@@ -1,6 +1,6 @@
 # Just Beat It 公式サイト
 
-TKAttractions の一人用弾幕アクション「Just Beat It」（Steam App ID 5429530）の GitHub Pages 用静的サイトです。HTML / CSS / JavaScript のみ。ビルド・npm・外部 JS ライブラリは不要です。
+Ark Art Games の一人用弾幕アクション「Just Beat It」（Steam App ID 5429530）の GitHub Pages 用静的サイトです。HTML / CSS / JavaScript のみ。ビルド・npm・外部 JS ライブラリは不要です。
 
 公開予定 URL: https://raymee675.github.io/Just-Beat-It/
 
