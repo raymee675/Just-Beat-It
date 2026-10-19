@@ -73,12 +73,13 @@
     list.setAttribute('role','listbox');list.setAttribute('aria-label',t('ステージ選択','Select a stage'));
     list.setAttribute('aria-describedby','stage-instructions');list.tabIndex = 0;
     const marker = section.querySelector('.stage-marker');
-    let selected = 0, difficulty = 1;
+    let selected = -1, difficulty = 1;
     const multipliers = ['×0.8','×1.0','×1.3'];
     const descriptions = [t('気軽に遊べる難易度','A relaxed challenge'),t('標準的な難易度','A balanced challenge'),t('上級者向けの高難易度','An extreme challenge')];
     const group = panel.querySelector('.difficulty-options');group.setAttribute('role','radiogroup');group.setAttribute('aria-label',t('難易度','Difficulty'));
     const detail = panel.querySelector('.difficulty-detail');detail.setAttribute('aria-live','polite');
     const selectedName = panel.querySelector('.selected-stage'); selectedName.setAttribute('aria-live','polite');
+    const number = panel.querySelector('.stage-number');
     const buttons = [...group.querySelectorAll('button')];
     buttons.forEach((b,i) => { b.disabled = false;b.setAttribute('role','radio');b.addEventListener('click',() => setDifficulty(i)); });
     function setDifficulty(i, focus = false) {
@@ -89,10 +90,16 @@
       if (focus) buttons[difficulty].focus();
     }
     function select(i) {
-      selected = (i + rows.length) % rows.length;
+      const next = (i + rows.length) % rows.length, changed = selected !== next;
+      selected = next;
       rows.forEach((row,j) => row.setAttribute('aria-selected',String(j === selected)));
       list.setAttribute('aria-activedescendant', rows[selected].id);
-      selectedName.textContent = String(selected + 1).padStart(2,'0') + ' / ' + rows[selected].textContent;
+      selectedName.textContent = rows[selected].textContent;
+      number.textContent = String(selected + 1).padStart(2,'0');
+      if (changed && fx.enabled && number.animate) {
+        number.animate([{transform:'perspective(400px) rotateX(-75deg)',opacity:.3},{transform:'perspective(400px) rotateX(0)',opacity:1}],{duration:fx.beat,easing:'cubic-bezier(.2,.8,.2,1)'});
+        panel.classList.remove('stage-changing');void panel.offsetWidth;panel.classList.add('stage-changing');
+      }
       marker.style.height = rows[selected].offsetHeight + 'px';
       marker.style.transform = 'translateY(' + (list.offsetTop + rows[selected].offsetTop) + 'px)';
     }
@@ -111,7 +118,7 @@
       const delta = {ArrowLeft:-1,ArrowUp:-1,ArrowRight:1,ArrowDown:1}[event.key];
       if (delta) { event.preventDefault();setDifficulty(difficulty + delta,true); }
     });
-    new ResizeObserver(() => select(selected)).observe(list);setDifficulty(1);select(0);
+    new ResizeObserver(() => select(Math.max(0,selected))).observe(list);setDifficulty(1);select(0);
   }
   gallery();stages();
 })();

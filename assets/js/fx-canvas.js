@@ -9,16 +9,49 @@
   const sprite = (ctx, img, x, y, time, size = 128, frames = 8) => {
     ctx.drawImage(img, Math.floor(time / 100) % frames * 128, 0, 128, 128, Math.round(x - size / 2), Math.round(y - size / 2), size, size);
   };
-  const chevron = (ctx, x, y, angle, white, size = 7) => {
+  // The same full-size projectiles are used in the demo and feature diagrams.
+  // All angles follow velocity: zero points right, PI / 2 points down.
+  const chevron = (ctx, x, y, angle, length = 64) => {
     ctx.save(); ctx.translate(Math.round(x), Math.round(y)); ctx.rotate(angle);
-    ctx.fillStyle = white ? '#fff5fa' : '#ee294b';
-    ctx.beginPath(); ctx.moveTo(-size, -size); ctx.lineTo(0, -size * .35); ctx.lineTo(size, -size);
-    ctx.lineTo(0, size); ctx.closePath(); ctx.fill(); ctx.restore();
+    const stride = length / 4, h = length * .3;
+    for (let i = 0; i < 4; i++) {
+      const tip = length / 2 - i * stride;
+      ctx.fillStyle = i === 0 ? '#fff9fc' : '#f01b46';
+      ctx.beginPath(); ctx.moveTo(tip - stride, -h); ctx.lineTo(tip - stride * .6, -h);
+      ctx.lineTo(tip, 0); ctx.lineTo(tip - stride * .6, h);
+      ctx.lineTo(tip - stride, h); ctx.lineTo(tip - stride * .4, 0); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
   };
-  const orb = (ctx, x, y, size) => {
-    ctx.fillStyle = '#6a309a'; ctx.beginPath(); ctx.arc(x, y, size, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#dbb2ff'; ctx.lineWidth = 1.5; ctx.stroke();
-    ctx.fillStyle = '#edd9ff'; ctx.fillRect(Math.round(x - size / 3), Math.round(y - size / 2), 2, 2);
+  const orb = (ctx, x, y, angle, radius = 21) => {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
+    const alpha = ctx.globalAlpha;
+    for (let i = 8; i > 0; i--) {
+      ctx.globalAlpha = alpha * (1 - i / 9) * .55;
+      ctx.fillStyle = '#e7c9ff'; ctx.beginPath();
+      ctx.arc(-i * radius * .55, 0, radius * (1 - i / 10), 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = alpha; ctx.fillStyle = '#9b1fe8';
+    ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#d581ff'; ctx.lineWidth = 1; ctx.stroke(); ctx.restore();
+  };
+  const pellet = (ctx, x, y, radius = 6) => {
+    ctx.fillStyle = '#fffbff'; ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+  };
+  const laser = (ctx, x, y, angle) => {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
+    for (let i = 0; i < 10; i++) {
+      ctx.fillStyle = i === 0 ? '#f9ddff' : '#a81cef';
+      ctx.globalAlpha *= i === 9 ? .4 : 1;
+      ctx.fillRect(-i * 11, -5, 8, 10);
+    }
+    ctx.restore();
+  };
+  const projectile = (ctx, b) => {
+    if (b.mode === 0) chevron(ctx,b.x,b.y,b.angle,b.size);
+    else if (b.mode === 1) orb(ctx,b.x,b.y,b.angle,b.size);
+    else if (b.mode === 2) pellet(ctx,b.x,b.y,b.size);
+    else laser(ctx,b.x,b.y,b.angle);
   };
   const star = (ctx, x, y, age) => {
     ctx.strokeStyle = '#ffe16a'; ctx.globalAlpha *= Math.max(0, 1 - age);
@@ -38,7 +71,7 @@
     control.textContent = fx.text('自機を誘導 / 矢印キー・ドラッグ', 'PILOT / ARROWS · DRAG');
     control.setAttribute('aria-label', fx.text('弾幕デモ。フォーカス中は矢印キーで自機を移動。Esc で自動回避', 'Bullet demo. Arrow keys steer while focused. Escape resumes autopilot'));
     host.append(control);
-    let ctx, width, height, bullets = [], sparks = [], lastBeat = -1, quality = 1, slow = 0;
+    let ctx, width, height, bullets = [], sparks = [], lastBeat = -1, quality = 1, slow = 0, staticScene = false;
     let player = {x:0, y:0}, pointer = null, keyboard = false, steering = false, lastGraze = -1000;
     let readZone = {left:0, right:0, top:0, bottom:0};
     function resize() {
@@ -46,7 +79,8 @@
       if (!ctx) { canvas.remove(); control.remove(); return; }
       player.x = width * .78; player.y = height * .78;
       const rect = host.getBoundingClientRect(), copy = host.querySelector('.hero-content').getBoundingClientRect();
-      readZone = {left:copy.left - rect.left, right:copy.left - rect.left + Math.min(copy.width, 670), top:copy.top - rect.top, bottom:copy.bottom - rect.top};
+      const lastCopy = host.querySelector('.free-banner:not([hidden])') || host.querySelector('.hero .actions');
+      readZone = {left:copy.left - rect.left, right:copy.left - rect.left + Math.min(copy.width, 670), top:copy.top - rect.top, bottom:lastCopy.getBoundingClientRect().bottom - rect.top + 16};
       fx.refresh(canvas);
     }
     const ro = new ResizeObserver(resize); ro.observe(host); resize(); if (!ctx) return;
@@ -67,31 +101,53 @@
       pointer = pointer || {...player}; pointer.x = clamp(pointer.x + delta[0], 24, width - 24); pointer.y = clamp(pointer.y + delta[1], height * .35, height - 36);
     });
     control.addEventListener('blur', () => { keyboard = false; pointer = null; });
-    function spawn(beat, staticFrame) {
+    const arena = () => ({x:width * .79, y:width <= 850 ? height - 345 : height * .2, bottom:height - 140});
+    function spawn(beat) {
       const mode = Math.floor(beat / 16) % 3;
-      const max = Math.min(220, Math.floor(width * height / 4200 * quality));
-      const count = Math.max(8, Math.round((mode === 2 ? 18 : 14) * quality));
+      const downbeat = beat % 4 === 0, origin = arena();
+      const max = Math.round(84 * quality);
+      const count = Math.max(3, Math.round((downbeat ? 9 : 3) * quality));
       for (let i = 0; i < count && bullets.length < max; i++) {
-        const a = i / count * Math.PI * 2 + beat * .37;
         if (mode === 2) {
-          bullets.push({x:(i + .5) * width / count, y:staticFrame ? height * (.23 + i % 4 * .13) : 32, vx:0, vy:135, mode, angle:0, white:true});
+          // Parallel rows retain a regular lattice as they travel.
+          for (let row = 0; row < (downbeat ? 3 : 1) && bullets.length < max; row++) {
+            bullets.push({x:width * (width <= 850 ? .12 : .55) + i * (width * (width <= 850 ? .8 : .42) / (count - 1)), y:origin.y + row * 30, vx:0,vy:125,mode,angle:Math.PI / 2,size:6});
+          }
         } else {
-          const speed = mode === 1 ? 105 : 135;
-          bullets.push({x:width * .78 + (staticFrame ? Math.cos(a) * 160 : 0), y:height * .19 + (staticFrame ? Math.sin(a) * 160 : 0), vx:Math.cos(a) * speed, vy:Math.sin(a) * speed + 48, mode, angle:a + Math.PI / 2, white:i % 3 === 0});
+          const angle = Math.PI * (.12 + i / (count - 1) * .76) + (beat % 4) * .07;
+          const speed = mode === 1 ? 135 : 175;
+          const ring = mode === 1 ? 46 : 30;
+          bullets.push({x:origin.x + Math.cos(angle) * ring,y:origin.y + Math.sin(angle) * ring,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,mode,angle,size:mode === 1 ? 16 + i % 3 * 5 : 56 + i % 3 * 10});
         }
       }
+      if (downbeat && mode !== 0) [-.55,.55].forEach(offset => {
+        const angle = Math.PI / 2 + offset;
+        bullets.push({x:origin.x,y:origin.y,vx:Math.cos(angle)*190,vy:Math.sin(angle)*190,mode:3,angle});
+      });
+    }
+    function stillFrame() {
+      const a = arena(), top = a.y + 65, span = a.bottom - top;
+      bullets = [];
+      [0,1,2].forEach(i => {
+        bullets.push({x:width * (.46 + i * .21),y:top + span * (.2 + i * .17),mode:0,angle:1.1 + i * .45,size:66,vx:0,vy:0});
+        bullets.push({x:width * (.36 + i * .23),y:top + span * (.7 - i * .2),mode:1,angle:1.15,size:18 + i * 3,vx:0,vy:0});
+      });
+      for (let i = 0; i < 7; i++) bullets.push({x:width * (.48 + i * .075),y:top + span * .85,mode:2,size:6,vx:0,vy:0});
+      bullets.push({x:width * .91,y:top + span * .65,mode:3,angle:1.1,vx:0,vy:0});
     }
     fx.add(canvas, (time, dt, still) => {
       if (!ctx) return;
-      if (still) { bullets = []; sparks = []; lastBeat = -1; spawn(8, true); player = {x:width * .78,y:height * .78}; }
+      const origin = arena();
+      if (still) { stillFrame(); staticScene = true; sparks = []; lastBeat = -1; player = {x:width * .72,y:origin.bottom}; }
+      else if (staticScene) { bullets = []; staticScene = false; lastBeat = -1; }
       const beat = Math.floor(time / fx.beat);
-      if (!still && beat !== lastBeat) { spawn(beat, false); lastBeat = beat; }
+      if (!still && beat !== lastBeat) { spawn(beat); lastBeat = beat; }
       if (dt > 26) slow++; else slow = Math.max(0, slow - 1);
       if (slow > 35) { quality = Math.max(.4, quality * .8); slow = 0; }
       ctx.clearRect(0, 0, width, height);
       const step = Math.floor(time / (fx.beat * 2)) % 8;
       const autoX = width * (width < 700 ? .69 : .79) + [-.3,.8,-.7,.4,-.9,.7,0,-.5][step] * Math.min(110, width * .16);
-      let tx = pointer ? pointer.x : autoX, ty = pointer ? pointer.y : height * .77 + [0,-22,16,-8][step % 4];
+      let tx = pointer ? pointer.x : autoX, ty = pointer ? pointer.y : origin.bottom + [0,-22,16,-8][step % 4];
       if (!pointer && !still) {
         // Repel from predicted bullet positions, then ease toward the safe route.
         bullets.forEach(b => {
@@ -99,25 +155,29 @@
           if (distance < 92 && distance > .1) { tx += dx / distance * (92 - distance) * 1.5; ty += dy / distance * (92 - distance) * .6; }
         });
       }
-      tx = clamp(tx, width < 700 ? width * .4 : width * .58, width - 32); ty = clamp(ty, height * .5, height - 50);
+      tx = clamp(tx, width < 700 ? width * .4 : width * .58, width - 32); ty = clamp(ty, height * .5, height - 120);
       if (pointer) { tx = pointer.x; ty = pointer.y; }
       const dx = (tx - player.x) * Math.min(1, dt / 105);
       if (!still) { player.x += dx; player.y += (ty - player.y) * Math.min(1, dt / 105); }
-      bullets = bullets.filter(b => b.x > -30 && b.x < width + 30 && b.y > -60 && b.y < height + 30);
+      bullets = bullets.filter(b => b.x > -120 && b.x < width + 120 && b.y > -120 && b.y < height + 120);
       bullets.forEach(b => {
         if (!still) { b.x += b.vx * dt / 1000; b.y += b.vy * dt / 1000; }
         const underText = b.x > readZone.left && b.x < readZone.right && b.y > readZone.top && b.y < readZone.bottom;
-        ctx.globalAlpha = underText ? .19 : .88;
-        if (b.mode === 0) chevron(ctx, b.x, b.y, b.angle + time / 2200, b.white);
-        else if (b.mode === 1) orb(ctx, b.x, b.y, 6);
-        else { ctx.fillStyle = '#fff5fa'; ctx.fillRect(Math.round(b.x), Math.round(b.y), 3, 3); }
+        ctx.globalAlpha = underText ? .25 : 1;
+        projectile(ctx,b);
         const distance = Math.hypot(player.x - b.x, player.y - b.y);
         if (!still && !b.grazed && distance < 37 && distance > 9 && time - lastGraze > 130) {
           b.grazed = true; lastGraze = time; sparks.push({x:player.x,y:player.y,born:time});
         }
       });
-      ctx.globalAlpha = .85; sprite(ctx, boss, width * .78, height * .19, still ? 0 : time, 128, 4);
-      ctx.globalAlpha = 1; sprite(ctx, dx < -.6 ? left : dx > .6 ? right : neutral, player.x, player.y, still ? 0 : time);
+      ctx.globalAlpha = 1; sprite(ctx, boss, origin.x, origin.y, still ? 0 : time, 256, 4);
+      // Charge ring grows over the final 150ms before each volley.
+      const charge = (time % fx.beat - (fx.beat - 150)) / 150;
+      if (!still && charge > 0) {
+        ctx.strokeStyle = beat % 4 === 3 ? '#fff4fa' : '#c38be6';ctx.lineWidth = beat % 4 === 3 ? 3 : 1.5;
+        ctx.globalAlpha = charge;ctx.beginPath();ctx.arc(origin.x,origin.y,22 + charge * 36,0,Math.PI*2);ctx.stroke();
+      }
+      ctx.globalAlpha = 1; sprite(ctx, dx < -.6 ? left : dx > .6 ? right : neutral, player.x, player.y, still ? 0 : time,256);
       ctx.fillStyle = '#efffff'; ctx.fillRect(Math.round(player.x - 1),Math.round(player.y - 1),3,3);
       sparks = sparks.filter(s => time - s.born < fx.beat);
       sparks.forEach(s => { ctx.save(); star(ctx,s.x,s.y,(time - s.born) / fx.beat); ctx.restore(); });
@@ -174,41 +234,42 @@
     const cards = [...document.querySelectorAll('#game .grid .plate')]; if (!cards.length) return;
     const neutral = await image('player-neutral-sheet.png');
     cards.forEach((card, type) => {
-      const canvas = document.createElement('canvas'); canvas.className = 'feature-canvas'; canvas.width = 320; canvas.height = 144;
+      const canvas = document.createElement('canvas'); canvas.className = 'feature-canvas';
       canvas.setAttribute('role','img');
       canvas.setAttribute('aria-label', [fx.text('無敵のダッシュで弾の壁を抜ける図', 'Invincible dash through a bullet wall'),fx.text('グレイズで100点を獲得する図','A close graze earns 100 points'),fx.text('拍に同期したリング弾幕の図','Bullet rings synchronized to a beat')][type]);
       const slot = card.querySelector('.feature-slot'); if (!slot) return;
       slot.append(canvas); card.classList.add('feature-card'); card.tabIndex = 0;
-      let cw = slot.clientWidth, ctx = fx.canvas(canvas,cw,144); if (!ctx) return;
-      new ResizeObserver(() => { cw = slot.clientWidth;ctx = fx.canvas(canvas,cw,144);fx.refresh(canvas); }).observe(slot);
+      let cw = slot.clientWidth, ctx = fx.canvas(canvas,cw,cw * 9 / 16); if (!ctx) return;
+      new ResizeObserver(() => { cw = slot.clientWidth;ctx = fx.canvas(canvas,cw,cw * 9 / 16);fx.refresh(canvas); }).observe(slot);
       fx.add(canvas, (time, dt, still) => {
-        ctx.clearRect(0,0,cw,144);ctx.save();ctx.translate(Math.round((cw - 320) / 2),0);
+        ctx.clearRect(0,0,cw,cw * 9 / 16);ctx.save();ctx.scale(cw / 320,cw / 320);
         ctx.strokeStyle = '#24304b'; ctx.lineWidth = 1;
-        for (let x = 16; x < 320; x += 32) { ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,144);ctx.stroke(); }
+        for (let x = 16; x < 320; x += 32) { ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,180);ctx.stroke(); }
         const phase = still ? .55 : (time % (fx.beat * 4)) / (fx.beat * 4);
         ctx.globalAlpha = 1;
         if (type === 0) {
-          for (let y = 12; y < 144; y += 22) chevron(ctx,165,y,0,y % 3 === 0,6);
+          for (let y = 42; y < 180; y += 53) chevron(ctx,165,y,Math.PI / 2,56);
           const dash = phase > .28 && phase < .53;
           const x = phase < .28 ? 55 : phase < .53 ? 55 + (phase - .28) / .25 * 210 : 265;
-          if (dash || still) for (let i = 1; i < 5; i++) { ctx.globalAlpha = .3 / i; sprite(ctx,neutral,x - i * 22,80,time,128); }
+          if (dash || still) for (let i = 1; i < 5; i++) { ctx.globalAlpha = .3 / i; sprite(ctx,neutral,(still ? 235 : x) - i * 22,105,still ? 0 : time,128); }
           ctx.globalAlpha = dash && Math.floor(time / 70) % 2 ? .2 : 1;
-          sprite(ctx,neutral,still ? 211 : x,80,still ? 0 : time);
+          sprite(ctx,neutral,still ? 235 : x,105,still ? 0 : time);
           if (dash) { ctx.globalCompositeOperation = 'source-atop'; ctx.fillStyle = '#fff9'; ctx.fillRect(x - 25,55,50,50);ctx.globalCompositeOperation = 'source-over'; }
         } else if (type === 1) {
-          sprite(ctx,neutral,158,91,still ? 0 : time);
+          sprite(ctx,neutral,158,118,still ? 0 : time);
           const bx = still ? 175 : 30 + phase * 280;
-          chevron(ctx,bx,64,Math.PI / 2,true,7);
-          if (still || (phase > .42 && phase < .72)) { ctx.save(); star(ctx,168,80,still ? .25 : (phase - .42) / .3);ctx.restore(); }
+          chevron(ctx,bx,64,0,66);
+          if (still || (phase > .42 && phase < .72)) { ctx.save(); star(ctx,168,96,still ? .25 : (phase - .42) / .3);ctx.restore(); }
+          for (let x = 36; x < 320; x += 48) pellet(ctx,x,158,5);
         } else {
           const pulse = still ? .55 : time / fx.beat % 1;
-          for (let ring = 0; ring < 3; ring++) for (let i = 0; i < 18; i++) {
-            const angle = i / 18 * Math.PI * 2 + ring * .2, r = 12 + (ring + pulse) * 23;
-            orb(ctx,160 + Math.cos(angle) * r,72 + Math.sin(angle) * r,3);
+          for (let i = 0; i < 5; i++) {
+            const angle = i / 5 * Math.PI * 2 + .4, r = 40 + pulse * 40;
+            orb(ctx,160 + Math.cos(angle) * r,96 + Math.sin(angle) * r,angle,16);
           }
-          ctx.fillStyle = '#ffe16a'; ctx.fillRect(14,130,292 * (1 - pulse),2);
+          laser(ctx,278,136,Math.PI / 2);ctx.fillStyle = '#ffe16a'; ctx.fillRect(14,174,292 * (1 - pulse),2);
         }
-        ctx.globalAlpha = 1; ctx.fillStyle = '#a8b8cd';ctx.font = '10px monospace';ctx.fillText(['01 / DASH','02 / GRAZE +100','03 / 130 BPM'][type],Math.max(12,(320-cw)/2+12),18);ctx.restore();
+        ctx.globalAlpha = 1; ctx.fillStyle = '#a8b8cd';ctx.font = '10px monospace';ctx.fillText(['01 / DASH','02 / GRAZE +100','03 / 130 BPM'][type],12,18);ctx.restore();
       });
       if (matchMedia('(hover:hover) and (pointer:fine)').matches) {
         card.addEventListener('pointermove', event => {
@@ -219,6 +280,22 @@
         });
         card.addEventListener('pointerleave', () => { card.style.setProperty('--rx','0deg');card.style.setProperty('--ry','0deg'); });
       }
+    });
+  }
+
+  async function steam() {
+    const panel = document.querySelector('.steam-panel'); if (!panel) return;
+    const fallback = panel.querySelector('.cta-player');
+    const neutral = await image('player-neutral-sheet.png');
+    const canvas = document.createElement('canvas');canvas.className = 'cta-player';canvas.setAttribute('aria-hidden','true');
+    const ctx = fx.canvas(canvas,256,256);if (!ctx) return;
+    fallback.replaceWith(canvas);
+    fx.add(panel,(time,dt,still) => {
+      ctx.clearRect(0,0,256,256);sprite(ctx,neutral,128,128,still ? 0 : time,256);
+      const rect = panel.getBoundingClientRect();
+      const offset = still ? 0 : clamp((innerHeight / 2 - rect.top - rect.height / 2) * .055,-32,32);
+      panel.style.setProperty('--cta-parallax',offset + 'px');
+      panel.style.setProperty('--glint',still ? '-50%' : (-50 + time % fx.beat / fx.beat * 220) + '%');
     });
   }
 
@@ -239,7 +316,7 @@
     };
     document.body.append(canvas);paint();addEventListener('resize',paint,{passive:true});
   }
-  const init = () => { hero().catch(() => {}); logo().catch(() => {}); diagrams().catch(() => {}); texture(); };
+  const init = () => { hero().catch(() => {}); logo().catch(() => {}); diagrams().catch(() => {}); steam().catch(() => {}); texture(); };
   if (document.readyState === 'complete') init(); else addEventListener('load', () => {
     if ('requestIdleCallback' in window) requestIdleCallback(init,{timeout:350}); else setTimeout(init,0);
   },{once:true});

@@ -50,16 +50,20 @@
       return ctx;
     }
   };
-  const toggle = document.createElement('button');
-  toggle.type = 'button'; toggle.className = 'motion-toggle';
-  document.body.append(toggle);
+  const toggles = [];
+  [document.querySelector('.header .nav'),document.querySelector('.footer nav')].filter(Boolean).forEach(host => {
+    const toggle = document.createElement('button');
+    toggle.type = 'button';toggle.className = 'motion-toggle';host.append(toggle);toggles.push(toggle);
+  });
   function apply() {
     enabled = preference && !reduced.matches;
     root.dataset.motion = enabled ? 'on' : 'off';
-    toggle.textContent = text('演出 ', 'FX ') + (enabled ? text('オン', 'ON') : text('オフ', 'OFF'));
-    toggle.setAttribute('aria-pressed', String(enabled));
-    toggle.setAttribute('aria-label', text('演出の切替', 'Toggle visual effects'));
-    toggle.title = reduced.matches ? text('OS の「動きを減らす」設定により停止中', 'Paused by your reduced-motion preference') : '';
+    toggles.forEach(toggle => {
+      toggle.textContent = text('演出 ', 'FX ') + (enabled ? text('オン', 'ON') : text('オフ', 'OFF'));
+      toggle.setAttribute('aria-pressed', String(enabled));
+      toggle.setAttribute('aria-label', text('演出の切替', 'Toggle visual effects'));
+      toggle.title = reduced.matches ? text('OS の「動きを減らす」設定により停止中', 'Paused by your reduced-motion preference') : '';
+    });
     cancelAnimationFrame(frame); frame = 0; last = 0;
     if (!enabled) {
       if (document.getAnimations) document.getAnimations().forEach(animation => animation.cancel());
@@ -67,11 +71,11 @@
     } else wake();
     document.dispatchEvent(new CustomEvent('jbi:motion', {detail: enabled}));
   }
-  toggle.addEventListener('click', () => {
+  toggles.forEach(toggle => toggle.addEventListener('click', () => {
     preference = !preference;
     try { localStorage.setItem('jbi-motion', preference ? 'on' : 'off'); } catch {}
     apply();
-  });
+  }));
   reduced.addEventListener('change', apply);
   document.addEventListener('visibilitychange', () => {
     cancelAnimationFrame(frame); frame = 0; last = 0; wake();
@@ -97,7 +101,7 @@
     const setOpen = value => {
       open = value; menu.setAttribute('aria-expanded', String(open));
       header.classList.toggle('menu-open', open); document.body.classList.toggle('menu-is-open', open);
-      document.querySelectorAll('main,.footer,.motion-toggle,.header .brand,.header .small,.header .languages').forEach(node => { node.inert = open; });
+      document.querySelectorAll('main,.footer,.header .brand,.header .small,.header .languages').forEach(node => { node.inert = open; });
       if (open) nav.querySelector('a:not([hidden])').focus(); else menu.focus();
     };
     menu.addEventListener('click', () => setOpen(!open));
@@ -105,7 +109,7 @@
       if (!open) return;
       if (event.key === 'Escape') { event.preventDefault(); setOpen(false); }
       if (event.key === 'Tab') {
-        const links = [...nav.querySelectorAll('a:not([hidden])'), menu];
+        const links = [...nav.querySelectorAll('a:not([hidden]),button'), menu];
         const index = links.indexOf(document.activeElement);
         if (event.shiftKey && index <= 0) { event.preventDefault(); menu.focus(); }
         else if (!event.shiftKey && index === links.length - 1) { event.preventDefault(); links[0].focus(); }
@@ -146,8 +150,11 @@
   // Content stays visible if JS/IO fails. Split only plain text headings.
   const targets = document.querySelectorAll('.section h2,.content h2,.page-title h1,.section .plate,.content .plate,.section .eyebrow');
   targets.forEach(node => {
-    if (/^H[12]$/.test(node.tagName) && node.children.length === 0) {
+    if (/^H[12]$/.test(node.tagName) && [...node.children].every(child => child.tagName === 'WBR')) {
       const label = node.textContent;
+      const words = node.innerHTML.split(/<wbr\s*\/?>/i).map(part => {
+        const decoder = document.createElement('span');decoder.innerHTML = part;return decoder.textContent;
+      });
       node.setAttribute('aria-label', label); node.classList.add('letter-heading');
       node.textContent = '';
       let index = 0;
@@ -162,7 +169,11 @@
         const group = document.createElement('span');group.className = 'heading-word';group.setAttribute('aria-hidden','true');
         Array.from(word).forEach(letter => addLetter(letter,group));node.append(group);
       });
-      else Array.from(label).forEach(letter => addLetter(letter,node));
+      else words.forEach((word,i) => {
+        if (i) node.append(document.createElement('wbr'));
+        const group = document.createElement('span');group.className = 'heading-word';group.setAttribute('aria-hidden','true');
+        Array.from(word).forEach(letter => addLetter(letter,group));node.append(group);
+      });
     }
   });
   function reveal(node) {
