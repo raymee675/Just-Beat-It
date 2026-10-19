@@ -32,6 +32,34 @@
   }).format(new Date(value)) + ' JST (UTC+09:00)';
   const setText = (selector, value) => document.querySelectorAll(selector).forEach(node => { node.textContent = value; });
   let previousState;
+  function countdown(value, label) {
+    document.querySelectorAll('[data-countdown]').forEach(node => {
+      if (!value) { node.replaceChildren(); delete node.dataset.length; node.removeAttribute('aria-label'); return; }
+      node.setAttribute('aria-label', label + value);
+      node.setAttribute('role', 'timer');
+      const digits = Array.from(value);
+      if (node.dataset.length !== String(digits.length)) {
+        node.replaceChildren();
+        const title = document.createElement('span'); title.className = 'countdown-label'; title.setAttribute('aria-hidden','true'); node.append(title);
+        digits.forEach(char => {
+          const span = document.createElement('span');span.className = /\d/.test(char) ? 'flip-digit' : 'flip-separator';
+          span.setAttribute('aria-hidden','true');span.textContent = char;node.append(span);
+        });
+        node.dataset.length = String(digits.length);
+      }
+      node.firstElementChild.textContent = label;
+      digits.forEach((char,index) => {
+        const digit = node.children[index + 1];
+        if (digit.textContent !== char) {
+          digit.textContent = char;
+          if (window.JBI_FX && window.JBI_FX.enabled && !document.hidden && digit.animate) digit.animate([
+            {transform:'perspective(100px) rotateX(-75deg)',color:'#fff'},
+            {transform:'perspective(100px) rotateX(0)',color:'#ffe16a'}
+          ],{duration:230,easing:'cubic-bezier(.2,.8,.2,1)'});
+        }
+      });
+    });
+  }
   function render() {
     const time = now();
     const state = !valid ? 'none' : time < start ? 'upcoming' : time < end ? 'active' : 'ended';
@@ -55,14 +83,15 @@
       setText('[data-free-sha]', /^[a-f0-9]{64}$/i.test(free.sha256 || '') ? free.sha256 : t('未掲載', 'Not provided'));
       previousState = state;
     }
-    if (state === 'active') {
-      const seconds = Math.max(0, Math.ceil((end - time) / 1000));
+    if (state === 'active' || state === 'upcoming') {
+      const seconds = Math.max(0, Math.ceil(((state === 'active' ? end : start) - time) / 1000));
       const days = Math.floor(seconds / 86400);
       const hours = String(Math.floor(seconds % 86400 / 3600)).padStart(2, '0');
       const minutes = String(Math.floor(seconds % 3600 / 60)).padStart(2, '0');
       const secs = String(seconds % 60).padStart(2, '0');
-      setText('[data-countdown]', t('残り ', 'Time left: ') + days + t('日 ', 'd ') + hours + ':' + minutes + ':' + secs);
-    } else setText('[data-countdown]', '');
+      countdown(days + t('日 ', 'd ') + hours + ':' + minutes + ':' + secs,
+        state === 'active' ? t('残り ', 'Time left: ') : t('開始まで ', 'Starts in: '));
+    } else countdown('', '');
   }
   render();
   window.setInterval(render, 1000);
@@ -75,12 +104,28 @@
   const dialog = document.querySelector('#lightbox');
   if (dialog && typeof dialog.showModal === 'function') {
     const img = dialog.querySelector('img'), caption = dialog.querySelector('p');
-    let opener;
+    let opener, current = 0;
+    const links = [...document.querySelectorAll('[data-lightbox]')];
+    const previous = document.createElement('button'), next = document.createElement('button');
+    previous.type = next.type = 'button'; previous.textContent = '←'; next.textContent = '→';
+    previous.className = 'lightbox-prev'; next.className = 'lightbox-next';
+    previous.setAttribute('aria-label',t('前の画像','Previous screenshot'));next.setAttribute('aria-label',t('次の画像','Next screenshot'));
+    dialog.append(previous,next);caption.setAttribute('aria-live','polite');
+    function show(index, source) {
+      current = (index + links.length) % links.length; if (source) opener = source;
+      img.src = links[current].href;img.alt = links[current].querySelector('img').alt;
+      caption.textContent = (current + 1) + ' / ' + links.length + ' — ' + img.alt;
+    }
+    const open = (index, source) => { show(index,source);if (!dialog.open) dialog.showModal();document.body.classList.add('modal-open'); };
     document.querySelectorAll('[data-lightbox]').forEach(a => a.addEventListener('click', event => {
-      event.preventDefault(); opener = a; img.src = a.href;
-      img.alt = a.querySelector('img').alt; caption.textContent = img.alt; dialog.showModal();
-      document.body.classList.add('modal-open');
+      event.preventDefault(); open(links.indexOf(a),a);
     }));
+    document.addEventListener('jbi:lightbox-open',event => open(event.detail.index,event.detail.opener));
+    document.addEventListener('jbi:lightbox-image',event => show(event.detail.index,event.detail.opener));
+    previous.addEventListener('click',() => show(current - 1));next.addEventListener('click',() => show(current + 1));
+    dialog.addEventListener('keydown',event => {
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {event.preventDefault();show(current + (event.key === 'ArrowLeft' ? -1 : 1));}
+    });
     dialog.querySelector('button').addEventListener('click', () => dialog.close());
     dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
     dialog.addEventListener('close', () => { document.body.classList.remove('modal-open'); if (opener) opener.focus(); });
