@@ -123,8 +123,6 @@
   function scroll() {
     scrolling = false;
     if (header) header.classList.toggle('compact', window.scrollY > 40);
-    const layer = document.querySelector('.chevrons');
-    if (layer) layer.style.setProperty('--parallax', fx.enabled ? Math.min(scrollY * .12, 100) + 'px' : '0px');
   }
   addEventListener('scroll', () => { if (!scrolling) { scrolling = true; requestAnimationFrame(scroll); } }, {passive:true});
   document.addEventListener('jbi:motion', scroll); scroll();
@@ -148,7 +146,7 @@
   }
 
   // Content stays visible if JS/IO fails. Split only plain text headings.
-  const targets = document.querySelectorAll('.section h2,.content h2,.page-title h1,.section .plate,.content .plate,.section .eyebrow');
+  const targets = document.querySelectorAll('.section h2,.content h2,.page-title h1,.section .plate,.content .plate,.section .eyebrow,.story-scene');
   targets.forEach(node => {
     if (/^H[12]$/.test(node.tagName) && [...node.children].every(child => child.tagName === 'WBR')) {
       const label = node.textContent;
