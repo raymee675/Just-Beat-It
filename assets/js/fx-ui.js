@@ -73,13 +73,12 @@
     list.setAttribute('role','listbox');list.setAttribute('aria-label',t('ステージ選択','Select a stage'));
     list.setAttribute('aria-describedby','stage-instructions');list.tabIndex = 0;
     const marker = section.querySelector('.stage-marker');
-    let selected = -1, activeImage = 0, imageRequest = 0;
+    let selected = -1, imageRequest = 0;
     const selectedName = panel.querySelector('.selected-stage'); selectedName.setAttribute('aria-live','polite');
     const number = panel.querySelector('.stage-number');
-    const preview = panel.querySelector('.stage-preview'), first = preview.querySelector('img');
-    const second = document.createElement('img');second.width = 960;second.height = 540;
-    second.alt = '';second.decoding = 'async';second.setAttribute('aria-hidden','true');preview.append(second);
-    const images = [first,second], loaded = new Map();
+    const preview = panel.querySelector('.stage-preview');
+    let current = preview.querySelector('img');
+    const loaded = new Map();
     const source = row => new URL('stage-' + row.dataset.stage + '.jpg',fx.assets).href;
     function load(row) {
       const id = row.dataset.stage;
@@ -91,19 +90,32 @@
       }
       return loaded.get(id);
     }
+    // Each new picture fades in on top of an opaque one; layers below it are dropped once
+    // it is fully shown, so a quick sweep through the list never flashes a stale frame.
     async function showImage(row) {
       const request = ++imageRequest;
       const src = await load(row);
-      if (!src || request !== imageRequest || images[activeImage].src === src) return;
-      const next = 1 - activeImage, incoming = images[next];
-      incoming.src = src;
-      try { await incoming.decode(); } catch { return; }
-      if (request !== imageRequest) return;
+      if (!src || request !== imageRequest || current.src === src) return;
+      const incoming = document.createElement('img');
+      incoming.width = 960;incoming.height = 540;incoming.decoding = 'async';incoming.src = src;
+      if (!incoming.complete) await new Promise(done => { incoming.onload = incoming.onerror = done; });
+      if (request !== imageRequest || !incoming.naturalWidth) return;
       incoming.alt = row.dataset.stage === 'archmage'
         ? t('大聖堂に立つ大魔導士','The Archmage in the Cathedral')
         : t(row.textContent + 'のプレイ画面','Gameplay in ' + row.textContent);
-      images[activeImage].classList.remove('is-active');images[activeImage].setAttribute('aria-hidden','true');
-      incoming.classList.add('is-active');incoming.removeAttribute('aria-hidden');activeImage = next;
+      current.setAttribute('aria-hidden','true');current = incoming;
+      preview.append(incoming);void incoming.offsetWidth;incoming.classList.add('is-active');
+      let settled = false;
+      const settle = () => {
+        if (settled) return;settled = true;
+        while (incoming.previousElementSibling) incoming.previousElementSibling.remove();
+      };
+      if (!fx.enabled) settle();
+      else {
+        incoming.addEventListener('transitionend',settle,{once:true});
+        // If transitionend never arrives, finish the fade at once rather than uncover the backdrop.
+        setTimeout(() => { if (!settled) { incoming.style.transition = 'none';settle(); } },700);
+      }
     }
     function select(i) {
       const next = (i + rows.length) % rows.length, changed = selected !== next;
