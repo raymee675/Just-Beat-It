@@ -90,6 +90,31 @@
   connection?.addEventListener('change', syncAll);
   syncAll();
 
+  // One continuous story reel: light up the chapter that is on screen and fill its rule.
+  document.querySelectorAll('.story-chapters').forEach(list => {
+    const video = list.closest('.story-scene')?.querySelector('video');
+    if (!video) return;
+    const items = [...list.children], starts = items.map(item => parseFloat(item.dataset.start) || 0);
+    let frame = 0;
+    function update() {
+      const t = video.currentTime, end = video.duration || Infinity;
+      items.forEach((item, i) => {
+        const from = starts[i], to = starts[i + 1] ?? end;
+        item.style.setProperty('--p', Math.max(0, Math.min(1, (t - from) / (to - from))).toFixed(4));
+        item.classList.toggle('is-current', t >= from && t < to);
+      });
+    }
+    function tick() { update(); frame = video.paused ? 0 : requestAnimationFrame(tick); }
+    video.addEventListener('loadeddata', () => { list.classList.add('is-live'); update(); });
+    video.addEventListener('play', () => { cancelAnimationFrame(frame); tick(); });
+    video.addEventListener('pause', () => { cancelAnimationFrame(frame); update(); });
+    video.addEventListener('seeked', update);
+    video.addEventListener('emptied', () => {
+      cancelAnimationFrame(frame); list.classList.remove('is-live');
+      items.forEach(item => { item.style.removeProperty('--p'); item.classList.remove('is-current'); });
+    });
+  });
+
   // Native details remain usable without JavaScript. Animate the reserved height
   // while keeping the requested open/closed state independent of rapid clicks.
   const finishers = [];
