@@ -1,19 +1,42 @@
-// 運用時の変更はこのファイルだけで行います。文字列は引用符で囲んでください。
+// 運用で書き換えるのはこのファイルだけです。文字列は引用符で囲んでください。
+// 日本語と英語を両方持つ項目は { ja: "…", en: "…" } の形です。
 window.JBI_CONFIG = {
-  // 全ページの Steam ボタンのリンク先。
-  steamUrl: "https://store.steampowered.com/app/5429530/",
-  // Google フォームの公開 URL（https://docs.google.com/forms/... または https://forms.gle/...）。空なら準備中。
-  contactFormUrl: "",
-  freeDownload: {
-    // 開始・終了はタイムゾーン付き ISO 8601。開始を含み、終了を含みません。
-    // 例: "2026-11-01T00:00:00+09:00"。両日時と URL が揃わない場合は配布なし。
-    startsAt: "",
-    endsAt: "",
-    // GitHub Releases の ZIP 直リンク（https://github.com/所有者/リポジトリ/releases/download/タグ/ファイル.zip）。
-    url: "",
-    // 配布する版、ZIP の容量表示、ZIP ファイルの SHA-256（64桁の16進数）。
-    version: "",
-    sizeLabel: "",
-    sha256: ""
+  // 制作の名前（暫定）。
+  team: {
+    ja: "筑駒縁日 Just Beat It 制作班",
+    en: "Tsukukoma Festival Just Beat It Team"
+  },
+
+  // メンバー（ハンドル名と担当）。上から順に並びます。空のあいだは「準備中」と出ます。
+  // 例: { handle: "raymee", role: { ja: "プログラム・弾幕", en: "Programming, Patterns" } },
+  members: [],
+
+  // PV。youtubeId（例 "dQw4w9WgXcQ"）か mp4（例 "assets/video/pv1.mp4"）のどちらかを入れると差し替わります。
+  // 両方空のあいだは、プレイ映像を「PV 準備中」の注記つきで流します。
+  pv: {
+    youtubeId: "",
+    mp4: ""
+  },
+
+  // ダウンロード。url が空のあいだはボタンが「準備中」になります。
+  // url は GitHub Releases の直リンク（https://github.com/所有者/リポジトリ/releases/download/タグ/ファイル.zip）。
+  // size はファイルの大きさ（例 "約 650 MB"）、version は版（例 "1.0.0"）。
+  download: {
+    windows: {
+      url: "",
+      size: "",
+      version: "",
+      os: { ja: "Windows 10 / 11（64 ビット）", en: "Windows 10 / 11 (64-bit)" },
+      gpu: { ja: "DirectX 11 対応（GeForce GTX 1050 程度以上）", en: "DirectX 11 capable (GeForce GTX 1050 or better)" },
+      storage: { ja: "1 GB 以上の空き", en: "1 GB free space" }
+    },
+    mac: {
+      url: "",
+      size: "",
+      version: "",
+      os: { ja: "準備中", en: "TBA" },
+      gpu: { ja: "準備中", en: "TBA" },
+      storage: { ja: "準備中", en: "TBA" }
+    }
   }
 };
