@@ -137,7 +137,8 @@
 
     // 残像を残しながら暗くする
     ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = t < MEET ? "rgba(0,0,0,0.32)" : "rgba(0,0,0,0.5)";
+    if (t >= MEET || this.skipped) ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = t < MEET && !this.skipped ? "rgba(0,0,0,0.32)" : "rgba(0,0,0,0)";
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = "lighter";
 
