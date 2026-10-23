@@ -1,0 +1,72 @@
+name: Claude
+
+# issue に「@claude ○○して」と書くと、Claude が作業して main へ取り込む。
+# 反応するのは、このリポジトリに書き込みできる人のコメントだけ（claude-code-action の既定）。
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened]
+
+concurrency:
+  group: claude-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request == null && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          base_branch: main
+          claude_args: >-
+            --model claude-opus-5-5
+            --max-turns 80
+            --allowedTools "Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(ls:*),Bash(python3:*),Bash(node:*),Bash(npx:*)"
+
+      # Claude の作業ブランチを main へ取り込み、ブランチを消す（PR は作らない）
+      - name: main へ取り込む
+        if: steps.claude.outputs.branch_name != ''
+        env:
+          BRANCH: ${{ steps.claude.outputs.branch_name }}
+          GH_TOKEN: ${{ steps.claude.outputs.github_token || github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+        run: |
+          set -e
+          git config user.name "claude[bot]"
+          git config user.email "209825114+claude[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if ! git fetch origin main "$BRANCH"; then
+            echo "作業ブランチが無い（変更なし）"; exit 0
+          fi
+          if [ "$(git rev-list --count origin/main..origin/$BRANCH)" = "0" ]; then
+            echo "変更なし"; git push origin --delete "$BRANCH" || true; exit 0
+          fi
+          git checkout -B main origin/main
+          if ! git merge --ff-only "origin/$BRANCH"; then
+            if ! git merge --no-edit "origin/$BRANCH"; then
+              git merge --abort || true
+              gh issue comment "$ISSUE" --body "main と衝突したので取り込めませんでした。ブランチ \`$BRANCH\` に残してあります。"
+              exit 1
+            fi
+          fi
+          git push origin main
+          git push origin --delete "$BRANCH" || true
+          gh issue comment "$ISSUE" --body "main に取り込みました（$(git rev-parse --short HEAD)）。"
