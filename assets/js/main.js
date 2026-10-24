@@ -74,7 +74,7 @@
             var f = document.createElement("link");
             f.id = "style-new-font";
             f.rel = "stylesheet";
-            f.href = "https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap";
+            f.href = "https://fonts.googleapis.com/css2?family=Anton&family=M+PLUS+1:wght@800;900&family=Montserrat:wght@900&family=Noto+Sans+JP:wght@400;700&display=swap";
             document.head.appendChild(f);
           }
         } else {
@@ -96,6 +96,45 @@
     }
     sync();
     document.body.appendChild(box);
+  })();
+
+  // ---- 試作の見た目の飾り（いつも置いておき、?style=new の時だけ CSS で出す） ----
+  var dots = [];
+  (function () {
+    function zz(tag, cls, text) {
+      var el = document.createElement(tag);
+      el.className = "zz-only " + cls;
+      if (text) el.textContent = text;
+      el.setAttribute("aria-hidden", "true");
+      return el;
+    }
+    // 区画の右上の大きな薄い英字
+    $$("main > .section").forEach(function (s) {
+      var en = $(".section-en", s);
+      if (en) s.insertBefore(zz("span", "zz-ghost", en.textContent), s.firstChild);
+    });
+    // トップのロゴの下の英字のラベル
+    var heroLogo = $(".hero-logo");
+    if (heroLogo) heroLogo.insertAdjacentElement("afterend", zz("p", "hero-lead", "Rhythm Bullet Hell / 1-2 Players / Windows · Mac"));
+    // ヘッダーのダウンロードのボタン
+    var langBox = $(".header .lang");
+    if (langBox) {
+      var dl = zz("a", "zz-dl");
+      dl.href = "#download";
+      dl.removeAttribute("aria-hidden");
+      dl.innerHTML = '<span lang="ja">無料ダウンロード</span><span lang="en">Download</span>';
+      langBox.parentNode.insertBefore(dl, langBox);
+    }
+    // 右端の区画のドット（上のナビと同じ行き先なので、読み上げとキー操作からは外す）
+    var nav = zz("nav", "zz-dots");
+    $$("[data-nav] a").forEach(function (a) {
+      var d = document.createElement("a");
+      d.href = a.getAttribute("href");
+      d.tabIndex = -1;
+      nav.appendChild(d);
+      dots.push(d);
+    });
+    document.body.appendChild(nav);
   })();
 
   // ---- オープニング ----
@@ -153,6 +192,7 @@
         a.classList.toggle("is-current", on);
         if (on) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
       });
+      dots.forEach(function (d) { d.classList.toggle("is-current", d.getAttribute("href") === "#" + current); });
     }, { rootMargin: "-45% 0px -50% 0px" });
     $$("main > section[id]").forEach(function (s) { io.observe(s); });
   }
@@ -230,6 +270,8 @@
       ruby.firstChild.nodeValue = d.ja;
       $("[data-stage-ruby]", panel).textContent = d.ruby;
       $("[data-stage-name-en]", panel).textContent = d.en;
+      var ghost = $(".zz-ghost", stages);
+      if (ghost) ghost.textContent = d.en;
       enemy.src = "assets/img/enemy/" + d.stage + ".gif";
       updateEnemyAlt();
       swapBg("assets/img/stage-" + d.stage + ".jpg");
