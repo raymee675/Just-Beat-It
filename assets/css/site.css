@@ -332,6 +332,65 @@ html.js .hero-flank i { transform: scaleX(0); }
 .section-head--alt .section-title { grid-column: 2; max-width: 100%; text-align: right; }
 .section-head--alt .band-title { --band: #f3eee6; color: #17131e; transform: rotate(2deg); transform-origin: right center; }
 .section-head--alt .section-en { grid-column: 2; margin-left: 4px; color: #d6d0c9; }
+
+/* 見出し C（見比べ用。?head=c で出る）: 番号の札・帯なしの題・拍の目盛りの線 */
+:root[data-head="c"] .section-head {
+  --accent: var(--magenta);
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end;
+  column-gap: clamp(14px, 2.4vw, 26px); row-gap: 0;
+  padding-bottom: 18px;
+}
+:root[data-head="c"] .section--alt .section-head { --accent: var(--cyan); }
+:root[data-head="c"] .section-head::after {
+  /* 拍の目盛り: 細い線に 4 拍ごとの太い刻み */
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 0; height: 10px;
+  background:
+    linear-gradient(var(--accent), var(--accent)) left bottom / 100% 2px no-repeat,
+    repeating-linear-gradient(90deg, var(--accent) 0 3px, transparent 3px 96px) left bottom / 100% 10px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .28) 0 1px, transparent 1px 24px) left bottom / 100% 6px no-repeat;
+  -webkit-mask: linear-gradient(90deg, #000 55%, transparent);
+  mask: linear-gradient(90deg, #000 55%, transparent);
+}
+:root[data-head="c"] .section-no,
+:root[data-head="c"] .section-head--alt .section-no {
+  position: relative; left: auto; right: auto; top: auto;
+  grid-row: 1 / span 2; align-self: stretch;
+  display: flex; align-items: center; justify-content: center;
+  min-width: 2.4em; padding: .1em .55em;
+  font-size: clamp(1.9rem, 5vw, 3.2rem); letter-spacing: .02em;
+  color: #fff; -webkit-text-stroke: 0;
+  background: var(--accent);
+  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+}
+:root[data-head="c"] .section-title,
+:root[data-head="c"] .section-head--alt .section-title { grid-column: 2; text-align: left; }
+:root[data-head="c"] .band-title,
+:root[data-head="c"] .section-head--alt .band-title {
+  padding: 0; color: var(--ink); transform: none; justify-content: flex-start;
+  white-space: normal; letter-spacing: .08em;
+}
+:root[data-head="c"] .band-title::before { content: none; }
+:root[data-head="c"] .section-en,
+:root[data-head="c"] .section-head--alt .section-en {
+  grid-column: 2; grid-row: 1; margin: 0 0 2px;
+  font-size: .72rem; font-weight: 700; letter-spacing: .45em; color: var(--accent);
+  filter: brightness(1.5);
+}
+:root[data-head="c"] .section-title { grid-row: 2; }
+
+/* 見出しの見比べ用の切り替え（?head= がある時だけ出る） */
+.head-switch {
+  position: fixed; right: 12px; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index: 60;
+  display: flex; gap: 4px; padding: 6px; background: rgba(11, 10, 14, .92);
+  border: 1px solid var(--plate-line); font-size: .8rem;
+}
+.head-switch button {
+  padding: 4px 12px; border: 0; background: var(--gray); color: #fff;
+  font: inherit; font-weight: 700; cursor: pointer;
+}
+.head-switch button[aria-pressed="true"] { background: var(--magenta); }
+
 .sub-title { font-size: 1.25rem; margin: 56px 0 14px; padding-left: 14px; border-left: 4px solid var(--cyan); }
 
 /* ---- 01 ゲームについて ---- */

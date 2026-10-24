@@ -54,6 +54,39 @@
     });
   });
 
+  // ---- 見出しの見比べ（?head= がある時だけ、右下に切り替えを出す） ----
+  (function () {
+    var q;
+    try { q = new URLSearchParams(location.search).get("head"); } catch (e) { return; }
+    if (q === null) return;
+    var box = document.createElement("div");
+    box.className = "head-switch";
+    box.setAttribute("role", "group");
+    box.setAttribute("aria-label", "見出し");
+    var buttons = [["ab", "今の見出し"], ["c", "見出し C"]].map(function (p) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = p[1];
+      b.addEventListener("click", function () {
+        if (p[0] === "c") root.dataset.head = "c"; else delete root.dataset.head;
+        try {
+          var u = new URL(location.href);
+          u.searchParams.set("head", p[0]);
+          history.replaceState(null, "", u.pathname + u.search + u.hash);
+        } catch (e) { /* 古いブラウザでは URL を変えない */ }
+        sync();
+      });
+      box.appendChild(b);
+      return [p[0], b];
+    });
+    function sync() {
+      var now = root.dataset.head === "c" ? "c" : "ab";
+      buttons.forEach(function (x) { x[1].setAttribute("aria-pressed", x[0] === now ? "true" : "false"); });
+    }
+    sync();
+    document.body.appendChild(box);
+  })();
+
   // ---- オープニング ----
   var hero = $("[data-hero]");
   var opening = null;
