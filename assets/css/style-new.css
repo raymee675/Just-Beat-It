@@ -1,0 +1,287 @@
+/* 新しい見た目の試作（?style=new の時だけ効く）: ゼンゼロ・UNBEATABLE・PUKEY 風
+   斜めの帯・網点・ストライプ・記号の模様、平行四辺形の札とずらした影。色は今のマゼンタ・シアン・白・黒 */
+:root[data-style="new"] {
+  --font: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  --head-font: "Dela Gothic One", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  --white: #f7f4ef;
+  --black: #08070a;
+  --accent: var(--magenta);
+  --edge: #000;
+  /* 模様 */
+  --dots: radial-gradient(rgba(255, 255, 255, .09) 1px, transparent 1.6px) 0 0 / 9px 9px;
+  --hatch: repeating-linear-gradient(-45deg, rgba(255, 255, 255, .03) 0 2px, transparent 2px 13px);
+  --hazard-m: repeating-linear-gradient(-45deg, var(--magenta) 0 9px, transparent 9px 18px);
+  --hazard-c: repeating-linear-gradient(-45deg, var(--cyan) 0 9px, transparent 9px 18px);
+  --hazard-w: repeating-linear-gradient(-45deg, var(--white) 0 9px, var(--black) 9px 18px);
+  --cut: 16px;
+}
+:root[data-style="new"] .section--alt { --accent: var(--cyan); }
+
+/* ---- 背景: 網点・細い斜線・記号・大きな斜めの帯（画面に固定） ---- */
+:root[data-style="new"] body { background: var(--black); }
+:root[data-style="new"] body::before {
+  content: "";
+  position: fixed; inset: 0; z-index: -1;
+  pointer-events: none;
+  background:
+    /* 大きな斜めの帯（右上にマゼンタ、左下にシアン） */
+    linear-gradient(118deg, transparent 0 66%, rgba(221, 0, 123, .14) 66% 74%, transparent 74% 76%, rgba(221, 0, 123, .08) 76% 78%, transparent 78%),
+    linear-gradient(118deg, transparent 0 14%, rgba(8, 127, 150, .16) 14% 20%, transparent 20%),
+    /* 記号（＋・○・△・×） */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' fill='none' stroke='%23ffffff' stroke-opacity='.07' stroke-width='2'%3E%3Cpath d='M30 20v20M20 30h20'/%3E%3Ccircle cx='120' cy='40' r='9'/%3E%3Cpath d='M60 150l10-17 10 17z'/%3E%3Cpath d='M138 128l14 14M152 128l-14 14'/%3E%3C/svg%3E") 0 0 / 180px 180px,
+    var(--dots),
+    var(--hatch),
+    var(--black);
+}
+
+/* ---- 筆の帯 → 平行四辺形の札。ずらした影で押せる物を示す ---- */
+:root[data-style="new"] .band { font-family: var(--head-font); font-weight: 400; letter-spacing: .04em; filter: drop-shadow(.2em .2em 0 var(--edge)); }
+:root[data-style="new"] .band::before {
+  inset: 0 -.25em;
+  -webkit-mask: none; mask: none;
+  background:
+    repeating-linear-gradient(-60deg, rgba(0, 0, 0, .3) 0 3px, transparent 3px 7px) right / 1.6em 100% no-repeat,
+    var(--band);
+  clip-path: polygon(.55em 0, 100% 0, calc(100% - .55em) 100%, 0 100%);
+}
+:root[data-style="new"] .band-action { --edge: var(--magenta); }
+:root[data-style="new"] .band-selected,
+:root[data-style="new"] .band[aria-selected="true"],
+:root[data-style="new"] .band[aria-current="true"] { --edge: var(--cyan); }
+:root[data-style="new"] a.band:hover,
+:root[data-style="new"] button.band:hover,
+:root[data-style="new"] .band:focus-visible { filter: drop-shadow(.28em .28em 0 var(--edge)) brightness(1.15); }
+:root[data-style="new"] .band.is-disabled,
+:root[data-style="new"] .band.is-disabled:hover { filter: drop-shadow(.2em .2em 0 #000) saturate(.4) brightness(.8); }
+:root[data-style="new"] .band small { font-family: var(--font); font-weight: 700; }
+:root[data-style="new"] .band-chip { filter: drop-shadow(.15em .15em 0 var(--edge)); }
+
+/* ---- 暗い板 → 角を切った板。上に色の線、右下に網点 ---- */
+:root[data-style="new"] .plate {
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: linear-gradient(160deg, rgba(26, 23, 32, .94), rgba(12, 11, 15, .94));
+  box-shadow: inset 0 3px 0 var(--accent);
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+  isolation: isolate;
+}
+:root[data-style="new"] .plate:not(.movie-frame)::after {
+  content: "";
+  position: absolute; right: 0; bottom: 0; z-index: -1; width: 96px; height: 96px;
+  pointer-events: none;
+  background: radial-gradient(var(--accent) 1.4px, transparent 1.8px) 0 0 / 7px 7px;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  opacity: .45;
+}
+:root[data-style="new"] .movie-frame { box-shadow: inset 0 3px 0 var(--accent), 8px 8px 0 var(--accent); clip-path: none; }
+
+/* ---- ヘッダー: 下に注意の縞 ---- */
+:root[data-style="new"] .header { border-bottom: 0; background: rgba(8, 7, 10, .9); }
+:root[data-style="new"] .header::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: -5px; height: 5px;
+  background: var(--hazard-m);
+  pointer-events: none;
+}
+:root[data-style="new"] .nav a b { font-family: var(--head-font); font-weight: 400; }
+:root[data-style="new"] .nav a.is-current {
+  color: #fff;
+  background: var(--magenta);
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+/* ---- 00 トップ: 斜めの帯と網点を重ね、キャッチは黒い札に ---- */
+:root[data-style="new"] .hero::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(118deg, transparent 0 72%, rgba(221, 0, 123, .5) 72% 75%, transparent 75% 77%, rgba(8, 127, 150, .5) 77% 78.5%, transparent 78.5%),
+    linear-gradient(118deg, transparent 0 8%, rgba(8, 127, 150, .45) 8% 11%, transparent 11%),
+    radial-gradient(rgba(0, 0, 0, .5) 1.3px, transparent 1.7px) 0 0 / 6px 6px;
+  -webkit-mask: linear-gradient(180deg, #000, transparent 45%, transparent 60%, #000);
+  mask: linear-gradient(180deg, #000, transparent 45%, transparent 60%, #000);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+:root[data-style="new"] .hero.is-flank::before,
+:root[data-style="new"] .hero.is-done::before,
+:root[data-style="new"]:not(.js) .hero::before { opacity: 1; }
+:root[data-style="new"] .hero-sub { font-family: var(--head-font); font-weight: 400; color: var(--white); }
+:root[data-style="new"] .hero-catch {
+  font-family: var(--head-font); font-weight: 400;
+  padding: .2em .9em;
+  color: var(--black);
+  background: var(--white);
+  box-shadow: 7px 7px 0 var(--magenta);
+  transform: rotate(-2deg);
+}
+:root[data-style="new"] .hero.is-sub .hero-catch { animation-name: rise-tilt; }
+@keyframes rise-tilt { from { opacity: 0; transform: translateY(12px) rotate(-2deg); } to { opacity: 1; transform: rotate(-2deg); } }
+:root[data-style="new"] .hero-skip { border-radius: 0; font-family: var(--head-font); }
+
+/* ---- 区画の区切り: 注意の縞・流れる文字 ---- */
+:root[data-style="new"] .section { border-top: 2px solid rgba(255, 255, 255, .08); }
+:root[data-style="new"] .section::before {
+  left: 0; top: -2px;
+  width: min(48%, 560px); height: 14px;
+  background: var(--hazard-m);
+  transform: none;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+:root[data-style="new"] .section--alt::before {
+  left: auto; right: 0;
+  background: var(--hazard-c);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 14px 100%);
+}
+:root[data-style="new"] .section::after {
+  content: "JUST BEAT IT \2715  RHYTHM BULLET HELL \25B6\25B6  JUST BEAT IT \2715  RHYTHM BULLET HELL \25B6\25B6  JUST BEAT IT \2715  RHYTHM BULLET HELL \25B6\25B6  JUST BEAT IT \2715  RHYTHM BULLET HELL \25B6\25B6";
+  content: "JUST BEAT IT \2715  RHYTHM BULLET HELL \25B6\25B6  JUST BEAT IT \2715  RHYTHM BULLET HELL \25B6\25B6  JUST BEAT IT \2715  RHYTHM BULLET HELL \25B6\25B6  JUST BEAT IT \2715  RHYTHM BULLET HELL \25B6\25B6" / "";
+  position: absolute; left: calc(min(48%, 560px) + 16px); right: 0; top: 20px;
+  overflow: hidden; white-space: nowrap;
+  font-family: var(--head-font); font-size: .62rem; letter-spacing: .35em; line-height: 1;
+  color: var(--accent); filter: brightness(1.6); opacity: .55;
+  pointer-events: none;
+}
+:root[data-style="new"] .section--alt::after { left: 16px; right: calc(min(48%, 560px) + 16px); }
+:root[data-style="new"] .stages::after { top: calc(var(--header-h) + 4px); }
+
+/* ---- 見出し: 網点の大きな番号・白い札の題（ずらした色の影）・ラベルの英字 ---- */
+:root[data-style="new"] .section-no {
+  font-family: var(--head-font); font-weight: 400;
+  color: transparent;
+  background: radial-gradient(var(--accent) 34%, transparent 38%) 0 0 / 7px 7px;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, .22);
+  opacity: .8;
+}
+:root[data-style="new"] .section-title { font-family: var(--head-font); font-weight: 400; }
+:root[data-style="new"] .band-title,
+:root[data-style="new"] .section-head--alt .band-title {
+  --band: var(--white);
+  color: var(--black);
+  padding: .25em 1.1em .3em;
+  transform: rotate(-2deg);
+  filter: drop-shadow(.16em .16em 0 var(--accent));
+}
+:root[data-style="new"] .section-head--alt .band-title { transform: rotate(2deg); }
+:root[data-style="new"] .band-title::before { background: var(--band); }
+:root[data-style="new"] .band-title::after {
+  /* 題の頭の小さな縞 */
+  content: "";
+  position: absolute; left: .1em; top: -.42em; width: 2.4em; height: .32em;
+  background: var(--accent);
+  clip-path: polygon(.2em 0, 100% 0, calc(100% - .2em) 100%, 0 100%);
+}
+:root[data-style="new"] .section-head--alt .band-title::after { left: auto; right: .1em; }
+:root[data-style="new"] .section-en,
+:root[data-style="new"] .section-head--alt .section-en {
+  width: fit-content;
+  margin-top: 18px;
+  padding: .25em .9em .25em .8em;
+  font-family: var(--head-font); font-size: .7rem; letter-spacing: .35em; line-height: 1.4;
+  color: #fff;
+  background: var(--accent);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+:root[data-style="new"] .section-en::before { content: "// "; opacity: .7; }
+:root[data-style="new"] .section-head--alt .section-en { justify-self: end; }
+:root[data-style="new"] .sub-title {
+  font-family: var(--head-font); font-weight: 400;
+  padding: .1em .6em .1em 1.6em;
+  border-left: 0;
+  background: var(--hazard-c) left / 1.1em 100% no-repeat;
+}
+
+/* ---- 01 ゲームについて ---- */
+:root[data-style="new"] .features li > b {
+  font-family: var(--head-font); font-weight: 400;
+  color: transparent; -webkit-text-stroke: 1.5px var(--magenta);
+}
+:root[data-style="new"] .features h3 { font-weight: 900; }
+:root[data-style="new"] .about-art img { filter: drop-shadow(12px 12px 0 rgba(221, 0, 123, .55)) drop-shadow(0 20px 40px rgba(0, 0, 0, .6)); }
+
+/* ---- 02 ステージ ---- */
+:root[data-style="new"] .stage-bg::after {
+  background:
+    radial-gradient(rgba(0, 0, 0, .55) 1.2px, transparent 1.6px) 0 0 / 5px 5px,
+    linear-gradient(90deg, rgba(8, 7, 10, .92) 0%, rgba(8, 7, 10, .55) 38%, rgba(8, 7, 10, .2) 70%, rgba(8, 7, 10, .55) 100%),
+    linear-gradient(rgba(8, 7, 10, .85), transparent 22%, transparent 75%, rgba(8, 7, 10, .95));
+}
+:root[data-style="new"] .stage-list button { font-family: var(--head-font); font-weight: 400; filter: drop-shadow(3px 3px 0 #000); }
+:root[data-style="new"] .stage-list button::before {
+  -webkit-mask: none; mask: none;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+:root[data-style="new"] .stage-list button[aria-selected="true"] { filter: drop-shadow(4px 4px 0 var(--cyan)); }
+:root[data-style="new"] .stage-list button[aria-selected="true"]::before {
+  background:
+    repeating-linear-gradient(-60deg, rgba(0, 0, 0, .3) 0 3px, transparent 3px 7px) right / 2em 100% no-repeat,
+    var(--band);
+}
+:root[data-style="new"] .stage-stage::before {
+  -webkit-mask: none; mask: none;
+  background: repeating-linear-gradient(-45deg, var(--stage) 0 12px, transparent 12px 24px);
+  opacity: .18;
+}
+:root[data-style="new"] .stage-count b,
+:root[data-style="new"] .stage-name ruby,
+:root[data-style="new"] .stage-name [data-stage-name-en] { font-family: var(--head-font); font-weight: 400; }
+
+/* ---- 03〜07 ---- */
+:root[data-style="new"] .movie-label { font-family: var(--head-font); font-weight: 400; }
+:root[data-style="new"] .dl h3 { font-family: var(--head-font); font-weight: 400; }
+:root[data-style="new"] .dl h3::after {
+  content: ""; display: block; width: 3.2em; height: 6px; margin-top: 8px;
+  background: var(--hazard-c);
+}
+:root[data-style="new"] .warn summary::before { content: "\25B6"; display: inline-block; transition: transform .2s; }
+:root[data-style="new"] .warn[open] summary::before { content: "\25B6"; transform: rotate(90deg); }
+:root[data-style="new"] .specs div,
+:root[data-style="new"] .control-row,
+:root[data-style="new"] .credit-list li { border-bottom: 1px dashed rgba(255, 255, 255, .14); }
+:root[data-style="new"] kbd { border-radius: 0; background: #16141b; box-shadow: 2px 2px 0 rgba(255, 255, 255, .12); }
+:root[data-style="new"] .player-map {
+  border-width: 2px;
+  background: radial-gradient(color-mix(in srgb, var(--player) 25%, transparent) 1px, transparent 1.5px) 0 0 / 8px 8px, #0b0a0ecc;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+:root[data-style="new"] .team-name { font-family: var(--head-font); font-weight: 400; }
+:root[data-style="new"] .members li::before { background: var(--hazard-m); width: 6px; }
+:root[data-style="new"] .members b { font-family: var(--head-font); font-weight: 400; }
+
+/* ---- フッター: 上に白黒の縞 ---- */
+:root[data-style="new"] .footer {
+  position: relative;
+  border-top: 0;
+  background: var(--dots), var(--black);
+}
+:root[data-style="new"] .footer::before {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0; height: 10px;
+  background: var(--hazard-w);
+  opacity: .8;
+}
+:root[data-style="new"] .footer-team { font-family: var(--head-font); font-weight: 400; }
+
+@media (max-width: 640px) {
+  :root[data-style="new"] { --cut: 12px; }
+  :root[data-style="new"] .section::before { width: 62%; height: 10px; }
+  :root[data-style="new"] .section::after { top: 16px; left: calc(62% + 12px); font-size: .55rem; }
+  :root[data-style="new"] .section--alt::after { left: 12px; right: calc(62% + 12px); }
+  :root[data-style="new"] .stages::after { top: calc(var(--header-h) + 4px); }
+  :root[data-style="new"] .hero-catch { box-shadow: 5px 5px 0 var(--magenta); max-width: 100%; }
+  :root[data-style="new"] .plate:not(.movie-frame)::after { width: 64px; height: 64px; }
+  :root[data-style="new"] .movie-frame { box-shadow: inset 0 3px 0 var(--accent), 5px 5px 0 var(--accent); }
+}
+
+/* 見た目の見比べ用の切り替え（?style= がある時だけ出る。オープニングの「とばす」と重ならないよう左下） */
+.style-switch {
+  position: fixed; left: 12px; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index: 60;
+  display: flex; gap: 4px; padding: 6px; background: rgba(11, 10, 14, .92);
+  border: 1px solid var(--plate-line); font-size: .8rem;
+}
+.style-switch button {
+  padding: 4px 12px; border: 0; background: var(--gray); color: #fff;
+  font: inherit; font-weight: 700; cursor: pointer;
+}
+.style-switch button[aria-pressed="true"] { background: var(--magenta); }

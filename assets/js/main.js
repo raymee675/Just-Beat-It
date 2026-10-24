@@ -54,6 +54,50 @@
     });
   });
 
+  // ---- 見た目の見比べ（?style= がある時だけ、左下に切り替えを出す） ----
+  (function () {
+    var q;
+    try { q = new URLSearchParams(location.search).get("style"); } catch (e) { return; }
+    if (q === null) return;
+    var box = document.createElement("div");
+    box.className = "style-switch";
+    box.setAttribute("role", "group");
+    box.setAttribute("aria-label", "見た目");
+    var buttons = [["now", "今の見た目"], ["new", "新しい見た目"]].map(function (p) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = p[1];
+      b.addEventListener("click", function () {
+        if (p[0] === "new") {
+          root.dataset.style = "new";
+          if (!document.getElementById("style-new-font")) {
+            var f = document.createElement("link");
+            f.id = "style-new-font";
+            f.rel = "stylesheet";
+            f.href = "https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap";
+            document.head.appendChild(f);
+          }
+        } else {
+          delete root.dataset.style;
+        }
+        try {
+          var u = new URL(location.href);
+          u.searchParams.set("style", p[0]);
+          history.replaceState(null, "", u.pathname + u.search + u.hash);
+        } catch (e) { /* 古いブラウザでは URL を変えない */ }
+        sync();
+      });
+      box.appendChild(b);
+      return [p[0], b];
+    });
+    function sync() {
+      var now = root.dataset.style === "new" ? "new" : "now";
+      buttons.forEach(function (x) { x[1].setAttribute("aria-pressed", x[0] === now ? "true" : "false"); });
+    }
+    sync();
+    document.body.appendChild(box);
+  })();
+
   // ---- オープニング ----
   var hero = $("[data-hero]");
   var opening = null;
