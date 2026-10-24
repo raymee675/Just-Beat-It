@@ -1,0 +1,484 @@
+/* 試作の見た目（?style=new の時だけ）: 細い線・目盛り・記号・番号・ラベル・網点で余白を埋める。文字は傾けない */
+
+/* 見比べの切り替え（?style= がある時だけ main.js が左下に出す） */
+.style-switch {
+  position: fixed; z-index: 60;
+  left: max(12px, env(safe-area-inset-left, 0px)); bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  display: flex;
+  background: rgba(8, 8, 11, .92);
+  border: 1px solid rgba(255, 255, 255, .25);
+  font-size: .75rem;
+}
+.style-switch button {
+  min-height: 40px; padding: 8px 12px;
+  background: none; border: 0; color: #ccc;
+  font: inherit; cursor: pointer;
+}
+.style-switch button + button { border-left: 1px solid rgba(255, 255, 255, .2); }
+.style-switch button[aria-pressed="true"] { background: var(--magenta); color: #fff; }
+
+html[data-style="new"] {
+  --font: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  --head: "Dela Gothic One", var(--font);
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --line: rgba(255, 255, 255, .12);
+  --cyan-hi: #35bfd4;
+  --plate: rgba(13, 12, 17, .9);
+}
+
+/* ---- 地: 薄い方眼と、交点に小さな ＋ ---- */
+html[data-style="new"] body {
+  counter-reset: sec;
+  background-color: var(--bg);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cpath d='M80 74v12M74 80h12' stroke='%23fff' stroke-opacity='.22' fill='none'/%3E%3Crect x='0' y='0' width='2' height='2' fill='%23fff' fill-opacity='.14'/%3E%3C/svg%3E"),
+    linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px);
+  background-size: 160px 160px, 80px 80px, 80px 80px;
+}
+
+/* 画面の左右の余白: 目盛りと縦書きのラベル（広い画面だけ） */
+html[data-style="new"] body::before,
+html[data-style="new"] body::after {
+  position: fixed; z-index: 40; top: var(--header-h); bottom: 0;
+  width: 28px;
+  display: none; align-items: center; justify-content: center;
+  writing-mode: vertical-rl;
+  font: 10px/1 var(--mono); letter-spacing: .4em;
+  color: rgba(255, 255, 255, .32);
+  pointer-events: none;
+  transition: opacity .6s ease;
+}
+html[data-style="new"] body::before {
+  content: "JUST BEAT IT ── RHYTHM BULLET HELL ── 2026";
+  left: 0;
+  background:
+    repeating-linear-gradient(rgba(255, 255, 255, .28) 0 1px, transparent 1px 40px) right top / 12px 100% no-repeat,
+    repeating-linear-gradient(rgba(255, 255, 255, .16) 0 1px, transparent 1px 8px) right top / 6px 100% no-repeat;
+}
+html[data-style="new"] body::after {
+  content: "10 STAGES ── 10 SONGS ── 1P / 2P ── WINDOWS · MAC";
+  right: 0;
+  background:
+    repeating-linear-gradient(rgba(255, 255, 255, .28) 0 1px, transparent 1px 40px) left top / 12px 100% no-repeat,
+    repeating-linear-gradient(rgba(255, 255, 255, .16) 0 1px, transparent 1px 8px) left top / 6px 100% no-repeat;
+}
+html[data-style="new"].js:not(.opened) body::before,
+html[data-style="new"].js:not(.opened) body::after { opacity: 0; }
+@media (min-width: 900px) {
+  html[data-style="new"] body::before,
+  html[data-style="new"] body::after { display: flex; }
+}
+
+/* ---- ボタン: 角を切った四角。傾けない ---- */
+html[data-style="new"] .band { letter-spacing: .06em; }
+html[data-style="new"] .band::before {
+  inset: 0;
+  -webkit-mask: none; mask: none;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+html[data-style="new"] .band::after {
+  /* 右下の小さな縞の目印 */
+  content: ""; position: absolute; right: 7px; bottom: 6px;
+  width: 14px; height: 4px;
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .7) 0 2px, transparent 2px 4px);
+  pointer-events: none;
+}
+html[data-style="new"] .band-idle::before { background: rgba(30, 28, 36, .9); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3); }
+html[data-style="new"] a.band:hover,
+html[data-style="new"] button.band:hover,
+html[data-style="new"] .band:focus-visible { transform: translateY(-2px); filter: brightness(1.18); }
+html[data-style="new"] .band:active { transform: none; }
+html[data-style="new"] .band.is-disabled:hover { transform: none; }
+
+/* ---- ヘッダー ---- */
+html[data-style="new"] .header {
+  background: rgba(8, 8, 11, .92);
+  border-bottom: 1px solid var(--line);
+}
+html[data-style="new"] .header::after {
+  /* 下の目盛り */
+  content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 5px;
+  background:
+    linear-gradient(var(--magenta), var(--magenta)) left top / 56px 2px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .2) 0 1px, transparent 1px 10px) left top / 100% 5px no-repeat;
+  pointer-events: none;
+}
+html[data-style="new"] .nav a { position: relative; }
+html[data-style="new"] .nav a b { font-family: var(--mono); font-weight: 400; }
+html[data-style="new"] .nav a b::before { content: "/"; margin-right: 2px; opacity: .45; }
+html[data-style="new"] .nav a.is-current { box-shadow: inset 0 -2px 0 var(--magenta); }
+html[data-style="new"] .band-chip { font-family: var(--mono); letter-spacing: .1em; }
+html[data-style="new"] .band-chip::before { clip-path: none; }
+html[data-style="new"] .band-chip::after { display: none; }
+
+/* ---- 00 トップ ---- */
+html[data-style="new"] .hero::before {
+  /* 四隅の かぎ */
+  --k: rgba(255, 255, 255, .6);
+  content: ""; position: absolute; z-index: 2;
+  inset: calc(var(--header-h) + 14px) max(14px, 2.4vw) max(14px, 2.4vw);
+  background:
+    linear-gradient(var(--k), var(--k)) left top / 24px 1px no-repeat,
+    linear-gradient(var(--k), var(--k)) left top / 1px 24px no-repeat,
+    linear-gradient(var(--k), var(--k)) right top / 24px 1px no-repeat,
+    linear-gradient(var(--k), var(--k)) right top / 1px 24px no-repeat,
+    linear-gradient(var(--k), var(--k)) left bottom / 24px 1px no-repeat,
+    linear-gradient(var(--k), var(--k)) left bottom / 1px 24px no-repeat,
+    linear-gradient(var(--k), var(--k)) right bottom / 24px 1px no-repeat,
+    linear-gradient(var(--k), var(--k)) right bottom / 1px 24px no-repeat;
+  pointer-events: none;
+  transition: opacity .6s ease;
+}
+html[data-style="new"] .hero::after {
+  content: "SEC.00 ／ TOP ── RHYTHM BULLET HELL";
+  position: absolute; z-index: 2;
+  top: calc(var(--header-h) + 24px); left: calc(max(14px, 2.4vw) + 14px);
+  font: 10.5px/1 var(--mono); letter-spacing: .25em;
+  color: rgba(255, 255, 255, .55);
+  pointer-events: none;
+  transition: opacity .6s ease;
+}
+html[data-style="new"].js:not(.opened) .hero::before,
+html[data-style="new"].js:not(.opened) .hero::after { opacity: 0; }
+html[data-style="new"] .hero-sub {
+  position: relative;
+  padding: .2em 1.2em;
+  border: 1px solid rgba(255, 255, 255, .3);
+  background: rgba(0, 0, 0, .4);
+}
+html[data-style="new"] .hero-sub::before {
+  content: ""; position: absolute; left: -4px; top: 50%;
+  width: 7px; height: 7px; margin-top: -3.5px;
+  background: var(--magenta);
+}
+html[data-style="new"] .hero-catch {
+  display: flex; align-items: center; gap: 14px;
+  font-family: var(--head); font-weight: 400; letter-spacing: .06em;
+}
+html[data-style="new"] .hero-catch::before,
+html[data-style="new"] .hero-catch::after {
+  content: ""; flex: 0 0 36px; height: 1px; background: rgba(255, 255, 255, .6);
+}
+html[data-style="new"] .hero-scroll { font-family: var(--mono); }
+html[data-style="new"] .hero-skip { font-family: var(--mono); letter-spacing: .1em; }
+
+/* ---- 区画の区切り: 目盛りの線と、隅のラベル ---- */
+html[data-style="new"] .section {
+  --acc: var(--magenta);
+  counter-increment: sec;
+  border-top: 0;
+}
+html[data-style="new"] .section--alt { --acc: var(--cyan-hi); }
+html[data-style="new"] .section::before {
+  left: 0; right: 0; top: 0; width: auto; height: 10px;
+  transform: none; clip-path: none;
+  background:
+    linear-gradient(var(--acc), var(--acc)) left top / 96px 3px no-repeat,
+    linear-gradient(var(--line), var(--line)) left top / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .18) 0 1px, transparent 1px 12px) left top / 100% 6px no-repeat;
+  z-index: 1;
+  pointer-events: none;
+}
+html[data-style="new"] .section--alt::before {
+  background:
+    linear-gradient(var(--acc), var(--acc)) right top / 96px 3px no-repeat,
+    linear-gradient(var(--line), var(--line)) left top / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .18) 0 1px, transparent 1px 12px) left top / 100% 6px no-repeat;
+}
+html[data-style="new"] .section::after {
+  content: "SEC." counter(sec, decimal-leading-zero) " ／ " attr(id) " ── JBI";
+  position: absolute; z-index: 1; top: 22px; right: var(--gutter);
+  font: 10.5px/1 var(--mono); letter-spacing: .25em; text-transform: uppercase;
+  color: rgba(255, 255, 255, .4);
+  pointer-events: none;
+}
+html[data-style="new"] .section--alt::after { right: auto; left: var(--gutter); }
+html[data-style="new"] .stages::after { top: calc(var(--header-h) + 6px); }
+
+/* ---- 見出し: 網点の大きな番号 ＋ ラベルの帯 ＋ 題 ---- */
+html[data-style="new"] .section-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "no en" "no title";
+  column-gap: clamp(14px, 2.4vw, 28px);
+  align-items: end;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+html[data-style="new"] .section-head--alt {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "en no" "title no";
+  text-align: right;
+}
+html[data-style="new"] .section-head::before {
+  /* 番号の反対側に網点 */
+  content: ""; position: absolute; z-index: 0; right: 0; top: -12px;
+  width: min(200px, 40%); height: 76px;
+  background: radial-gradient(circle, rgba(255, 255, 255, .28) 1px, transparent 1.4px) 0 0 / 6px 6px;
+  -webkit-mask: linear-gradient(to left, #000, transparent);
+  mask: linear-gradient(to left, #000, transparent);
+  pointer-events: none;
+}
+html[data-style="new"] .section-head--alt::before {
+  right: auto; left: 0;
+  -webkit-mask: linear-gradient(to right, #000, transparent);
+  mask: linear-gradient(to right, #000, transparent);
+}
+html[data-style="new"] .section-head::after {
+  /* 下の線の端に色 */
+  content: ""; position: absolute; left: 0; bottom: -2px;
+  width: 64px; height: 3px; background: var(--acc);
+}
+html[data-style="new"] .section-head--alt::after { left: auto; right: 0; }
+html[data-style="new"] .section-no {
+  position: relative; left: auto; right: auto; top: auto;
+  grid-area: no;
+  font-family: var(--head); font-weight: 400;
+  font-size: clamp(3.6rem, 9vw, 7rem);
+  line-height: .82;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, .55);
+  background: radial-gradient(circle, var(--acc) 1.2px, transparent 1.7px) 0 0 / 5px 5px;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+html[data-style="new"] .section-en {
+  grid-area: en;
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 0 12px;
+  font: .72rem/1 var(--mono); letter-spacing: .3em;
+  color: var(--muted);
+}
+html[data-style="new"] .section-en::before {
+  content: ""; flex: 0 0 auto; width: 8px; height: 8px; background: var(--acc);
+}
+html[data-style="new"] .section-en::after {
+  content: ""; flex: 1 1 auto; min-width: 24px; height: 7px;
+  background:
+    linear-gradient(var(--line), var(--line)) left center / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .22) 0 1px, transparent 1px 8px) left center / 100% 7px no-repeat;
+}
+html[data-style="new"] .section-head--alt .section-en { grid-area: en; flex-direction: row-reverse; margin-left: 0; color: var(--muted); }
+html[data-style="new"] .section-title { grid-area: title; font-family: var(--head); font-weight: 400; }
+html[data-style="new"] .section-head--alt .section-title { grid-area: title; text-align: right; }
+html[data-style="new"] .band-title,
+html[data-style="new"] .section-head--alt .band-title {
+  display: inline; padding: 0;
+  transform: none;
+  color: #fff;
+  white-space: normal;
+  letter-spacing: .04em;
+}
+html[data-style="new"] .band-title::before,
+html[data-style="new"] .band-title::after { content: none; }
+
+html[data-style="new"] .sub-title {
+  display: flex; align-items: center; gap: 12px;
+  padding-left: 0; border-left: 0;
+  font-family: var(--head); font-weight: 400;
+}
+html[data-style="new"] .sub-title::before { content: ""; flex: 0 0 auto; width: 10px; height: 10px; background: var(--cyan-hi); }
+html[data-style="new"] .sub-title::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--line); }
+
+/* ---- 板: 細い枠と、角のかぎ ---- */
+html[data-style="new"] .plate {
+  --k: var(--magenta);
+  border: 1px solid var(--line);
+  box-shadow: none;
+  background:
+    linear-gradient(var(--k), var(--k)) left top / 16px 2px no-repeat,
+    linear-gradient(var(--k), var(--k)) left top / 2px 16px no-repeat,
+    linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, .5)) right bottom / 16px 1px no-repeat,
+    linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, .5)) right bottom / 1px 16px no-repeat,
+    var(--plate);
+}
+html[data-style="new"] .section--alt .plate { --k: var(--cyan-hi); }
+html[data-style="new"] .plate h3,
+html[data-style="new"] .controls h4,
+html[data-style="new"] .team-name { font-family: var(--head); font-weight: 400; letter-spacing: .03em; }
+
+/* ---- 01 ゲームについて: 一言は左に色の線、特徴は線で区切った表 ---- */
+html[data-style="new"] .about-lead { border-left: 3px solid var(--magenta); }
+html[data-style="new"] .about-lead::after {
+  content: "INTRO ── 01";
+  position: absolute; top: 8px; right: 12px;
+  font: 10px/1 var(--mono); letter-spacing: .25em; color: rgba(255, 255, 255, .35);
+}
+html[data-style="new"] .features {
+  gap: 0;
+  border-top: 1px solid var(--line); border-left: 1px solid var(--line);
+}
+html[data-style="new"] .features li {
+  padding: 46px 22px 22px;
+  border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  background: rgba(13, 12, 17, .72);
+}
+html[data-style="new"] .features li > b {
+  left: 22px; top: 18px;
+  font: .72rem/1 var(--mono); letter-spacing: .2em; color: var(--magenta);
+}
+html[data-style="new"] .features li > b::before { content: "NO."; color: var(--muted); }
+html[data-style="new"] .features li::after {
+  content: "＋"; position: absolute; top: 12px; right: 14px;
+  font-size: .8rem; line-height: 1; color: rgba(255, 255, 255, .3);
+}
+html[data-style="new"] .about-art {
+  padding: 14px;
+  background:
+    radial-gradient(closest-side, transparent 35%, var(--bg)),
+    radial-gradient(circle, rgba(221, 0, 123, .5) 1.2px, transparent 1.7px) 0 0 / 7px 7px;
+}
+html[data-style="new"] .about-art::before {
+  /* 四隅の かぎ */
+  --k: rgba(255, 255, 255, .55);
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(var(--k), var(--k)) left top / 20px 1px no-repeat,
+    linear-gradient(var(--k), var(--k)) left top / 1px 20px no-repeat,
+    linear-gradient(var(--k), var(--k)) right bottom / 20px 1px no-repeat,
+    linear-gradient(var(--k), var(--k)) right bottom / 1px 20px no-repeat;
+  pointer-events: none;
+}
+html[data-style="new"] .about-art::after {
+  content: "APPRENTICE MAGE ── MAIN CHARACTER";
+  position: absolute; top: 14px; right: -22px;
+  writing-mode: vertical-rl;
+  font: 10px/1 var(--mono); letter-spacing: .3em; color: rgba(255, 255, 255, .4);
+}
+html[data-style="new"] .about-art img { position: relative; }
+
+/* ---- 02 ステージ: 一覧は線で区切った行、真ん中は網点の帯とかぎの枠 ---- */
+html[data-style="new"] .stage-list { gap: 2px; }
+html[data-style="new"] .stage-list button { transform: none; }
+html[data-style="new"] .stage-list button::before {
+  -webkit-mask: none; mask: none;
+  border-left: 2px solid rgba(255, 255, 255, .18);
+}
+html[data-style="new"] .stage-list button b { font-family: var(--mono); font-weight: 400; }
+html[data-style="new"] .stage-list button:hover { transform: none; }
+html[data-style="new"] .stage-list button[aria-selected="true"] { transform: none; }
+html[data-style="new"] .stage-list button[aria-selected="true"]::before { border-left-color: #fff; }
+html[data-style="new"] .stage-list button[aria-selected="true"]::after {
+  content: ""; position: absolute; right: 10px; top: 50%;
+  width: 22px; height: 8px; margin-top: -4px;
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .8) 0 2px, transparent 2px 5px);
+}
+html[data-style="new"] .stage-stage::before {
+  /* 傾いた帯をやめ、横の網点の帯に */
+  top: 44%; height: 28%; left: -4%; right: -4%;
+  transform: none;
+  background: radial-gradient(circle, var(--stage) 1.4px, transparent 1.9px) 0 0 / 7px 7px;
+  opacity: .4;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+}
+html[data-style="new"] .stage-stage::after {
+  --k: rgba(255, 255, 255, .45);
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(var(--k), var(--k)) left top / 22px 1px no-repeat,
+    linear-gradient(var(--k), var(--k)) left top / 1px 22px no-repeat,
+    linear-gradient(var(--k), var(--k)) right top / 22px 1px no-repeat,
+    linear-gradient(var(--k), var(--k)) right top / 1px 22px no-repeat,
+    linear-gradient(var(--k), var(--k)) left bottom / 22px 1px no-repeat,
+    linear-gradient(var(--k), var(--k)) left bottom / 1px 22px no-repeat,
+    linear-gradient(var(--k), var(--k)) right bottom / 22px 1px no-repeat,
+    linear-gradient(var(--k), var(--k)) right bottom / 1px 22px no-repeat;
+  pointer-events: none;
+}
+html[data-style="new"] .stage-count { font-family: var(--mono); padding: 10px 14px 0; }
+html[data-style="new"] .stage-count b { font-family: var(--head); font-weight: 400; }
+html[data-style="new"] .stage-name { padding-bottom: 12px; }
+html[data-style="new"] .stage-name ruby,
+html[data-style="new"][data-lang="en"] .stage-name [data-stage-name-en] { font-family: var(--head); font-weight: 400; }
+html[data-style="new"] .stage-name [data-stage-name-en] { font-family: var(--mono); }
+html[data-style="new"] .stage-help::before { content: "※ "; color: var(--cyan-hi); }
+
+/* ---- 03 映像: 札のついた枠 ---- */
+html[data-style="new"] .movie-label {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--head); font-weight: 400;
+}
+html[data-style="new"] .movie-label::before {
+  content: "● REC"; margin: 0;
+  padding: 3px 8px;
+  background: var(--magenta); color: #fff;
+  font: 10.5px/1.2 var(--mono); letter-spacing: .2em;
+}
+html[data-style="new"] .movie-label::after {
+  content: ""; flex: 1 1 auto; height: 7px;
+  background:
+    linear-gradient(var(--line), var(--line)) left center / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .22) 0 1px, transparent 1px 8px) left center / 100% 7px no-repeat;
+}
+html[data-style="new"] .movie-frame::after {
+  content: "PV-01 ── 16:9 ── 1080P";
+  position: absolute; right: 0; top: 100%; margin-top: 8px;
+  font: 10px/1 var(--mono); letter-spacing: .25em; color: rgba(255, 255, 255, .4);
+}
+html[data-style="new"] .movie-note { margin-top: 32px; }
+
+/* ---- 04 ダウンロード: 札の頭に縞、仕様は点線の表 ---- */
+html[data-style="new"] .dl h3 { display: flex; align-items: center; gap: 14px; }
+html[data-style="new"] .dl h3::after {
+  content: ""; flex: 1 1 auto; height: 10px;
+  background: repeating-linear-gradient(-45deg, rgba(255, 255, 255, .2) 0 2px, transparent 2px 6px);
+}
+html[data-style="new"] .dl::after {
+  content: "DL ／ " attr(data-dl);
+  position: absolute; top: 7px; right: 14px;
+  font: 10px/1 var(--mono); letter-spacing: .25em; text-transform: uppercase; color: rgba(255, 255, 255, .4);
+}
+html[data-style="new"] .specs div { border-bottom: 1px dashed rgba(255, 255, 255, .12); }
+html[data-style="new"] .specs dd { font-family: var(--mono); }
+html[data-style="new"] .warn summary { font-family: var(--head); font-weight: 400; }
+
+/* ---- 05 遊び方 ---- */
+html[data-style="new"] .player-map { position: relative; }
+html[data-style="new"] .player-map::before {
+  /* 右上の角に網点 */
+  content: ""; position: absolute; top: 0; right: 0; width: 96px; height: 56px;
+  background: radial-gradient(circle, var(--player) 1px, transparent 1.5px) 0 0 / 6px 6px;
+  -webkit-mask: linear-gradient(225deg, #000, transparent 70%);
+  mask: linear-gradient(225deg, #000, transparent 70%);
+  opacity: .7;
+  pointer-events: none;
+}
+html[data-style="new"] .player-map > * { position: relative; }
+html[data-style="new"] kbd { border-radius: 2px; background: #15141a; font-family: var(--mono); }
+
+/* ---- 06 制作 / 07 クレジット ---- */
+html[data-style="new"] .credit-list li { border-bottom: 1px dashed rgba(255, 255, 255, .12); }
+
+/* ---- フッター ---- */
+html[data-style="new"] .footer { position: relative; border-top: 1px solid var(--line); }
+html[data-style="new"] .footer::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px;
+  background:
+    linear-gradient(var(--magenta), var(--magenta)) center top / 96px 3px no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .18) 0 1px, transparent 1px 12px) left top / 100% 6px no-repeat;
+}
+html[data-style="new"] .footer::after {
+  content: "JUST BEAT IT ── RHYTHM BULLET HELL ── 1P / 2P ── WINDOWS · MAC";
+  display: block; margin-top: 18px;
+  font: 10px/1.6 var(--mono); letter-spacing: .25em; color: rgba(255, 255, 255, .3);
+}
+
+/* ---- スマホ ---- */
+@media (max-width: 640px) {
+  html[data-style="new"] .section::after { top: 16px; font-size: 9px; letter-spacing: .18em; }
+  html[data-style="new"] .section-head { column-gap: 12px; padding-bottom: 14px; }
+  html[data-style="new"] .section-no { font-size: clamp(2.8rem, 15vw, 3.6rem); }
+  html[data-style="new"] .section-en { gap: 8px; margin-bottom: 8px; letter-spacing: .2em; }
+  html[data-style="new"] .section-head::before { height: 56px; }
+  html[data-style="new"] .features li { padding: 42px 18px 18px; }
+  html[data-style="new"] .about-art::after { display: none; }
+  html[data-style="new"] .hero::before { inset: calc(var(--header-h) + 10px) 10px 10px; }
+  html[data-style="new"] .hero::after { left: 22px; top: calc(var(--header-h) + 20px); font-size: 9px; letter-spacing: .16em; }
+  html[data-style="new"] .hero-catch { gap: 10px; }
+  html[data-style="new"] .hero-catch::before,
+  html[data-style="new"] .hero-catch::after { flex-basis: 18px; }
+  html[data-style="new"] .stage-list button[aria-selected="true"] { padding-right: 40px; }
+  html[data-style="new"] .footer::after { letter-spacing: .12em; }
+}
