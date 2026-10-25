@@ -114,7 +114,7 @@
       if (en) s.insertBefore(zz("span", "zz-ghost", en.textContent), s.firstChild);
     });
     // 区画のあいだを流れる英字の帯
-    var TICKER = ["JUST BEAT IT", "RHYTHM BULLET HELL", "10 STAGES", "10 SONGS", "DASH", "GRAZE ×4", "FREE DOWNLOAD", "WINDOWS / MAC"];
+    var TICKER = ["JUST BEAT IT", "RHYTHM BULLET HELL", "10 STAGES", "10 SONGS", "DASH", "FREE DOWNLOAD", "WINDOWS / MAC"];
     $$("main > .section").forEach(function (s, i) {
       var t = zz("div", "zz-ticker zz-ticker--" + (i % 3));
       if (["about", "download", "howto", "credits"].indexOf(s.id) !== -1) t.classList.add("zz-ticker-light");
@@ -144,22 +144,17 @@
       }).join("");
       row.innerHTML = items + items;
     }
-    // 04: 起動の警告の説明と手順を、Windows・Mac それぞれの欄の下に写す（最初は畳む）
+    // 04: 起動の警告の手順を、Windows・Mac それぞれの欄の下に写す（見出しを押すと開閉。最初は畳む）
     var subTitle = $("#download .sub-title");
-    var warnNote = subTitle && subTitle.nextElementSibling;
     $$("#download .warn").forEach(function (det, k) {
       var card = $$("#download [data-dl]")[k];
       if (!card || !subTitle) return;
       var box = zz("div", "zz-warn");
       box.removeAttribute("aria-hidden");
-      var h = document.createElement("h4");
-      h.innerHTML = subTitle.innerHTML;
-      box.appendChild(h);
-      if (warnNote) box.appendChild(warnNote.cloneNode(true));
       var c = det.cloneNode(true);
       c.open = false;
       c.className = "zz-warn-steps";
-      $("summary", c).innerHTML = '<span lang="ja">開き方の手順</span><span lang="en">How to open it</span>';
+      $("summary", c).innerHTML = subTitle.innerHTML;
       box.appendChild(c);
       card.appendChild(box);
     });
@@ -186,9 +181,25 @@
 
   // ---- オープニング ----
   if (root.dataset.style === "new") {
+    // 16×16 のドット絵（# が塗るマス）。どちらも横 14 マスの中に収め、大きさをそろえる
+    var OS_DOTS = {
+      windows: [
+        "", ".######..######", ".######..######", ".######..######", ".######..######", ".######..######", ".######..######", "", "",
+        ".######..######", ".######..######", ".######..######", ".######..######", ".######..######", ".######..######"
+      ],
+      mac: [
+        "..........##", ".........###", "........###", "",
+        "...####..####", "..############", ".#############", ".############",
+        ".###########", ".###########", ".############", ".#############",
+        "..############", "..############", "...####..####", "....##....##"
+      ]
+    };
     function osIcon(os) {
-      var path = os === "windows" ? '<path d="M1 1h6v6H1zM9 1h6v6H9zM1 9h6v6H1zM9 9h6v6H9z"/>' : '<path d="M9 0h3v2h-2v1H8V1h1zM4 4h3v1h2V4h3v1h2v2h-2v1h-1v2h1v1h2v2h-1v2h-2v1H9v-1H7v1H5v-1H3v-2H2v-3H1V7h1V5h2z"/>';
-      return '<svg class="zz-os-icon" viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges" fill="currentColor">' + path + '</svg>';
+      var d = "";
+      (OS_DOTS[os] || []).forEach(function (row, y) {
+        row.replace(/#+/g, function (run, x) { d += "M" + x + " " + y + "h" + run.length + "v1h-" + run.length + "z"; });
+      });
+      return '<svg class="zz-os-icon" viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges" fill="currentColor"><path d="' + d + '"/></svg>';
     }
     $$(".hero-actions small").forEach(function (el) {
       el.innerHTML = '<span class="zz-visually-hidden">Windows / Mac</span>' + osIcon("windows") + osIcon("mac");
@@ -217,7 +228,7 @@
     if (calm || !window.JBI_OPENING || !canvas.getContext) {
       Object.keys(phaseClass).forEach(onPhase);
     } else if (root.dataset.style === "new") {
-      // Reveal ten clipped letters, then FLIP to the final hero rectangle.
+      // 画面の中央で、ロゴのドットを左の列から 1 つずつ置いていく → 左の定位置へ動く → 背景と各要素が出る
       var timers = [];
       var introDone = false;
       var layer = document.createElement("div");
@@ -225,18 +236,44 @@
       layer.setAttribute("aria-hidden", "true");
       var letters = document.createElement("div");
       letters.className = "zz-intro-letters";
+      var dotCanvas = document.createElement("canvas");
+      letters.appendChild(dotCanvas);
       layer.appendChild(letters);
       document.body.appendChild(layer);
       hero.classList.add("zz-intro");
-      var ranges = [0, 15, 28, 38, 47, 63, 73, 83, 93, 105, 116];
-      for (var n = 0; n < 10; n++) {
-        var letter = $("img", logo).cloneNode(true);
-        letter.alt = "";
-        letter.style.clipPath = "inset(0 " + ((116 - ranges[n + 1]) / 116 * 100) + "% 0 " + (ranges[n] / 116 * 100) + "%)";
-        letter.style.setProperty("--letter-delay", (300 + n * 100) + "ms");
-        letter.style.transformOrigin = ((ranges[n] + ranges[n + 1]) / 232 * 100) + "% 50%";
-        letters.appendChild(letter);
-      }
+      var COL_MS = 9, ROW_MS = 7, LEAD_MS = 300, HOT_MS = 90;
+      var src = new Image();
+      src.onload = function () {
+        var w = src.naturalWidth, h = src.naturalHeight;
+        dotCanvas.width = w;
+        dotCanvas.height = h;
+        var g = dotCanvas.getContext("2d");
+        g.drawImage(src, 0, 0);
+        var px = g.getImageData(0, 0, w, h).data;
+        var dots = [];
+        for (var x = 0; x < w; x++) {
+          for (var y = 0; y < h; y++) {
+            var i = (y * w + x) * 4;
+            if (px[i + 3] > 127) dots.push({ x: x, y: y, at: LEAD_MS + x * COL_MS + y * ROW_MS, c: "rgb(" + px[i] + "," + px[i + 1] + "," + px[i + 2] + ")" });
+          }
+        }
+        var t0 = performance.now();
+        (function draw(now) {
+          if (introDone) return;
+          var t = now - t0;
+          g.clearRect(0, 0, w, h);
+          var left = 0;
+          for (var k = 0; k < dots.length; k++) {
+            var d = dots[k];
+            if (t < d.at) { left++; continue; }
+            // 置いたばかりのドットだけマゼンタ。すぐに元の色になる
+            g.fillStyle = t - d.at < HOT_MS ? "#ff2d78" : d.c;
+            g.fillRect(d.x, d.y, 1, 1);
+          }
+          if (left || t < LEAD_MS + w * COL_MS + h * ROW_MS + HOT_MS) requestAnimationFrame(draw);
+        })(t0);
+      };
+      src.src = $("img", logo).currentSrc || $("img", logo).src;
       function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
       function zzSkip() {
         if (introDone) return;
@@ -249,20 +286,19 @@
           window.removeEventListener(event, zzSkip);
         });
       }
-      later(function () { layer.classList.add("zz-intro-flash"); }, 1500);
       later(function () {
         var finalRect = logo.getBoundingClientRect();
         var initialRect = letters.getBoundingClientRect();
         letters.style.transformOrigin = "0 0";
-        letters.style.transition = "transform 700ms ease-in-out";
+        letters.style.transition = "transform 650ms cubic-bezier(.65, 0, .35, 1)";
         letters.style.transform = "translate(" + (finalRect.left - initialRect.left) + "px," + (finalRect.top - initialRect.top) + "px) scale(" + (finalRect.width / initialRect.width) + ")";
-      }, 2400);
+      }, 1950);
       later(function () {
         layer.remove();
         hero.classList.add("zz-revealing");
         ["logo", "sub", "flank", "ready"].forEach(onPhase);
-      }, 3100);
-      later(zzSkip, 4200);
+      }, 2650);
+      later(zzSkip, 3700);
       ["click", "keydown", "wheel", "touchmove", "scroll", "resize"].forEach(function (event) {
         window.addEventListener(event, zzSkip, { passive: true });
       });
