@@ -18,6 +18,12 @@ window.JBI_CONFIG = {
     mp4: ""
   },
 
+  // お問い合わせ。formUrl に Google フォームの URL（例 "https://forms.gle/…"）を入れるとボタンが有効になります。
+  // 空のあいだはボタンが「準備中」になります。
+  contact: {
+    formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfeEURZEyI0D2UZvlAes9fcFfb7OTds7c3bpasJRYUKSAk5DA/viewform"
+  },
+
   // ダウンロード。url が空のあいだはボタンが「準備中」になります。
   // url は GitHub Releases の直リンク（https://github.com/所有者/リポジトリ/releases/download/タグ/ファイル.zip）。
   // size はファイルの大きさ（例 "約 650 MB"）、version は版（例 "1.0.0"）。
