@@ -336,6 +336,13 @@
       group.names.push(name);
       return name;
     });
+    // フォント名と「© 年」の途中では折り返さない
+    var keep = function (s) { return s.replace(/ /g, " "); };
+    names = names.map(keep);
+    groups.forEach(function (g) {
+      g.names = g.names.map(keep);
+      g.notice = g.notice.replace(/^© (\S+) /, function (m, y) { return keep("© " + y + " "); });
+    });
     var compact = document.createElement("div");
     compact.className = "zz-only zz-font-credits";
     var fonts = document.createElement("p");
@@ -386,6 +393,52 @@
       var word = el.textContent;
       el.innerHTML = '<span class="zz-visually-hidden">' + word + '</span>' + osIcon(word.toLowerCase());
     });
+    $$(".zz-sp-dl-icons").forEach(function (el) { el.innerHTML = osIcon("windows") + osIcon("mac"); });
+
+    // スマホのダウンロード欄: パソコンで開いてもらうため、ページのリンクをコピーする
+    var copyBtn = $("[data-copy-link]");
+    if (copyBtn) {
+      var copyLabel = $("[data-copy-label]", copyBtn);
+      var copyStatus = $("[data-copy-status]");
+      var copyUrl = function () { return location.origin + location.pathname + "#download"; };
+      var copyTimer = 0;
+      var copyIdle = function () {
+        copyBtn.classList.remove("is-copied");
+        copyLabel.textContent = lang() === "en" ? "Copy page link" : "ページのリンクをコピー";
+      };
+      var showUrl = function () { $("[data-copy-url]").textContent = copyUrl(); copyIdle(); };
+      showUrl();
+      langHooks.push(showUrl);
+      var fallbackCopy = function (text) {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+        document.body.removeChild(ta);
+        return ok;
+      };
+      var done = function (ok) {
+        var en = lang() === "en";
+        var msg = ok ? (en ? "Copied ✓" : "コピーしました ✓") : (en ? "Couldn't copy" : "コピーできませんでした");
+        copyLabel.textContent = msg;
+        copyStatus.textContent = msg;
+        copyBtn.classList.toggle("is-copied", ok);
+        clearTimeout(copyTimer);
+        copyTimer = setTimeout(copyIdle, 2000);
+      };
+      copyBtn.addEventListener("click", function () {
+        var text = copyUrl();
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(fallbackCopy(text)); });
+        } else {
+          done(fallbackCopy(text));
+        }
+      });
+    }
   }
 
   var hero = $("[data-hero]");
@@ -607,6 +660,7 @@
         t.style.setProperty("--pos", String(off));
         if (Math.abs(off) > 2) t.setAttribute("data-far", ""); else t.removeAttribute("data-far");
         if (Math.abs(off) === 1) t.setAttribute("data-near", ""); else t.removeAttribute("data-near");
+        if (off === -1) t.dataset.side = "prev"; else if (off === 1) t.dataset.side = "next"; else delete t.dataset.side;
       });
       if (focus) {
         tab.focus();

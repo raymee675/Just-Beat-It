@@ -1125,3 +1125,110 @@ html[data-style="new"] .zz-coord { right: calc(clamp(120px, 16vw, 240px) + 16px)
   html[data-style="new"] .section-head--alt .section-en { grid-column: 2; grid-row: 2; align-self: start; }
   html[data-style="new"] .specs div { grid-template-columns: 8.6em 1fr; }
 }
+
+/* ==== 11 回目 ==== */
+/* 05 遊び方: 「ポーズ・戻る」は「ダッシュ・決定」の右に並べる（移動は 1 段目に横いっぱい） */
+html[data-style="new"] .controls .control-map { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+html[data-style="new"] .controls .control-row:first-child { grid-column: 1 / -1; }
+html[data-style="new"] .controls .control-row:nth-child(3) { padding-left: 20px; border-left: 2px dotted rgba(0, 0, 0, .12); }
+/* ルール: 番号と文の 1 行目の頭をそろえる（並べて、ベースラインで合わせる） */
+html[data-style="new"] .rules li {
+  display: grid; grid-template-columns: 50px minmax(0, 1fr); align-items: baseline;
+  padding: 12px 0;
+}
+html[data-style="new"] .rules li::before { position: static; font: 400 1.6rem/1 var(--en); }
+html[data-style="new"] .rules li > span { line-height: 1.7; }
+html[data-style="new"] .rules li.zz-rule-one > span { white-space: nowrap; }
+/* スマホのダウンロードの案内（PC では出さない） */
+html[data-style="new"] .zz-sp-dl { display: none; }
+
+@media (max-width: 640px) {
+  /* 文字を全体に少し小さく（rem で決めている所はまとめて縮む。押せる所の px は保つ） */
+  html[data-style="new"] { font-size: 15px; }
+  html[data-style="new"] body { font-size: 1rem; }
+  /* 言葉や数字の途中で折り返さない（日本語は文節で、英数字は語で折り返す） */
+  html[data-style="new"] body { word-break: auto-phrase; line-break: strict; }
+  html[data-style="new"] .zz-nowrap { white-space: nowrap; }
+
+  /* トップ: ロゴを少し下へ（その分、部屋の CG とボタンも下げる） */
+  html[data-style="new"] .hero { --cg-top: calc(var(--header-h) + 128px); }
+  html[data-style="new"] .hero-center { padding-top: calc(var(--header-h) + 52px); }
+
+  /* 見出しと中身のあいだを広げる */
+  html[data-style="new"] .section { padding-top: calc(var(--tag-top) + var(--tag-h, 140px) + 52px); }
+  html[data-style="new"] .stages { padding-top: calc(var(--tag-top) + var(--tag-h, 140px) + 40px); }
+
+  /* 02: 下の選び方は「‹ 前のステージ ｜ 今の番号 ｜ 次のステージ ›」。写真の上の大きな ＜ ＞ は出さない */
+  html[data-style="new"] .zz-stage-step { display: none !important; }
+  html[data-style="new"] .stage-list {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px;
+    width: 100%; padding: 6px 0 4px;
+  }
+  html[data-style="new"] .stage-list button:not([aria-selected="true"]):not([data-side]) { display: none; }
+  html[data-style="new"] .stage-list button[data-side] {
+    display: flex; align-items: center; gap: 7px;
+    min-width: 0; min-height: 56px; padding: 6px 10px;
+    border-radius: 16px;
+    background: rgba(10, 10, 12, .86); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .3);
+    color: #fff; opacity: 1;
+    font: 800 .9rem/1.2 var(--ja); text-align: left;
+  }
+  html[data-style="new"] .stage-list button[data-side="next"] { flex-direction: row-reverse; text-align: right; }
+  html[data-style="new"] .stage-list button[data-side]::before {
+    display: block; content: "‹"; flex: 0 0 auto;
+    position: static; width: auto; height: auto; background: none;
+    font: 400 1.7rem/1 var(--en); color: #fff;
+  }
+  html[data-style="new"] .stage-list button[data-side="next"]::before { content: "›"; }
+  html[data-style="new"] .stage-list button[data-side] b { width: 30px; height: 30px; font-size: .95rem; }
+  html[data-style="new"][data-lang="ja"] .stage-list button[data-side] > span[lang="ja"],
+  html[data-style="new"][data-lang="en"] .stage-list button[data-side] > span[lang="en"] {
+    display: block !important; min-width: 0; overflow-wrap: anywhere;
+  }
+  html[data-style="new"][data-lang="en"] .stage-list button[data-side] > span[lang="en"] { font-size: .8rem; line-height: 1.15; }
+  html[data-style="new"] .stage-list button[aria-selected="true"] {
+    min-height: 56px; min-width: 56px; padding: 4px;
+    border-radius: 50%; justify-content: center;
+  }
+  html[data-style="new"] .stage-list button[aria-selected="true"] > span { display: none !important; }
+  html[data-style="new"] .stage-list button[aria-selected="true"] b { width: 46px; height: 46px; }
+
+  /* 遊び方 */
+  html[data-style="new"] .controls .control-row:nth-child(3) { padding-left: 14px; }
+  html[data-style="new"] .rules li { grid-template-columns: 40px minmax(0, 1fr); }
+  html[data-style="new"] .rules li::before { font-size: 1.4rem; }
+  html[data-style="new"] .rules ul { font-size: .95rem; }
+  html[data-style="new"] .rules li.zz-rule-one > span { font-size: clamp(.8rem, 4vw, .95rem); letter-spacing: -.01em; }
+
+  /* 05 ダウンロード: スマホでは遊べないので、欄と仕様の表は出さず、パソコンで開くよう案内する */
+  html[data-style="new"] #download .downloads { display: none; }
+  html[data-style="new"] .zz-sp-dl { display: block; padding: 22px 18px; }
+  html[data-style="new"] .zz-sp-dl-head {
+    display: flex; align-items: center; gap: 12px; margin: 0 0 12px;
+    font: 400 1.5rem/1 var(--en); letter-spacing: .02em;
+  }
+  html[data-style="new"] .zz-sp-dl-icons { display: inline-flex; gap: 8px; }
+  html[data-style="new"] .zz-sp-dl-icons .zz-os-icon { width: 26px; height: 26px; }
+  html[data-style="new"] .zz-sp-dl-text { margin: 0 0 16px; font-weight: 700; line-height: 1.75; }
+  html[data-style="new"] .zz-copy {
+    display: flex; justify-content: center; align-items: center;
+    width: 100%; min-height: 52px; padding: 0 16px;
+    border: 0; cursor: pointer;
+    font: 900 1rem/1 var(--ja);
+  }
+  html[data-style="new"] .zz-copy.is-copied::before { background: #111; }
+  html[data-style="new"] .zz-sp-dl-url { margin: 10px 0 0; color: var(--muted); font-size: .75rem; overflow-wrap: anywhere; word-break: break-all; }
+}
+@media (max-width: 640px) {
+  /* クレジット: URL は小さくして 1 行に。許諾文は元の改行のまま横に送って読む */
+  html[data-style="new"] .credit-list li > span { font-size: .82rem; }
+  html[data-style="new"] .zz-url { white-space: nowrap; font-size: .74rem; letter-spacing: -.01em; }
+  html[data-style="new"] .license { white-space: pre; overflow-wrap: normal; word-break: normal; overflow-x: auto; font-size: .7rem; }
+}
+@media (max-width: 640px) {
+  html[data-style="new"] .credits { grid-template-columns: minmax(0, 1fr); }
+  html[data-style="new"] .credits > * { min-width: 0; }
+  html[data-style="new"] .zz-url { display: block; }
+}
+/* PC でも、仕様の表などで言葉の途中で折り返さない */
+html[data-style="new"] body { word-break: auto-phrase; }
