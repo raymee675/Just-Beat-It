@@ -117,11 +117,12 @@
     var TICKER = ["JUST BEAT IT", "RHYTHM BULLET HELL", "10 STAGES", "10 SONGS", "DASH", "GRAZE ×4", "FREE DOWNLOAD", "WINDOWS / MAC"];
     $$("main > .section").forEach(function (s, i) {
       var t = zz("div", "zz-ticker zz-ticker--" + (i % 3));
+      if (["about", "download", "howto", "credits"].indexOf(s.id) !== -1) t.classList.add("zz-ticker-light");
       var run = document.createElement("div");
       run.className = "zz-ticker-run";
       var words = TICKER.slice(i % TICKER.length).concat(TICKER.slice(0, i % TICKER.length));
       var html = words.map(function (w) { return "<span>" + w + "</span><i></i>"; }).join("");
-      run.innerHTML = html + html;
+      run.innerHTML = '<div class="zz-ticker-half">' + html.repeat(3) + '</div><div class="zz-ticker-half">' + html.repeat(3) + '</div>';
       t.appendChild(run);
       s.parentNode.insertBefore(t, s);
     });
@@ -184,6 +185,20 @@
   })();
 
   // ---- オープニング ----
+  if (root.dataset.style === "new") {
+    function osIcon(os) {
+      var path = os === "windows" ? '<path d="M1 1h6v6H1zM9 1h6v6H9zM1 9h6v6H1zM9 9h6v6H9z"/>' : '<path d="M9 0h3v2h-2v1H8V1h1zM4 4h3v1h2V4h3v1h2v2h-2v1h-1v2h1v1h2v2h-1v2h-2v1H9v-1H7v1H5v-1H3v-2H2v-3H1V7h1V5h2z"/>';
+      return '<svg class="zz-os-icon" viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges" fill="currentColor">' + path + '</svg>';
+    }
+    $$(".hero-actions small").forEach(function (el) {
+      el.innerHTML = '<span class="zz-visually-hidden">Windows / Mac</span>' + osIcon("windows") + osIcon("mac");
+    });
+    $$("#download [data-dl] h3").forEach(function (el) {
+      var word = el.textContent;
+      el.innerHTML = '<span class="zz-visually-hidden">' + word + '</span>' + osIcon(word.toLowerCase());
+    });
+  }
+
   var hero = $("[data-hero]");
   var opening = null;
 
@@ -202,31 +217,55 @@
     if (calm || !window.JBI_OPENING || !canvas.getContext) {
       Object.keys(phaseClass).forEach(onPhase);
     } else if (root.dataset.style === "new") {
-      // ロゴが白く光りながら左から現れる → 色が付いてきらめく → 背景の CG と各要素が出る
-      var steps = [["zz-s1", 250], ["zz-s2", 1550], ["zz-s3", 2250], ["ready", 2700], ["done", 3600]];
+      // Reveal ten clipped letters, then FLIP to the final hero rectangle.
       var timers = [];
       var introDone = false;
+      var layer = document.createElement("div");
+      layer.className = "zz-only zz-intro-layer";
+      layer.setAttribute("aria-hidden", "true");
+      var letters = document.createElement("div");
+      letters.className = "zz-intro-letters";
+      layer.appendChild(letters);
+      document.body.appendChild(layer);
       hero.classList.add("zz-intro");
-      var step = function (name) {
-        if (name === "ready" || name === "done") {
-          ["logo", "sub", "flank", name].forEach(onPhase);
-          if (name === "done") { introDone = true; hero.classList.remove("zz-intro"); }
-        } else hero.classList.add(name);
-      };
-      steps.forEach(function (st) { timers.push(setTimeout(function () { step(st[0]); }, st[1])); });
-      var zzSkip = function () {
+      var ranges = [0, 15, 28, 38, 47, 63, 73, 83, 93, 105, 116];
+      for (var n = 0; n < 10; n++) {
+        var letter = $("img", logo).cloneNode(true);
+        letter.alt = "";
+        letter.style.clipPath = "inset(0 " + ((116 - ranges[n + 1]) / 116 * 100) + "% 0 " + (ranges[n] / 116 * 100) + "%)";
+        letter.style.setProperty("--letter-delay", (300 + n * 100) + "ms");
+        letter.style.transformOrigin = ((ranges[n] + ranges[n + 1]) / 232 * 100) + "% 50%";
+        letters.appendChild(letter);
+      }
+      function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+      function zzSkip() {
         if (introDone) return;
+        introDone = true;
         timers.forEach(clearTimeout);
-        steps.forEach(function (st) { step(st[0]); });
-      };
-      $("[data-skip-opening]").addEventListener("click", zzSkip);
-      hero.addEventListener("click", function () { if (!root.classList.contains("opened")) zzSkip(); });
-      window.addEventListener("keydown", function (ev) {
-        if (!root.classList.contains("opened") && (ev.key === "Escape" || ev.key === "Enter" || ev.key === " ")) zzSkip();
+        layer.remove();
+        hero.classList.remove("zz-intro", "zz-revealing");
+        ["logo", "sub", "flank", "ready", "done"].forEach(onPhase);
+        ["click", "keydown", "wheel", "touchmove", "scroll", "resize"].forEach(function (event) {
+          window.removeEventListener(event, zzSkip);
+        });
+      }
+      later(function () { layer.classList.add("zz-intro-flash"); }, 1500);
+      later(function () {
+        var finalRect = logo.getBoundingClientRect();
+        var initialRect = letters.getBoundingClientRect();
+        letters.style.transformOrigin = "0 0";
+        letters.style.transition = "transform 700ms ease-in-out";
+        letters.style.transform = "translate(" + (finalRect.left - initialRect.left) + "px," + (finalRect.top - initialRect.top) + "px) scale(" + (finalRect.width / initialRect.width) + ")";
+      }, 2400);
+      later(function () {
+        layer.remove();
+        hero.classList.add("zz-revealing");
+        ["logo", "sub", "flank", "ready"].forEach(onPhase);
+      }, 3100);
+      later(zzSkip, 4200);
+      ["click", "keydown", "wheel", "touchmove", "scroll", "resize"].forEach(function (event) {
+        window.addEventListener(event, zzSkip, { passive: true });
       });
-      window.addEventListener("scroll", function onScroll() {
-        if (window.scrollY > 40) { zzSkip(); window.removeEventListener("scroll", onScroll); }
-      }, { passive: true });
     } else {
       opening = window.JBI_OPENING.create(canvas, logo, onPhase);
       opening.play(read("s", "jbi-opened") === "1");
@@ -413,7 +452,15 @@
   var pv = config.pv || {};
   var startYouTube = null;
   if (movie) {
-    if (pv.youtubeId) {
+    if (root.dataset.style === "new" && video) {
+      video.removeAttribute("src");
+      video.innerHTML = '<source src="assets/video/pv1-1080.mp4" type="video/mp4" media="(min-width: 1000px)"><source src="assets/video/pv1-720.mp4" type="video/mp4">';
+      video.poster = "assets/img/poster-pv1.jpg";
+      video.removeAttribute("muted");
+      video.muted = false;
+      video.defaultMuted = false;
+      video.preload = "none";
+    } else if (pv.youtubeId) {
       var id = encodeURIComponent(pv.youtubeId);
       movie.innerHTML = "";
       var btn = document.createElement("button");

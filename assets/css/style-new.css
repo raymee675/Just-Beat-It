@@ -120,11 +120,11 @@ html[data-style="new"] .zz-dots a { display: grid; place-items: center; width: 2
 html[data-style="new"] .zz-dots a::before {
   content: ""; width: 8px; height: 8px;
   background: #8d8a90;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, .5);
+  box-shadow: none; border: 0; outline: 0;
   transition: height .25s ease, background .25s ease;
 }
 html[data-style="new"] .zz-dots a.is-current { height: 40px; }
-html[data-style="new"] .zz-dots a.is-current::before { width: 6px; height: 28px; background: var(--magenta); }
+html[data-style="new"] .zz-dots a.is-current::before { width: 8px; height: 28px; background: var(--magenta); }
 html[data-style="new"] .zz-dots a:hover::before { background: #fff; }
 @media (min-width: 1100px) {
   html[data-style="new"] .zz-dots { display: flex !important; }
@@ -193,7 +193,20 @@ html[data-style="new"] .hero-logo {
   opacity: calc(1 - var(--hp) * 1.4);
   transform: translateY(calc(var(--hp) * -40px));
 }
-html[data-style="new"] .hero-logo img { filter: drop-shadow(4px 0 0 rgba(221, 0, 123, .9)) drop-shadow(-4px 0 0 rgba(8, 200, 230, .75)) drop-shadow(0 6px 0 rgba(0, 0, 0, .6)); }
+html[data-style="new"] .hero-logo img { filter: drop-shadow(6px 0 0 #ff2d78) drop-shadow(-6px 0 0 #22e6ff) drop-shadow(0 6px 0 rgba(0, 0, 0, .6)); }
+html[data-style="new"] .hero-logo::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: url(../img/logo-pixel-1x.png) center / 100% 100% no-repeat;
+  image-rendering: pixelated; opacity: 0;
+  filter: drop-shadow(8px 0 0 #ff2d78) drop-shadow(-8px 0 0 #22e6ff);
+  animation: zz-logo-slice 3s steps(1) infinite;
+}
+@keyframes zz-logo-slice {
+  0%, 89%, 100% { opacity: 0; transform: none; clip-path: inset(30% 0 45%); }
+  90%, 94% { opacity: 1; transform: translateX(10px); clip-path: inset(20% 0 60%); }
+  92%, 96% { opacity: 1; transform: translateX(-9px); clip-path: inset(60% 0 18%); }
+}
+html.calm[data-style="new"] .hero-logo::after { animation: none; }
 
 /* ロゴのまわりのドットのきらめき */
 html[data-style="new"] .zz-sparks {
@@ -242,6 +255,15 @@ html[data-style="new"] .hero-catch {
   color: #fff;
   font: 900 clamp(1.4rem, 2.8vw, 2.5rem)/1.25 var(--ja); letter-spacing: .02em;
 }
+html[data-style="new"] .hero-catch:not(.zz-credit) { display: none; }
+html[data-style="new"] .zz-credit { font: 700 clamp(20px, 1.65vw, 24px)/1.5 var(--font); letter-spacing: 0; }
+html[data-style="new"] .zz-visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+html[data-style="new"] .zz-os-icon { display: inline-block; width: 20px; height: 20px; vertical-align: middle; }
+html[data-style="new"] .hero-actions small { display: inline-flex; align-items: center; gap: 8px; }
+html[data-style="new"] .dl h3 .zz-os-icon { width: 48px; height: 48px; }
 html[data-style="new"] .hero-actions {
   position: absolute; z-index: 3; right: var(--gutter); bottom: 0;
   height: var(--band-h); margin: 0;
@@ -264,24 +286,45 @@ html[data-style="new"].js .hero:not(.is-done) .hero-actions { opacity: 0; }
 html[data-style="new"].js .hero:not(.is-done)::after { transform: translateY(100%); }
 html[data-style="new"] .hero.is-done .hero-catch,
 html[data-style="new"] .hero.is-done .hero-actions { opacity: 1; }
-/* 1. ロゴが左から少しずつ、白く光って現れる */
-html[data-style="new"].js .hero.zz-s1 .hero-logo { opacity: 1; }
-html[data-style="new"].js .hero.zz-intro.zz-s1 .hero-logo img { animation: zz-logo-wipe 1.2s steps(14, end) both, zz-logo-glow 2.1s ease both; }
-@keyframes zz-logo-wipe { from { clip-path: inset(-20% 100% -20% -2%); } to { clip-path: inset(-20% -4% -20% -2%); } }
-@keyframes zz-logo-glow {
-  0%, 55% { filter: brightness(1.6) drop-shadow(0 0 10px rgba(255, 255, 255, .9)) drop-shadow(0 0 26px rgba(255, 255, 255, .55)); }
-  100% { filter: drop-shadow(4px 0 0 rgba(221, 0, 123, .9)) drop-shadow(-4px 0 0 rgba(8, 200, 230, .75)) drop-shadow(0 6px 0 rgba(0, 0, 0, .6)); }
+html[data-style="new"] .zz-intro-layer {
+  position: fixed; inset: 0; z-index: 50; background: #000; pointer-events: none;
+  display: grid; place-items: center; overflow: hidden;
 }
-/* 2. 色が付き、ドットがきらめく */
-html[data-style="new"].js .hero.zz-s2 .zz-sparks { opacity: 1; transition: opacity .3s; }
-/* 3. CG・帯・キャッチとボタンが出る */
-html[data-style="new"].js .hero.zz-s3 .zz-hero-layers { opacity: 1; transition: opacity 1.1s ease; }
-html[data-style="new"].js .hero.zz-intro.zz-s3 .zz-hero-frame { animation: zz-scene-in 1.6s cubic-bezier(.2, .8, .2, 1) both; }
-@keyframes zz-scene-in { from { scale: 1.08; } to { scale: 1; } }
-html[data-style="new"].js .hero.zz-s3::after { transform: none; }
-html[data-style="new"].js .hero.zz-s3 .hero-catch { opacity: 1; transition: opacity .6s .35s; }
-html[data-style="new"].js .hero.zz-s3 .hero-actions { opacity: 1; transition: opacity .6s .55s; }
-
+html[data-style="new"] .zz-intro-letters { position: relative; width: 70vw; aspect-ratio: 116 / 18; }
+html[data-style="new"] .zz-intro-letters img {
+  position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated;
+  opacity: 0; animation: zz-letter-pop 350ms var(--letter-delay) both;
+}
+@keyframes zz-letter-pop {
+  0% { opacity: 0; transform: scale(.84); }
+  20% { opacity: 1; transform: scale(1.08); filter: drop-shadow(10px 0 #ff2d78) drop-shadow(-10px 0 #22e6ff) brightness(2); }
+  45% { filter: drop-shadow(-8px 0 #ff2d78) drop-shadow(8px 0 #22e6ff); }
+  70% { filter: drop-shadow(6px 0 #ff2d78) drop-shadow(-6px 0 #22e6ff); }
+  100% { opacity: 1; transform: none; filter: drop-shadow(4px 0 #ff2d78) drop-shadow(-4px 0 #22e6ff); }
+}
+html[data-style="new"] .zz-intro-layer::after { content: ""; position: absolute; inset: 0; background: #fff; opacity: 0; }
+html[data-style="new"] .zz-intro-flash::after { animation: zz-intro-flash 230ms ease-out both; }
+@keyframes zz-intro-flash { 0% { opacity: 1; } 100% { opacity: 0; } }
+html[data-style="new"] .zz-intro-flash .zz-intro-letters::after {
+  content: ""; position: absolute; inset: 0;
+  background: url(../img/logo-pixel-1x.png) center / 100% 100% no-repeat;
+  image-rendering: pixelated;
+  filter: drop-shadow(12px 0 #ff2d78) drop-shadow(-12px 0 #22e6ff);
+  animation: zz-intro-burst 450ms steps(1) both;
+}
+@keyframes zz-intro-burst {
+  0%, 40% { clip-path: inset(15% 0 65%); transform: translateX(18px); }
+  20%, 60% { clip-path: inset(65% 0 12%); transform: translateX(-18px); }
+  80% { clip-path: inset(40% 0 40%); transform: translateX(10px); }
+  100% { opacity: 0; }
+}
+html[data-style="new"] .hero.zz-intro .hero-skip { position: fixed; z-index: 51; }
+html[data-style="new"].js .hero.zz-revealing .hero-logo { opacity: 1; }
+html[data-style="new"].js .hero.zz-revealing .zz-hero-layers,
+html[data-style="new"].js .hero.zz-revealing .zz-sparks,
+html[data-style="new"].js .hero.zz-revealing .hero-catch,
+html[data-style="new"].js .hero.zz-revealing .hero-actions { opacity: 1; transition: opacity 1s ease; }
+html[data-style="new"].js .hero.zz-revealing::after { transform: none; }
 @media (max-width: 900px) {
   html[data-style="new"] .hero { --band-h: 210px; }
   html[data-style="new"] .zz-hero-frame { left: 72%; transform: translate(-72%, -50%) translateY(calc(var(--hp) * -5%)) scale(calc(1 + var(--hp) * .14)); }
@@ -304,34 +347,40 @@ html[data-style="new"].js .hero.zz-s3 .hero-actions { opacity: 1; transition: op
   html[data-style="new"] .hero-actions small { display: block; margin: 2px 0 0; }
   html[data-style="new"] .hero-actions .band > span { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
   html[data-style="new"] .hero-actions [hidden] { display: none; }
+  html[data-style="new"] .zz-credit { font-size: 18px; }
+  html[data-style="new"] .zz-intro-letters { width: 88vw; }
+  html[data-style="new"] .hero-actions small { display: inline-flex; }
 }
 
 /* ---- 区画のあいだを流れる英字の帯 ---- */
 html[data-style="new"] .zz-ticker {
   display: block; overflow: hidden;
   height: 52px;
-  background: #000; color: #fff;
-  border-block: 2px solid #000;
+  background: #111; color: #222;
+  border: 0; width: 100%;
 }
-html[data-style="new"] .zz-ticker--1 { background: var(--magenta); }
-html[data-style="new"] .zz-ticker--2 { background: #fff; color: #111; }
+html[data-style="new"] .zz-ticker--1 { background: #111; }
+html[data-style="new"] .zz-ticker--2 { background: #111; color: #222; }
 html[data-style="new"] .zz-ticker-run {
   display: flex; align-items: center; width: max-content; height: 100%;
   animation: zz-ticker 46s linear infinite;
 }
+html[data-style="new"] .zz-ticker-half { display: flex; align-items: center; flex: 0 0 auto; min-width: max(2600px, 100vw); justify-content: space-around; }
+html[data-style="new"] .zz-ticker.zz-ticker-light { background: var(--light); color: #dcdcdc; }
 html[data-style="new"] .zz-ticker--1 .zz-ticker-run { animation-direction: reverse; }
 html[data-style="new"] .zz-ticker span { padding: 0 22px; font: 400 1.6rem/1 var(--en); letter-spacing: .03em; white-space: nowrap; }
 html[data-style="new"] .zz-ticker i {
   flex: 0 0 auto; width: 10px; height: 10px; background: currentColor;
-  box-shadow: 12px 0 0 var(--magenta), 24px 0 0 currentColor;
+  box-shadow: 12px 0 0 currentColor, 24px 0 0 currentColor;
   margin-right: 24px;
 }
-html[data-style="new"] .zz-ticker--1 i { box-shadow: 12px 0 0 #000, 24px 0 0 currentColor; }
+html[data-style="new"] .zz-ticker--1 i { box-shadow: 12px 0 0 currentColor, 24px 0 0 currentColor; }
 @keyframes zz-ticker { to { transform: translateX(-50%); } }
 html.calm[data-style="new"] .zz-ticker-run { animation: none; }
 
 /* ---- 区画: 明るい灰色と黒を交互に ---- */
 html[data-style="new"] .section {
+  --section-slant: 36deg;
   --tag: var(--magenta);
   --tag-top: clamp(40px, 4.4vw, 64px);
   --tag-w: clamp(210px, 17vw, 260px);
@@ -347,7 +396,7 @@ html[data-style="new"] .section::before {
   content: ""; position: absolute; left: 0; top: 0; z-index: 0;
   width: calc(var(--tag-w) + 80px); height: min(100%, 640px);
   background: var(--carbon), rgba(255, 255, 255, .025);
-  clip-path: polygon(0 0, 100% 0, 0 100%);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 640px * tan(var(--section-slant))) 640px, 0 640px);
   transform: none;
   pointer-events: none;
 }
@@ -392,7 +441,7 @@ html[data-style="new"] .section-head--alt {
   background: radial-gradient(rgba(255, 255, 255, .14) 1.2px, transparent 1.6px) 0 0 / 7px 7px, var(--tag);
   color: #fff;
   border-top-right-radius: 30px;
-  clip-path: polygon(0 0, 100% 0, 100% 52%, 58% 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 80px), calc(100% - 80px * tan(var(--section-slant))) 100%, 0 100%);
 }
 html[data-style="new"] .section-title,
 html[data-style="new"] .section-head--alt .section-title {
@@ -512,7 +561,7 @@ html[data-style="new"] .zz-story-text {
   color: #18171a;
 }
 html[data-style="new"] .zz-story-text[lang="en"] { font-size: clamp(1.1rem, 1.6vw, 1.4rem); line-height: 1.8; }
-html[data-style="new"] .zz-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 28px 0 0; }
+html[data-style="new"] .zz-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 28px 0 0; }
 html[data-style="new"] .zz-stats div {
   position: relative; display: flex; flex-direction: column-reverse; justify-content: flex-end;
   padding: 14px 18px 16px;
@@ -641,9 +690,9 @@ html[data-style="new"] .zz-stage-step {
   transition: background .2s, transform .15s;
 }
 html[data-style="new"] .zz-stage-step svg { width: 32%; height: auto; fill: currentColor; }
-html[data-style="new"] .zz-stage-prev { left: 0; }
+html[data-style="new"] .zz-stage-prev { left: max(0px, calc(50% - 394px)); }
 html[data-style="new"] .zz-stage-prev svg { margin-right: 6%; }
-html[data-style="new"] .zz-stage-next { right: 0; }
+html[data-style="new"] .zz-stage-next { right: max(0px, calc(50% - 394px)); }
 html[data-style="new"] .zz-stage-next svg { margin-left: 6%; }
 html[data-style="new"] .zz-stage-step:hover { background: var(--magenta); }
 html[data-style="new"] .zz-stage-step:active { transform: scale(.94); }
@@ -690,6 +739,7 @@ html[data-style="new"]:root[data-lang="en"] .stage-name [data-stage-name-en] {
 }
 html[data-style="new"] .stage-help { color: rgba(255, 255, 255, .72); font-size: .9rem; text-align: center; }
 html[data-style="new"] .zz-old-help { display: none; }
+html[data-style="new"] .zz-stage-help { display: none; }
 
 @media (max-width: 820px) {
   html[data-style="new"] .stage-list { gap: 6px; padding: 4px 0 8px; }
@@ -708,6 +758,7 @@ html[data-style="new"] .movie-label::before {
   border-radius: 50%; background: var(--magenta); color: #fff; font-size: .8rem;
 }
 html[data-style="new"] .movie-frame { padding: 0; overflow: hidden; }
+html[data-style="new"] .movie-note { display: none; }
 
 /* ---- 04 ダウンロード: 警告の説明と手順は、それぞれの OS の欄の下に ---- */
 html[data-style="new"] #download .sub-title,
@@ -790,9 +841,10 @@ html[data-style="new"] kbd {
   border: 0; border-radius: 9px;
   background: #18181b; color: #fff;
   box-shadow: 0 4px 0 #000;
-  font: 400 1.05em/1.6 var(--en); letter-spacing: .03em;
+  font: 900 1.05em/1.6 "Montserrat", "Noto Sans JP", sans-serif; letter-spacing: .03em;
 }
 html[data-style="new"] .key-cluster kbd { min-height: 40px; min-width: 40px; }
+html[data-style="new"] .key-cluster { grid-template-columns: repeat(3, 40px); gap: 8px; }
 html[data-style="new"] .note kbd { font-size: .85em; }
 html[data-style="new"] .rules ul { list-style: none; padding: 0; margin: 0; counter-reset: rule; font-size: 1.02rem; }
 html[data-style="new"] .rules li { position: relative; padding: 10px 0 10px 50px; counter-increment: rule; }
@@ -853,6 +905,7 @@ html[data-style="new"] .footer { position: relative; z-index: 1; background: #00
   html[data-style="new"] .stages .zz-ghost { top: calc(var(--header-h) + 34px); }
   html[data-style="new"] .zz-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   html[data-style="new"] .zz-story-text { font-size: 1.12rem; line-height: 1.95; }
+  html[data-style="new"] .zz-story-text { font-size: 1.05rem; line-height: 1.85; }
   html[data-style="new"] .zz-enemy-row img { width: 88px; height: 88px; }
   html[data-style="new"] .dl h3 { font-size: 2.8rem; }
   html[data-style="new"] .specs div:nth-child(odd) { margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
