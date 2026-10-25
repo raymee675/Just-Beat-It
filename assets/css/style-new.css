@@ -116,11 +116,14 @@ html[data-style="new"] .zz-menu { display: none; }
     position: relative;
     width: 16px; height: 2px; background: currentColor;
     box-shadow: 0 -5px 0 currentColor, 0 5px 0 currentColor;
-    transition: transform .2s, box-shadow .2s;
+    transition: transform .25s ease-out, box-shadow .25s ease-out;
   }
   html[data-style="new"].zz-menu-open .zz-menu-btn { background: var(--magenta); color: #fff; }
   html[data-style="new"].zz-menu-open .zz-menu-btn i { transform: rotate(45deg); box-shadow: none; }
-  html[data-style="new"].zz-menu-open .zz-menu-btn i::after { content: ""; position: absolute; inset: 0; background: currentColor; transform: rotate(90deg); }
+  html[data-style="new"] .zz-menu-btn i::after { content: ""; position: absolute; inset: 0; background: currentColor; transform: rotate(0); transition: transform .25s ease-out; }
+  html[data-style="new"].zz-menu-open .zz-menu-btn i::after { transform: rotate(90deg); }
+  html[data-style="new"] .zz-menu { opacity: 0; transform: translateY(-8px); transition: opacity .2s ease-out, transform .2s ease-out; pointer-events: none; }
+  html[data-style="new"] .zz-menu.is-open { opacity: 1; transform: translateY(0); transition-duration: .25s; pointer-events: auto; }
   html[data-style="new"] .zz-menu:not([hidden]) {
     position: fixed; left: 0; right: 0; top: var(--header-h); z-index: 55;
     display: grid; gap: 2px;
@@ -341,12 +344,12 @@ html[data-style="new"].js .hero.zz-revealing::after { transform: none; }
 }
 /* スマホの縦画面: PC と同じ組み方にはしない。
    上にロゴ、その下に部屋の CG の全景（上下はぼかした同じ絵へなじませる）、主人公は右下に大きく立たせて CG の主な所は隠さない。
-   左下にジャンルと一言・数字、下の帯にクレジットとボタン（どちらも 1 行） */
+   左下にボタン、下の帯にはクレジットだけを置く */
 html[data-style="new"] .zz-hero-blur,
 html[data-style="new"] .zz-hero-info { display: none; }
 @media (max-width: 640px) {
   html[data-style="new"] .hero {
-    --band-h: 148px;
+    --band-h: 56px;
     --cg-top: calc(var(--header-h) + 90px);
     --cg-w: 120vw;
     --cg-h: calc(var(--cg-w) * .5625);
@@ -384,7 +387,7 @@ html[data-style="new"] .zz-hero-info { display: none; }
 
   /* 左下: ジャンル・一言・数字 */
   html[data-style="new"] .zz-hero-info {
-    display: grid; justify-items: start; gap: 10px;
+    display: none;
     position: absolute; z-index: 3; left: var(--gutter);
     top: calc(var(--cg-top) + var(--cg-h) - 4px);
     width: 58vw;
@@ -415,29 +418,34 @@ html[data-style="new"] .zz-hero-info { display: none; }
   }
   html[data-style="new"] .zz-hero-facts b { color: #fff; font: 400 1.3rem/1 var(--en); letter-spacing: .02em; }
 
-  /* 下の帯: クレジットとボタンを 1 行ずつ */
+  /* 下の帯: クレジットだけ */
   html[data-style="new"] .hero::after { padding-left: 0; font-size: calc(var(--band-h) * .9); }
   html[data-style="new"] .hero-catch.zz-credit {
-    left: 0; right: 0; bottom: calc(var(--band-h) - 42px);
-    height: 28px; padding: 0 var(--gutter);
+    left: 0; right: 0; bottom: 0;
+    height: var(--band-h); padding: 0 var(--gutter);
     justify-content: flex-start;
     font-size: 14px; letter-spacing: .04em;
   }
   html[data-style="new"] .hero-actions {
-    bottom: 54px; gap: 8px; padding: 0 var(--gutter);
+    left: var(--gutter); right: auto; bottom: auto;
+    top: calc(var(--cg-top) + var(--cg-h) - 4px);
+    width: min(calc(60vw - var(--gutter)), 240px);
+    flex-direction: column; gap: 12px; padding: 0;
     align-items: stretch;
+    transition: opacity 1s ease;
   }
   html[data-style="new"] .hero-actions .band {
-    flex: 1 1 auto; max-width: none; min-height: 0; height: 52px;
+    flex: 0 0 auto; max-width: none; min-height: 0; height: 52px;
+    opacity: calc(1 - var(--hp) * 1.6);
     display: grid; place-items: center;
-    padding: 0 14px; font-size: .98rem; white-space: nowrap;
+    padding: 0 10px; font-size: .95rem; white-space: nowrap;
   }
-  html[data-style="new"] .hero-actions .band:first-child { flex-grow: 1.5; }
+  html[data-style="new"] .hero-actions .band:first-child { flex-grow: 0; }
   html[data-style="new"] .hero-actions .band > span { flex-direction: row; gap: 8px; line-height: 1; }
   html[data-style="new"] .hero-actions small { display: inline-flex; margin: 0; gap: 4px; }
   html[data-style="new"] .hero-actions .zz-os-icon { width: 15px; height: 15px; }
-  /* 見比べの切り替えは小さくして、帯の下の余白に収める */
-  .style-switch { font-size: .66rem; }
+  /* 見比べの切り替えはクレジットの帯より上に置く */
+  .style-switch { font-size: .66rem; bottom: 68px; }
   .style-switch button { min-height: 28px; padding: 3px 10px; }
 }
 
@@ -466,10 +474,15 @@ html[data-style="new"] .zz-ticker i {
 html[data-style="new"] .zz-ticker--1 i { box-shadow: 12px 0 0 currentColor, 24px 0 0 currentColor; }
 @keyframes zz-ticker { to { transform: translateX(-50%); } }
 html.calm[data-style="new"] .zz-ticker-run { animation: none; }
+html.calm[data-style="new"] :is(.zz-menu, .zz-menu-btn, .zz-menu-btn i, .zz-menu-btn i::after, .zz-warn-body) { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-style="new"] :is(.zz-menu, .zz-menu-btn, .zz-menu-btn i, .zz-menu-btn i::after, .zz-warn-body) { transition: none; }
+}
 
 /* ---- 区画: 明るい灰色と黒を交互に ---- */
 html[data-style="new"] .section {
   --section-slant: 36deg;
+  --panel-h: max(640px, calc(var(--tag-top) + var(--tag-h, 240px) + 25px));
   --tag: var(--magenta);
   --tag-top: clamp(40px, 4.4vw, 64px);
   --tag-w: clamp(210px, 17vw, 260px);
@@ -483,9 +496,10 @@ html[data-style="new"] .section {
 html[data-style="new"] .section::before {
   /* 左上から斜めに横切る面（細かい斜線の地模様） */
   content: ""; position: absolute; left: 0; top: 0; z-index: 0;
-  width: calc(var(--tag-w) + 80px); height: min(100%, 640px);
+  width: calc(var(--tag-w) + (var(--tag-top) + var(--tag-h, 240px) - 80px) * tan(var(--section-slant)) + 37px);
+  max-width: 100%; height: var(--panel-h);
   background: var(--carbon), rgba(255, 255, 255, .025);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 640px * tan(var(--section-slant))) 640px, 0 640px);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--panel-h) * tan(var(--section-slant))) 100%, 0 100%);
   transform: none;
   pointer-events: none;
 }
@@ -694,6 +708,7 @@ html[data-style="new"] .zz-enemy-row figcaption b { color: var(--magenta); font-
 
 /* ---- 02 ステージ: 選んでいる物と前後 2 つずつ。＜ ＞ でも選べる ---- */
 html[data-style="new"] .stages {
+  --tag-top: calc(var(--header-h) + 24px);
   --tag: var(--stage);
   padding: calc(var(--header-h) + clamp(96px, 8vw, 120px)) var(--gutter) 40px;
   min-height: 100svh;
@@ -872,6 +887,7 @@ html[data-style="new"] .zz-warn {
   border-top: 2px dotted rgba(0, 0, 0, .16);
 }
 html[data-style="new"] .zz-warn-steps { border-radius: 16px; background: #f2f2f2; }
+html[data-style="new"] .zz-warn-body { overflow: hidden; transition: height .25s ease-out; }
 html[data-style="new"] .zz-warn-steps summary {
   display: flex; align-items: center; gap: 12px;
   min-height: 56px; padding: 8px 10px 8px 18px;
@@ -901,6 +917,7 @@ html[data-style="new"] .zz-warn code { background: #e4e4e4; }
 
 /* ---- 05 遊び方: 2 人用の欄はやめ、ルールを横に ---- */
 html[data-style="new"] .controls-duo { display: none; }
+html[data-style="new"] .key-set:has(> kbd.space) > :not(kbd.space) { display: none; }
 html[data-style="new"] .howto { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
 html[data-style="new"] .howto .rules { grid-column: auto; }
 html[data-style="new"] .controls h3,
@@ -949,6 +966,10 @@ html[data-style="new"] .team-name { font-family: var(--ja); font-weight: 900; fo
 html[data-style="new"] .members li::before { border-radius: 2px; }
 
 /* ---- 07 クレジット ---- */
+html[data-style="new"] .zz-font-original { display: none; }
+html[data-style="new"] .zz-font-credits > p { margin: 12px 0 0; overflow-wrap: anywhere; }
+html[data-style="new"] .zz-font-credits > p:first-child { font-weight: 700; }
+html[data-style="new"] .zz-font-notices { font-size: .75rem; line-height: 1.7; color: #4a474d; }
 html[data-style="new"] .credit-list li { border-bottom: 2px dotted rgba(0, 0, 0, .12); }
 html[data-style="new"] .credit-list li > span { color: #4a474d; }
 html[data-style="new"] .license { background: #f2f2f2; color: #444; border-radius: 12px; }
@@ -984,10 +1005,10 @@ html[data-style="new"] .footer { position: relative; z-index: 1; background: #00
     white-space: normal;
   }
   html[data-style="new"] .stages .zz-ghost { font-size: clamp(1.8rem, 9vw, 2.6rem); line-height: 1; }
-  html[data-style="new"] .section::before { width: 64vw; height: 190px; }
+  html[data-style="new"] .section { --panel-h: calc(var(--tag-top) + var(--tag-h, 240px) + 25px); }
   html[data-style="new"] .zz-cross--a { display: none; }
   html[data-style="new"] .zz-coord { left: var(--gutter); right: auto; bottom: 16px; font-size: .66rem; }
-  html[data-style="new"] .stages { padding-top: calc(var(--header-h) + 168px); justify-content: flex-start; }
+  html[data-style="new"] .stages { --tag-top: calc(var(--header-h) + 16px); padding-top: calc(var(--header-h) + 168px); justify-content: flex-start; }
   html[data-style="new"] .stage-enemy { width: min(58vw, 260px); }
   html[data-style="new"] .stages .section-head { top: calc(var(--header-h) + 16px); }
   html[data-style="new"] .stages .zz-ghost { top: calc(var(--header-h) + 34px); }
