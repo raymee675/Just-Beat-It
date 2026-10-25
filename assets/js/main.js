@@ -191,14 +191,8 @@
       box.appendChild(c);
       card.appendChild(box);
     });
-    // ヘッダーのダウンロードのボタン
     var langBox = $(".header .lang");
     if (langBox) {
-      var dl = zz("a", "zz-dl");
-      dl.href = "#download";
-      dl.removeAttribute("aria-hidden");
-      dl.innerHTML = '<span lang="ja">無料ダウンロード</span><span lang="en">Download</span>';
-      langBox.parentNode.insertBefore(dl, langBox);
       // 狭い画面では、区画の一覧をメニューのボタンにまとめる（番号だけでは何か分からないため）
       var menuBtn = zz("button", "zz-menu-btn");
       menuBtn.type = "button";
@@ -265,6 +259,41 @@
       dots.push(d);
     });
     document.body.appendChild(nav);
+  })();
+
+  // スマホの新しい見た目では「どんなゲームか → 遊び方 → ダウンロード」の順に読めるよう、遊び方をダウンロードの前へ移し、番号も付け替える
+  (function () {
+    var dl = $("#download"), how = $("#howto");
+    if (!dl || !how) return;
+    var mq = window.matchMedia("(max-width: 640px)");
+    var NO = { download: ["04", "05"], howto: ["05", "04"] };
+    function setNo(sec, no) {
+      $(".section-no", sec).textContent = no;
+      $$('a[href="#' + sec.id + '"] b').forEach(function (b) { b.textContent = no; });
+      var code = $(".zz-code", sec);
+      if (code) code.lastChild.textContent = "JBI-" + no + "/07 · SEC." + no;
+      var coord = $(".zz-coord", sec);
+      if (coord) coord.textContent = "TRACK " + no + " — BEAT SYNC ON · 4/4";
+    }
+    // a を b の前へ（区画の前の流れる帯もいっしょに動かす）
+    function putBefore(a, b) {
+      if (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) return;
+      var at = a.previousElementSibling, bt = b.previousElementSibling;
+      b.parentNode.insertBefore(at, bt);
+      b.parentNode.insertBefore(a, bt);
+    }
+    function apply() {
+      var sp = root.dataset.style === "new" && mq.matches;
+      if (sp) putBefore(how, dl); else putBefore(dl, how);
+      [dl, how].forEach(function (sec) { setNo(sec, NO[sec.id][sp ? 1 : 0]); });
+      $$(".zz-menu").forEach(function (menu) {
+        var a = $('a[href="#download"]', menu), b = $('a[href="#howto"]', menu);
+        if (a && b) { if (sp) menu.insertBefore(b, a); else menu.insertBefore(a, b); }
+      });
+    }
+    if (mq.addEventListener) mq.addEventListener("change", apply); else mq.addListener(apply);
+    new MutationObserver(apply).observe(root, { attributes: true, attributeFilter: ["data-style"] });
+    apply();
   })();
 
   // 札の実寸は言語・フォント・画面幅で変わる。見比べで切り替えた時も再計測する。
