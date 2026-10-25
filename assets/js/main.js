@@ -166,6 +166,38 @@
       dl.removeAttribute("aria-hidden");
       dl.innerHTML = '<span lang="ja">無料ダウンロード</span><span lang="en">Download</span>';
       langBox.parentNode.insertBefore(dl, langBox);
+      // 狭い画面では、区画の一覧をメニューのボタンにまとめる（番号だけでは何か分からないため）
+      var menuBtn = zz("button", "zz-menu-btn");
+      menuBtn.type = "button";
+      menuBtn.removeAttribute("aria-hidden");
+      menuBtn.setAttribute("aria-expanded", "false");
+      menuBtn.setAttribute("aria-controls", "zz-menu");
+      menuBtn.innerHTML = '<i aria-hidden="true"></i><span class="zz-visually-hidden" lang="ja">メニュー</span><span class="zz-visually-hidden" lang="en">Menu</span>';
+      var menu = zz("nav", "zz-menu");
+      menu.id = "zz-menu";
+      menu.removeAttribute("aria-hidden");
+      menu.setAttribute("aria-label", "Menu");
+      menu.hidden = true;
+      $$("[data-nav] a").forEach(function (a) {
+        var sec = $(a.getAttribute("href"));
+        var en = sec && $(".section-en", sec);
+        var m = document.createElement("a");
+        m.href = a.getAttribute("href");
+        m.innerHTML = a.innerHTML + (en ? '<em aria-hidden="true">' + en.textContent + '</em>' : "");
+        menu.appendChild(m);
+        dots.push(m);
+      });
+      var setMenu = function (open) {
+        menu.hidden = !open;
+        menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        root.classList.toggle("zz-menu-open", open);
+      };
+      menuBtn.addEventListener("click", function (ev) { ev.stopPropagation(); setMenu(menu.hidden); });
+      menu.addEventListener("click", function (ev) { if (ev.target.closest("a")) setMenu(false); });
+      document.addEventListener("click", function (ev) { if (!menu.hidden && !menu.contains(ev.target)) setMenu(false); });
+      document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !menu.hidden) { setMenu(false); menuBtn.focus(); } });
+      langBox.parentNode.appendChild(menuBtn);
+      langBox.parentNode.appendChild(menu);
     }
     // 右端の区画のドット（上のナビと同じ行き先なので、読み上げとキー操作からは外す）
     var nav = zz("nav", "zz-dots");
@@ -241,7 +273,8 @@
       layer.appendChild(letters);
       document.body.appendChild(layer);
       hero.classList.add("zz-intro");
-      var COL_MS = 9, ROW_MS = 7, LEAD_MS = 300;
+      var COL_MS = 9, ROW_MS = 7, LEAD_MS = 300, FLASH_MS = 140;
+      var FLASH = getComputedStyle(root).getPropertyValue("--magenta").trim() || "#dd007b";
       var src = new Image();
       src.onload = function () {
         var w = src.naturalWidth, h = src.naturalHeight;
@@ -266,11 +299,11 @@
           for (var k = 0; k < dots.length; k++) {
             var d = dots[k];
             if (t < d.at) { left++; continue; }
-            // ドットは置いた時から元の色（白）のまま
-            g.fillStyle = d.c;
+            // 置いた瞬間だけマゼンタ、すぐ元の色（白）に
+            g.fillStyle = t - d.at < FLASH_MS ? FLASH : d.c;
             g.fillRect(d.x, d.y, 1, 1);
           }
-          if (left || t < LEAD_MS + w * COL_MS + h * ROW_MS) requestAnimationFrame(draw);
+          if (left || t < LEAD_MS + w * COL_MS + h * ROW_MS + FLASH_MS) requestAnimationFrame(draw);
         })(t0);
       };
       src.src = $("img", logo).currentSrc || $("img", logo).src;
@@ -290,15 +323,16 @@
         var finalRect = logo.getBoundingClientRect();
         var initialRect = letters.getBoundingClientRect();
         letters.style.transformOrigin = "0 0";
-        letters.style.transition = "transform 650ms cubic-bezier(.65, 0, .35, 1)";
+        // ゆっくり動き出し、長めに減速してから止まる
+        letters.style.transition = "transform 1300ms cubic-bezier(.55, 0, .15, 1)";
         letters.style.transform = "translate(" + (finalRect.left - initialRect.left) + "px," + (finalRect.top - initialRect.top) + "px) scale(" + (finalRect.width / initialRect.width) + ")";
-      }, 1950);
+      }, 1800);
       later(function () {
         layer.remove();
         hero.classList.add("zz-revealing");
         ["logo", "sub", "flank", "ready"].forEach(onPhase);
-      }, 2650);
-      later(zzSkip, 3700);
+      }, 3150);
+      later(zzSkip, 4200);
       ["click", "keydown", "wheel", "touchmove", "scroll", "resize"].forEach(function (event) {
         window.addEventListener(event, zzSkip, { passive: true });
       });
