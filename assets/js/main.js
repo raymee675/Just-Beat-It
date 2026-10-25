@@ -293,6 +293,19 @@
   }
   langHooks.push(renderDownloads);
 
+  // ---- お問い合わせ ----
+  var contactConfig = config.contact || {};
+  function renderContact() {
+    var b = $("[data-contact-button]");
+    if (!b || !contactConfig.formUrl) return;
+    b.href = contactConfig.formUrl;
+    b.classList.remove("band-idle", "is-disabled");
+    b.classList.add("band-action");
+    b.removeAttribute("aria-disabled");
+    b.textContent = lang() === "en" ? "Contact form" : "お問い合わせフォーム";
+  }
+  langHooks.push(renderContact);
+
   // ---- 制作班 ----
   function renderTeam() {
     var name = pick(config.team) || "筑駒縁日 Just Beat It 制作班";
