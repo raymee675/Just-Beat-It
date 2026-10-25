@@ -193,20 +193,8 @@ html[data-style="new"] .hero-logo {
   opacity: calc(1 - var(--hp) * 1.4);
   transform: translateY(calc(var(--hp) * -40px));
 }
-html[data-style="new"] .hero-logo img { filter: drop-shadow(6px 0 0 #ff2d78) drop-shadow(-6px 0 0 #22e6ff) drop-shadow(0 6px 0 rgba(0, 0, 0, .6)); }
-html[data-style="new"] .hero-logo::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: url(../img/logo-pixel-1x.png) center / 100% 100% no-repeat;
-  image-rendering: pixelated; opacity: 0;
-  filter: drop-shadow(8px 0 0 #ff2d78) drop-shadow(-8px 0 0 #22e6ff);
-  animation: zz-logo-slice 3s steps(1) infinite;
-}
-@keyframes zz-logo-slice {
-  0%, 89%, 100% { opacity: 0; transform: none; clip-path: inset(30% 0 45%); }
-  90%, 94% { opacity: 1; transform: translateX(10px); clip-path: inset(20% 0 60%); }
-  92%, 96% { opacity: 1; transform: translateX(-9px); clip-path: inset(60% 0 18%); }
-}
-html.calm[data-style="new"] .hero-logo::after { animation: none; }
+/* ロゴはドット絵の白一色。色の縁やずれは付けない */
+html[data-style="new"] .hero-logo img { filter: drop-shadow(0 6px 0 rgba(0, 0, 0, .6)); }
 
 /* ロゴのまわりのドットのきらめき */
 html[data-style="new"] .zz-sparks {
@@ -291,10 +279,9 @@ html[data-style="new"] .zz-intro-layer {
   display: grid; place-items: center; overflow: hidden;
 }
 html[data-style="new"] .zz-intro-letters { position: relative; width: 70vw; aspect-ratio: 116 / 18; }
-/* ドットで組み上げたロゴから、定位置のロゴへそのまま入れ替える。色の縁とずれは、出終わってから静かに付ける */
+/* ドットで組み上げたロゴから、定位置のロゴへそのまま入れ替える */
 html[data-style="new"] .hero-logo img { transition: filter .8s ease; }
-html[data-style="new"] .hero.zz-intro .hero-logo img { filter: drop-shadow(0 0 0 rgba(255, 45, 120, 0)) drop-shadow(0 0 0 rgba(34, 230, 255, 0)) drop-shadow(0 0 0 rgba(0, 0, 0, 0)); }
-html[data-style="new"] .hero.zz-intro .hero-logo::after { animation: none; }
+html[data-style="new"] .hero.zz-intro .hero-logo img { filter: none; }
 html[data-style="new"] .zz-intro-letters canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
 html[data-style="new"] .hero.zz-intro .hero-skip { position: fixed; z-index: 51; }
 html[data-style="new"].js .hero.zz-revealing .hero-logo { opacity: 1; }

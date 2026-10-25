@@ -241,7 +241,7 @@
       layer.appendChild(letters);
       document.body.appendChild(layer);
       hero.classList.add("zz-intro");
-      var COL_MS = 9, ROW_MS = 7, LEAD_MS = 300, HOT_MS = 90;
+      var COL_MS = 9, ROW_MS = 7, LEAD_MS = 300;
       var src = new Image();
       src.onload = function () {
         var w = src.naturalWidth, h = src.naturalHeight;
@@ -266,11 +266,11 @@
           for (var k = 0; k < dots.length; k++) {
             var d = dots[k];
             if (t < d.at) { left++; continue; }
-            // 置いたばかりのドットだけマゼンタ。すぐに元の色になる
-            g.fillStyle = t - d.at < HOT_MS ? "#ff2d78" : d.c;
+            // ドットは置いた時から元の色（白）のまま
+            g.fillStyle = d.c;
             g.fillRect(d.x, d.y, 1, 1);
           }
-          if (left || t < LEAD_MS + w * COL_MS + h * ROW_MS + HOT_MS) requestAnimationFrame(draw);
+          if (left || t < LEAD_MS + w * COL_MS + h * ROW_MS) requestAnimationFrame(draw);
         })(t0);
       };
       src.src = $("img", logo).currentSrc || $("img", logo).src;
