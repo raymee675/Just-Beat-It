@@ -10,6 +10,7 @@
   function $$(sel, el) { return Array.prototype.slice.call((el || document).querySelectorAll(sel)); }
   function lang() { return root.dataset.lang === "en" ? "en" : "ja"; }
   function pick(v) { return v && typeof v === "object" ? (v[lang()] || v.ja || "") : (v || ""); }
+  function instantMotion() { return root.classList.contains("calm") || window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
   function store(kind, key, value) {
     try { (kind === "s" ? sessionStorage : localStorage).setItem(key, value); } catch (e) { /* 保存できなくても閲覧はできる */ }
   }
@@ -155,6 +156,38 @@
       c.open = false;
       c.className = "zz-warn-steps";
       $("summary", c).innerHTML = subTitle.innerHTML;
+      var body = document.createElement("div");
+      body.className = "zz-warn-body";
+      $$("ol", c).forEach(function (ol) { body.appendChild(ol); });
+      c.appendChild(body);
+      var expanded = false, closeTimer, bodyFrame;
+      function finishHeight() {
+        clearTimeout(closeTimer);
+        if (!expanded) c.open = false;
+        body.style.height = "auto";
+      }
+      body.addEventListener("transitionend", function (ev) {
+        if (ev.target === body && ev.propertyName === "height") finishHeight();
+      });
+      $("summary", c).addEventListener("click", function (ev) {
+        ev.preventDefault();
+        expanded = !expanded;
+        clearTimeout(closeTimer);
+        cancelAnimationFrame(bodyFrame);
+        if (instantMotion()) {
+          c.open = expanded;
+          body.style.height = "auto";
+          return;
+        }
+        var height = c.open ? body.getBoundingClientRect().height : 0;
+        c.open = true;
+        body.style.height = height + "px";
+        void body.offsetHeight;
+        bodyFrame = requestAnimationFrame(function () {
+          body.style.height = (expanded ? body.scrollHeight : 0) + "px";
+          closeTimer = setTimeout(finishHeight, 300);
+        });
+      });
       box.appendChild(c);
       card.appendChild(box);
     });
@@ -187,12 +220,35 @@
         menu.appendChild(m);
         dots.push(m);
       });
+      var menuOpen = false, menuFrame, menuTimer, menuEnd;
       var setMenu = function (open) {
-        menu.hidden = !open;
+        menuOpen = open;
+        cancelAnimationFrame(menuFrame);
+        clearTimeout(menuTimer);
+        if (menuEnd) menu.removeEventListener("transitionend", menuEnd);
         menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
         root.classList.toggle("zz-menu-open", open);
+        menu.inert = !open;
+        if (instantMotion()) {
+          menu.hidden = !open;
+          menu.classList.toggle("is-open", open);
+        } else if (open) {
+          menu.hidden = false;
+          void menu.offsetHeight;
+          menuFrame = requestAnimationFrame(function () { menu.classList.add("is-open"); });
+        } else {
+          menu.classList.remove("is-open");
+          var finish = function () {
+            if (!menuOpen) menu.hidden = true;
+            clearTimeout(menuTimer);
+            menu.removeEventListener("transitionend", menuEnd);
+          };
+          menuEnd = function (ev) { if (ev.target === menu && ev.propertyName === "opacity") finish(); };
+          menu.addEventListener("transitionend", menuEnd);
+          menuTimer = setTimeout(finish, 240);
+        }
       };
-      menuBtn.addEventListener("click", function (ev) { ev.stopPropagation(); setMenu(menu.hidden); });
+      menuBtn.addEventListener("click", function (ev) { ev.stopPropagation(); setMenu(!menuOpen); });
       menu.addEventListener("click", function (ev) { if (ev.target.closest("a")) setMenu(false); });
       document.addEventListener("click", function (ev) { if (!menu.hidden && !menu.contains(ev.target)) setMenu(false); });
       document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !menu.hidden) { setMenu(false); menuBtn.focus(); } });
@@ -209,6 +265,67 @@
       dots.push(d);
     });
     document.body.appendChild(nav);
+  })();
+
+  // 札の実寸は言語・フォント・画面幅で変わる。見比べで切り替えた時も再計測する。
+  (function () {
+    var heads = $$(".section > .section-head");
+    function measureTags() {
+      if (root.dataset.style !== "new") return;
+      heads.forEach(function (head) {
+        head.parentNode.style.setProperty("--tag-h", head.getBoundingClientRect().height + "px");
+      });
+    }
+    if ("ResizeObserver" in window) {
+      var observer = new ResizeObserver(measureTags);
+      heads.forEach(function (head) { observer.observe(head); });
+    } else {
+      window.addEventListener("resize", function () { requestAnimationFrame(measureTags); });
+    }
+    new MutationObserver(measureTags).observe(root, { attributes: true, attributeFilter: ["data-style", "data-lang"] });
+    langHooks.push(measureTags);
+    if (document.fonts) document.fonts.ready.then(measureTags);
+    measureTags();
+  })();
+
+  // 元の一覧を保ったまま、新しい見た目だけ著作権者ごとにまとめる。
+  (function () {
+    var list = $("#credits .credit-list");
+    if (!list) return;
+    var groups = [];
+    var names = $$("li", list).map(function (li) {
+      var name = $("b", li).textContent;
+      var notice = $("li > span", li).textContent
+        .replace(/\s*\((?:https?:\/\/|www\.)[^)]+\)/g, "")
+        .replace(/^Copyright(?: \(c\))?\s*/, "© ");
+      var key = /^(Noto Serif JP|Noto Sans JP)$/.test(name) ? "noto" : notice;
+      var group = groups.filter(function (g) { return g.key === key; })[0];
+      if (!group) {
+        group = { key: key, notice: key === "noto" ? "© 2014-2023 Adobe / The Noto Project Authors, with Reserved Font Name 'Source'." : notice, names: [] };
+        groups.push(group);
+      }
+      group.names.push(name);
+      return name;
+    });
+    var compact = document.createElement("div");
+    compact.className = "zz-only zz-font-credits";
+    var fonts = document.createElement("p");
+    var notices = document.createElement("p");
+    notices.className = "zz-font-notices";
+    ["ja", "en"].forEach(function (l) {
+      var nameSpan = document.createElement("span");
+      nameSpan.lang = l;
+      nameSpan.textContent = names.join(" / ");
+      fonts.appendChild(nameSpan);
+      var noticeSpan = document.createElement("span");
+      noticeSpan.lang = l;
+      noticeSpan.textContent = groups.map(function (g) { return g.notice + " (" + g.names.join(", ") + ")"; }).join(" / ");
+      notices.appendChild(noticeSpan);
+    });
+    compact.appendChild(fonts);
+    compact.appendChild(notices);
+    list.classList.add("zz-font-original");
+    list.parentNode.insertBefore(compact, list);
   })();
 
   // ---- オープニング ----
