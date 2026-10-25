@@ -46,16 +46,19 @@ jobs:
         if: steps.claude.outputs.branch_name != ''
         env:
           BRANCH: ${{ steps.claude.outputs.branch_name }}
-          GH_TOKEN: ${{ steps.claude.outputs.github_token || github.token }}
+          # Claude の App トークンはアクションの終わりで無効になるので、ワークフローのトークンを使う
+          GH_TOKEN: ${{ github.token }}
           ISSUE: ${{ github.event.issue.number }}
         run: |
           set -e
           git config user.name "claude[bot]"
           git config user.email "209825114+claude[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          if ! git fetch origin main "$BRANCH"; then
+          git fetch origin main
+          if ! git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
             echo "作業ブランチが無い（変更なし）"; exit 0
           fi
+          git fetch origin "$BRANCH"
           if [ "$(git rev-list --count origin/main..origin/$BRANCH)" = "0" ]; then
             echo "変更なし"; git push origin --delete "$BRANCH" || true; exit 0
           fi
