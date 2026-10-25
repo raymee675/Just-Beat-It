@@ -67,8 +67,10 @@ html[data-style="new"] .header {
   backdrop-filter: none;
   border-bottom: 0;
 }
-html[data-style="new"] .header-logo { width: 148px; }
-html[data-style="new"] .header-logo img { width: 100%; height: auto; }
+/* ヘッダーのロゴは「J」の 1 文字だけ（トップに大きなロゴがあるため） */
+html[data-style="new"] .header-logo { width: auto; min-width: 44px; min-height: 44px; }
+html[data-style="new"] .header-logo .zz-logo-full { display: none; }
+html[data-style="new"] .header-logo .zz-logo-j { display: block; width: 24px; height: 30px; image-rendering: pixelated; }
 html[data-style="new"] .nav { gap: 2px; margin-left: auto; }
 html[data-style="new"] .nav a {
   min-height: 40px; padding: 4px 16px;
@@ -79,23 +81,14 @@ html[data-style="new"] .nav a {
 html[data-style="new"] .nav a b { display: none; }
 html[data-style="new"] .nav a:hover { color: #fff; }
 html[data-style="new"] .nav a.is-current { background: #fff; color: #111; }
-html[data-style="new"] .zz-dl {
-  flex: 0 0 auto;
-  display: inline-flex; align-items: center; min-height: 42px; padding: 4px 20px;
-  border-radius: 999px;
-  background: var(--magenta); color: #fff;
-  font: 700 .95rem/1.2 var(--font); text-decoration: none; white-space: nowrap;
-}
-html[data-style="new"] .zz-dl:hover { filter: brightness(1.15); }
 html[data-style="new"] .lang { gap: 4px; }
 html[data-style="new"] .band-chip { min-width: 44px; min-height: 40px; padding: .25em 1em; font: 700 .84rem/1 var(--font); }
 html[data-style="new"] .band-chip::before { background: transparent; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .4); }
 html[data-style="new"] .band-chip[aria-current="true"] { color: #111; }
 html[data-style="new"] .band-chip[aria-current="true"]::before { background: #fff; box-shadow: none; }
 
-/* ダウンロード・言語・メニューのボタンは同じ高さにそろえる */
+/* 言語・メニューのボタンは同じ高さにそろえる */
 html[data-style="new"] .header { --hbtn: 40px; }
-html[data-style="new"] .zz-dl,
 html[data-style="new"] .band-chip,
 html[data-style="new"] .zz-menu-btn { height: var(--hbtn); min-height: 0; box-sizing: border-box; }
 html[data-style="new"] .zz-menu-btn,
@@ -104,7 +97,7 @@ html[data-style="new"] .zz-menu { display: none; }
 /* 狭い画面: 区画の一覧はメニューのボタンにまとめ、上のバーは 1 列 */
 @media (max-width: 960px) {
   html[data-style="new"] .nav { display: none; }
-  html[data-style="new"] .zz-dl { margin-left: auto; }
+  html[data-style="new"] .lang { margin-left: auto; }
   html[data-style="new"] .zz-menu-btn {
     display: grid; place-items: center; flex: 0 0 auto;
     width: var(--hbtn); padding: 0;
@@ -152,15 +145,10 @@ html[data-style="new"] .zz-menu { display: none; }
 }
 @media (max-width: 560px) {
   html[data-style="new"] { --header-h: calc(56px + env(safe-area-inset-top, 0px)); }
-  html[data-style="new"] .header { --hbtn: 36px; display: flex; gap: 6px; padding-bottom: 0; }
-  html[data-style="new"] .header-logo { width: 104px; min-height: 0; }
-  html[data-style="new"] .zz-dl { padding: 0 13px; font-size: .78rem; letter-spacing: 0; }
-  html[data-style="new"] .lang { gap: 4px; }
-  html[data-style="new"] .band-chip { min-width: 36px; padding: 0 .5em; font-size: .78rem; }
-}
-@media (max-width: 359px) {
-  html[data-style="new"] .header-logo { width: 84px; }
-  html[data-style="new"] .zz-dl { padding: 0 9px; font-size: .7rem; }
+  /* 指で押しやすいよう、言語とメニューは 44px の丸 */
+  html[data-style="new"] .header { --hbtn: 44px; display: flex; gap: 8px; padding-bottom: 0; }
+  html[data-style="new"] .lang { gap: 6px; }
+  html[data-style="new"] .band-chip { min-width: 44px; padding: 0 .5em; font-size: .82rem; }
 }
 
 /* ---- 右端の区画のドット（広い画面だけ） ---- */
@@ -482,6 +470,7 @@ html.calm[data-style="new"] :is(.zz-menu, .zz-menu-btn, .zz-menu-btn i, .zz-menu
 /* ---- 区画: 明るい灰色と黒を交互に ---- */
 html[data-style="new"] .section {
   --section-slant: 36deg;
+  --tag-cut: 80px;
   --panel-h: max(640px, calc(var(--tag-top) + var(--tag-h, 240px) + 25px));
   --tag: var(--magenta);
   --tag-top: clamp(40px, 4.4vw, 64px);
@@ -496,7 +485,7 @@ html[data-style="new"] .section {
 html[data-style="new"] .section::before {
   /* 左上から斜めに横切る面（細かい斜線の地模様） */
   content: ""; position: absolute; left: 0; top: 0; z-index: 0;
-  width: calc(var(--tag-w) + (var(--tag-top) + var(--tag-h, 240px) - 80px) * tan(var(--section-slant)) + 37px);
+  width: calc(var(--tag-w) + (var(--tag-top) + var(--tag-h, 240px) - var(--tag-cut)) * tan(var(--section-slant)) + 37px);
   max-width: 100%; height: var(--panel-h);
   background: var(--carbon), rgba(255, 255, 255, .025);
   clip-path: polygon(0 0, 100% 0, calc(100% - var(--panel-h) * tan(var(--section-slant))) 100%, 0 100%);
@@ -544,7 +533,7 @@ html[data-style="new"] .section-head--alt {
   background: radial-gradient(rgba(255, 255, 255, .14) 1.2px, transparent 1.6px) 0 0 / 7px 7px, var(--tag);
   color: #fff;
   border-top-right-radius: 30px;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 80px), calc(100% - 80px * tan(var(--section-slant))) 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--tag-cut)), calc(100% - var(--tag-cut) * tan(var(--section-slant))) 100%, 0 100%);
 }
 html[data-style="new"] .section-title,
 html[data-style="new"] .section-head--alt .section-title {
@@ -1037,4 +1026,102 @@ html[data-style="new"] .footer { position: relative; z-index: 1; background: #00
   html[data-style="new"] .rules li::before { font-size: 1.4rem; }
   html[data-style="new"] .zz-ticker { height: 44px; }
   html[data-style="new"] .zz-ticker span { font-size: 1.3rem; padding: 0 16px; }
+}
+
+/* ---- 新しい見た目だけで外す文（今の見た目では出す） ---- */
+html[data-style="new"] .zz-old-lead,
+html[data-style="new"] .zz-cut,
+html[data-style="new"] .zz-old-rules { display: none !important; }
+
+/* ---- 01 ENEMY FILE: 10 体を 1 列に割り付けて、どの横幅でも端で切れないようにする（スマホは 5 体×2 段） ---- */
+html[data-style="new"] .zz-enemies { margin: 40px 0 0; }
+html[data-style="new"] .zz-kicker span { padding-right: 0; }
+html[data-style="new"] .zz-enemy-track { border-radius: 22px; }
+html[data-style="new"] .zz-enemy-row {
+  display: grid; grid-template-columns: repeat(10, minmax(0, 1fr));
+  width: auto; animation: none;
+}
+html[data-style="new"] .zz-enemy-row figure:nth-child(n + 11) { display: none; }
+html[data-style="new"] .zz-enemy-row figure { min-width: 0; padding: 16px 4px 14px; align-content: start; }
+html[data-style="new"] .zz-enemy-row figure:nth-child(10) { border-right: 0; }
+html[data-style="new"] .zz-enemy-row img { width: min(100%, 96px); height: auto; aspect-ratio: 1; }
+html[data-style="new"] .zz-enemy-row figcaption {
+  flex-direction: column; align-items: center; gap: 4px;
+  font-size: .62rem; line-height: 1.25; text-align: center; white-space: normal;
+}
+@media (max-width: 1000px) {
+  html[data-style="new"] .zz-enemies { margin-left: 0; }
+  html[data-style="new"] .zz-enemy-track { border-radius: 18px; }
+}
+@media (max-width: 760px) {
+  html[data-style="new"] .zz-enemy-row { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  html[data-style="new"] .zz-enemy-row figure:nth-child(5) { border-right: 0; }
+  html[data-style="new"] .zz-enemy-row figure:nth-child(n + 6) { border-top: 2px dotted rgba(255, 255, 255, .14); }
+  html[data-style="new"] .zz-enemy-row img { width: min(100%, 64px); height: auto; }
+}
+
+/* ---- スマホ: 「どんなゲームか → 遊び方 → ダウンロード」の順に、1 画面に詰め込みすぎない ---- */
+@media (max-width: 640px) {
+  /* 右上の大きな薄い英字は、名札の英字と同じ言葉なので出さない（切れて見えていた） */
+  html[data-style="new"] .zz-ghost { display: none; }
+  html[data-style="new"] .section { padding-top: calc(var(--tag-top) + var(--tag-h, 140px) + 28px); padding-bottom: 56px; }
+  html[data-style="new"] .stages { padding-top: calc(var(--tag-top) + var(--tag-h, 140px) + 20px); }
+  /* 01: 主人公の絵（トップに大きく出ている）と数字の札（02 と重なる）は出さない */
+  html[data-style="new"] #about .about-art,
+  html[data-style="new"] #about .zz-stats { display: none; }
+  html[data-style="new"] .zz-story-text,
+  html[data-style="new"] .zz-story-text[lang="en"] { font-size: 1.05rem; line-height: 1.8; }
+  html[data-style="new"] .zz-enemies { margin-top: 28px; }
+  /* 02: 番号は下の一覧の丸に出ているので、STAGE 01 / 10 の札は出さない */
+  html[data-style="new"] .stages .stage-count { display: none; }
+  html[data-style="new"] .stage-list button { min-height: 48px; min-width: 48px; justify-content: center; }
+  html[data-style="new"] .stage-list button b { width: 40px; height: 40px; }
+  /* 04: 欄の頭はアイコンと OS の名前を横に。仕様の表は 1 項目 1 行に詰める */
+  html[data-style="new"] .dl h3 { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 1.9rem; }
+  html[data-style="new"] .dl h3 .zz-os-icon { width: 32px; height: 32px; }
+  html[data-style="new"] .dl h3 .zz-visually-hidden {
+    position: static !important; order: 2; width: auto; height: auto; margin: 0;
+    overflow: visible; clip-path: none;
+  }
+  html[data-style="new"] .dl::after { display: none; }
+  html[data-style="new"] .specs { font-size: .92rem; }
+  html[data-style="new"] .specs div { grid-template-columns: 7.2em 1fr; gap: 8px; padding: 7px 0; }
+  html[data-style="new"] .specs dt { font-size: .84rem; }
+  html[data-style="new"] .specs dd { font-size: .92rem; line-height: 1.5; }
+  html[data-style="new"] .dl .band-big { display: flex; justify-content: center; min-height: 52px; margin-top: 14px; }
+  html[data-style="new"] .zz-warn { margin-top: 16px; padding-top: 14px; }
+  /* 遊び方: 本文は 16px 以上 */
+  html[data-style="new"] .rules ul { font-size: 1rem; }
+  /* 見比べの切り替えは本文に重ねず、ページの一番下に置く */
+  html[data-style="new"] .style-switch {
+    position: relative; left: auto; bottom: auto;
+    width: fit-content; margin: 0 auto; padding: 3px;
+    font-size: .8rem;
+  }
+  html[data-style="new"] .style-switch button { min-height: 44px; padding: 6px 16px; }
+  html[data-style="new"] body:has(> .style-switch) { padding-bottom: max(20px, env(safe-area-inset-bottom, 0px)); }
+}
+html[data-style="new"] .zz-story-text { word-break: auto-phrase; font-size: clamp(1.1rem, 1.5vw, 1.35rem); }
+@media (max-width: 640px) {
+  html[data-style="new"] .zz-enemy-row figcaption { font-size: .5rem; overflow-wrap: anywhere; }
+}
+/* 右下の小さな英字は、角の色の面に隠れないよう左へ寄せる */
+html[data-style="new"] .zz-coord { right: calc(clamp(120px, 16vw, 240px) + 16px); }
+
+/* スマホの名札は横に組んで背を低くする（番号を左、区画名と英字を右） */
+@media (max-width: 640px) {
+  html[data-style="new"] .section { --tag-w: 248px; --tag-cut: 34px; }
+  html[data-style="new"] .section-head,
+  html[data-style="new"] .section-head--alt {
+    grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; align-items: center;
+    padding: 12px 30px 14px max(16px, calc(env(safe-area-inset-left, 0px) + 12px));
+    border-top-right-radius: 22px;
+  }
+  html[data-style="new"] .section-no,
+  html[data-style="new"] .section-head--alt .section-no { grid-column: 1; grid-row: 1 / span 2; order: 0; margin: 0; font-size: 3.4rem; }
+  html[data-style="new"] .section-title,
+  html[data-style="new"] .section-head--alt .section-title { grid-column: 2; grid-row: 1; align-self: end; font-size: 1.2rem; }
+  html[data-style="new"] .section-en,
+  html[data-style="new"] .section-head--alt .section-en { grid-column: 2; grid-row: 2; align-self: start; }
+  html[data-style="new"] .specs div { grid-template-columns: 8.6em 1fr; }
 }
