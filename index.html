@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<script>(function(){var d=document.documentElement,l="ja";try{var q=new URLSearchParams(location.search).get("lang");if(q==="ja"||q==="en")l=q;else{var s=localStorage.getItem("jbi-lang");if(s==="ja"||s==="en")l=s;else if(!/^ja\b/i.test(navigator.language||"ja"))l="en"}}catch(e){}d.lang=l;d.dataset.lang=l;try{if(new URLSearchParams(location.search).get("style")==="new"){d.dataset.style="new";var f=document.createElement("link");f.id="style-new-font";f.rel="stylesheet";f.href="https://fonts.googleapis.com/css2?family=Anton&family=M+PLUS+1:wght@800;900&family=Montserrat:wght@900&family=Noto+Sans+JP:wght@400;700&display=swap";document.head.appendChild(f)}}catch(e){}d.classList.add("js");try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("calm")}catch(e){}})()</script>
+<script>(function(){var d=document.documentElement,l="ja";try{var q=new URLSearchParams(location.search).get("lang");if(q==="ja"||q==="en")l=q;else{var s=localStorage.getItem("jbi-lang");if(s==="ja"||s==="en")l=s;else if(!/^ja\b/i.test(navigator.language||"ja"))l="en"}}catch(e){}d.lang=l;d.dataset.lang=l;try{if(new URLSearchParams(location.search).get("style")==="new"){d.dataset.style="new";var f=document.createElement("link");f.id="style-new-font";f.rel="stylesheet";f.href="https://fonts.googleapis.com/css2?family=Anton&family=M+PLUS+1:wght@800;900&family=Montserrat:wght@900&family=Noto+Sans+JP:wght@400;700&family=Silkscreen&display=swap";document.head.appendChild(f)}}catch(e){}d.classList.add("js");try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("calm")}catch(e){}})()</script>
 <title>Just Beat It</title>
 <meta name="description" content="曲の拍に合わせて飛んでくる弾をかわす、1〜2 人で遊べるリズム弾幕アクション。Windows / Mac 向けに無料で配布しています。">
 <meta name="theme-color" content="#0b0a0e">
@@ -23,11 +23,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700;900&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=20261025a">
-<link rel="stylesheet" href="assets/css/style-new.css?v=20261025a">
-<script defer src="assets/js/config.js?v=20261025a"></script>
-<script defer src="assets/js/opening.js?v=20261025a"></script>
-<script defer src="assets/js/main.js?v=20261025a"></script>
+<link rel="stylesheet" href="assets/css/site.css?v=20261025b">
+<link rel="stylesheet" href="assets/css/style-new.css?v=20261025b">
+<script defer src="assets/js/config.js?v=20261025b"></script>
+<script defer src="assets/js/opening.js?v=20261025b"></script>
+<script defer src="assets/js/main.js?v=20261025b"></script>
 </head>
 <body>
 <a class="skip" href="#main"><span lang="ja">本文へ</span><span lang="en">Skip to content</span></a>
@@ -55,6 +55,14 @@
 <section class="hero" id="top" data-hero>
   <div class="hero-scene" aria-hidden="true"><img src="assets/img/hero-title.jpg" width="1280" height="720" alt="" fetchpriority="high"></div>
   <canvas class="hero-canvas" data-opening-canvas aria-hidden="true"></canvas>
+  <div class="zz-only zz-hero-layers" aria-hidden="true" data-zz-hero>
+    <div class="zz-hero-frame">
+      <img class="zz-hero-room" src="assets/img/hero-room.jpg" width="1280" height="720" alt="" loading="lazy">
+      <img class="zz-hero-mage" src="assets/img/hero-mage.png" width="401" height="800" alt="" loading="lazy">
+    </div>
+    <i class="zz-hero-shade"></i>
+  </div>
+  <div class="zz-only zz-sparks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="hero-flank hero-flank-left" aria-hidden="true">
     <i style="--c:#ff2d78;background-image:url(assets/img/stage-vagrant.jpg)"></i>
     <i style="--c:#8a4dff;background-image:url(assets/img/stage-plague.jpg)"></i>
@@ -99,15 +107,30 @@
         <p class="aside" lang="ja">※ 弾に当たると痛いです。なるべく避けてください。</p>
         <p class="aside" lang="en">* Getting hit hurts. We recommend not getting hit.</p>
       </div>
+      <div class="zz-only zz-story">
+        <p class="zz-kicker">STORY &amp; GAMEPLAY</p>
+        <p class="zz-story-text" lang="ja">魔法に支配された古都。見習い魔法使いは、地下墓地から船着き場まで 10 の場所を巡り、それぞれで待ちかまえる敵の弾幕に挑む。弾は、出る瞬間も曲がる瞬間も、すべて曲の拍に合わせて動く。耳で拍を聴いて弾の動きを読み、無敵のダッシュで弾の壁をすり抜け、弾のすぐそばをかすめて点を重ねながら、曲が終わるまで生き延びよう。</p>
+        <p class="zz-story-text" lang="en">In an old city ruled by magic, an apprentice mage travels through ten places, from the Catacombs to the Wharf, taking on the bullet storm of the enemy waiting in each. Every bullet spawns, turns and bursts on the beat of the song. Listen to the beat to read the bullets, dash through walls of bullets while invincible, graze past bullets to stack up points, and survive until the song ends.</p>
+        <dl class="zz-stats">
+          <div><dt>STAGES</dt><dd>10</dd></div>
+          <div><dt>SONGS</dt><dd>10</dd></div>
+          <div><dt>GRAZE</dt><dd>&times;4</dd></div>
+          <div><dt>RANK</dt><dd>S</dd></div>
+        </dl>
+      </div>
       <ol class="features">
         <li class="plate"><b>01</b><h3><span lang="ja">拍に乗る弾幕</span><span lang="en">Bullets on the beat</span></h3><p lang="ja">弾が出る瞬間も、曲がる瞬間も、曲に合わせてある。目だけでなく耳でも避ける弾幕。</p><p lang="en">Bullets spawn, turn and burst in time with the song. Dodge with your ears as well as your eyes.</p></li>
         <li class="plate"><b>02</b><h3><span lang="ja">すり抜けるダッシュ</span><span lang="en">Dash through it</span></h3><p lang="ja">ダッシュの間は無敵。弾の壁も抜けられる。ただし連打すると無敵が付かず、点も減る。ずるはだめ。</p><p lang="en">You're invincible while dashing, even through a wall of bullets. Mash it, though, and you lose both the invincibility and points. No cheating.</p></li>
         <li class="plate"><b>03</b><h3><span lang="ja">かすめて稼ぐ</span><span lang="en">Graze for points</span></h3><p lang="ja">弾のすぐそばをかすめると「グレイズ」で加点。続けるほど倍率が上がり、最大 4 倍。</p><p lang="en">Brush past a bullet to score a graze. Keep the chain going and the multiplier climbs up to ×4.</p></li>
         <li class="plate"><b>04</b><h3><span lang="ja">ふたりで遊べる</span><span lang="en">Play together</span></h3><p lang="ja">1 台のパソコンで 2 人同時に。<span class="p1">1P</span> は水色、<span class="p2">2P</span> は緑。</p><p lang="en">Two players on one PC. <span class="p1">1P</span> is sky blue, <span class="p2">2P</span> is green.</p></li>
-        <li class="plate"><b>05</b><h3><span lang="ja">10 の場所、10 の曲</span><span lang="en">10 places, 10 songs</span></h3><p lang="ja">地下墓地から船着き場まで。難易度は EASY・NORMAL・LUNATIC の 3 段階。</p><p lang="en">From the Catacombs to the Wharf, each in EASY, NORMAL and LUNATIC.</p></li>
+        <li class="plate"><b>05</b><h3><span lang="ja">10 の場所、10 の曲</span><span lang="en">10 places, 10 songs</span></h3><p lang="ja">地下墓地から船着き場まで。難易度は EASY・NORMAL・HARD の 3 段階。</p><p lang="en">From the Catacombs to the Wharf, each in EASY, NORMAL and HARD.</p></li>
       </ol>
     </div>
-    <figure class="about-art"><img src="assets/img/hero-art.png" width="709" height="1024" loading="lazy" alt="主人公の見習い魔法使い" data-alt-en="The apprentice mage"></figure>
+    <figure class="about-art"><span class="zz-only zz-art-tag" aria-hidden="true">APPRENTICE MAGE / No.001</span><img src="assets/img/hero-art.png" width="709" height="1024" loading="lazy" alt="主人公の見習い魔法使い" data-alt-en="The apprentice mage"></figure>
+  </div>
+  <div class="zz-only zz-enemies" aria-hidden="true">
+    <p class="zz-kicker">ENEMY FILE <span>10 / 10</span></p>
+    <div class="zz-enemy-track"><div class="zz-enemy-row" data-zz-enemies></div></div>
   </div>
 </section>
 
@@ -132,13 +155,16 @@
       <button role="tab" type="button" data-stage="archmage" data-color="#2ee6d6" data-ja="大聖堂" data-ruby="だいせいどう" data-en="Cathedral"><b>09</b><span lang="ja">大聖堂</span><span lang="en">Cathedral</span></button>
       <button role="tab" type="button" data-stage="captain" data-color="#3a7bff" data-ja="船着き場" data-ruby="ふなつきば" data-en="Wharf"><b>10</b><span lang="ja">船着き場</span><span lang="en">Wharf</span></button>
     </div>
+    <button class="zz-only zz-stage-step zz-stage-prev" type="button" data-stage-step="-1" aria-label="前のステージ" data-aria-label-en="Previous stage"><svg viewBox="0 0 7 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v1H6v1H5v1H4v1H3v1H2v1h1v1h1v1h1v1h1v1h1v1H4v-1H3V9H2V8H1V7H0V4h1V3h1V2h1V1h1z"/></svg></button>
+    <button class="zz-only zz-stage-step zz-stage-next" type="button" data-stage-step="1" aria-label="次のステージ" data-aria-label-en="Next stage"><svg viewBox="0 0 7 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 0h3v1h1v1h1v1h1v1h1v3H6v1H5v1H4v1H3v1H0v-1h1V9h1V8h1V7h1V6h1V5H4V4H3V3H2V2H1V1H0z"/></svg></button>
     <div class="stage-stage" role="tabpanel" data-stage-panel style="--stage:#ff2d78">
       <p class="stage-count"><span>STAGE</span><b data-stage-no>01</b><small>/ 10</small></p>
       <div class="stage-enemy"><img data-stage-enemy src="assets/img/enemy/vagrant.gif" width="128" height="128" alt=""></div>
       <p class="stage-name"><ruby data-stage-name-ja lang="ja">地下墓地<rt data-stage-ruby>ちかぼち</rt></ruby><span data-stage-name-en>Catacombs</span></p>
     </div>
   </div>
-  <p class="stage-help"><span lang="ja">一覧から選ぶと、ステージが切り替わります（↑ ↓ キーでも選べます）。</span><span lang="en">Pick a stage from the list (or use the ↑ ↓ keys).</span></p>
+  <p class="zz-only stage-help zz-stage-help"><span lang="ja">＜ ＞ か、下の一覧で選べます（← → キーでも選べます）。</span><span lang="en">Use ‹ › or the list below (or the ← → keys).</span></p>
+  <p class="stage-help zz-old-help"><span lang="ja">一覧から選ぶと、ステージが切り替わります（↑ ↓ キーでも選べます）。</span><span lang="en">Pick a stage from the list (or use the ↑ ↓ keys).</span></p>
 </section>
 
 <!-- 03 映像 -->
@@ -318,6 +344,7 @@
         <li><b>Oxanium</b><span>Copyright 2019 The Oxanium Project Authors (https://github.com/sevmeyer/oxanium)</span></li>
         <li class="zz-only"><b>M PLUS 1</b><span>Copyright 2021 The M+ FONTS Project Authors (https://github.com/coz-m/MPLUS_FONTS)</span><small lang="ja">このサイト（試作の見た目）</small><small lang="en">This website (new look prototype)</small></li>
         <li class="zz-only"><b>Anton</b><span>Copyright 2020 The Anton Project Authors (https://github.com/googlefonts/AntonFont.git)</span><small lang="ja">このサイト（試作の見た目）</small><small lang="en">This website (new look prototype)</small></li>
+        <li class="zz-only"><b>Silkscreen</b><span>Copyright 2001 The Silkscreen Project Authors (https://github.com/googlefonts/silkscreen)</span><small lang="ja">このサイト（試作の見た目）</small><small lang="en">This website (new look prototype)</small></li>
         <li class="zz-only"><b>Montserrat</b><span>Copyright 2024 The Montserrat.Git Project Authors (https://github.com/JulietaUla/Montserrat.git)</span><small lang="ja">このサイト（試作の見た目）</small><small lang="en">This website (new look prototype)</small></li>
       </ul>
     </article>
