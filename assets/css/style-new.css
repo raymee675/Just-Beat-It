@@ -1232,3 +1232,38 @@ html[data-style="new"] .zz-sp-dl { display: none; }
 }
 /* PC でも、仕様の表などで言葉の途中で折り返さない */
 html[data-style="new"] body { word-break: auto-phrase; }
+
+/* ==== 12 回目: 番号の上端を本文へそろえ、クレジットを短くする ==== */
+html[data-style="new"] .ofl > h3,
+html[data-style="new"] .ofl > .license { display: none; }
+html[data-style="new"] .zz-credit-details { margin-top: 10px; }
+html[data-style="new"] .zz-credit-details summary {
+  padding: 10px 0; cursor: pointer; font-size: .85rem; font-weight: 700; line-height: 1.6;
+}
+html[data-style="new"] .zz-credit-details summary:focus-visible { outline: 2px solid var(--magenta); outline-offset: 3px; }
+html[data-style="new"] .zz-license-details { margin-top: 0; }
+html[data-style="new"] .zz-license-details .license {
+  max-height: none; margin-top: 10px; white-space: pre-wrap;
+  overflow-wrap: anywhere; word-break: normal;
+}
+html[data-style="new"] .credits .ofl { padding-top: 8px; padding-bottom: 8px; }
+
+@media (max-width: 640px) {
+  html[data-style="new"] .rules li {
+    grid-template-columns: 30px minmax(0, 1fr); align-items: start;
+  }
+  html[data-style="new"] .rules li::before { font-size: 1em; line-height: 1.7; }
+  html[data-style="new"] #credits {
+    padding-top: calc(var(--tag-top) + var(--tag-h, 140px) + 40px);
+    padding-bottom: 36px;
+  }
+  html[data-style="new"] .credits { gap: 10px; }
+  html[data-style="new"] .credits .plate { padding: 16px 18px; }
+  html[data-style="new"] .credits h3 { font-size: 1.1rem; margin-bottom: 8px; }
+  html[data-style="new"] .credits .note { margin-bottom: 8px; font-size: .8rem; line-height: 1.6; }
+  html[data-style="new"] .zz-font-credits > p:first-child { margin-top: 8px; font-size: .8rem; line-height: 1.65; }
+  html[data-style="new"] .credit-list li { padding: 7px 0; gap: 2px; font-size: .8rem; line-height: 1.6; }
+  html[data-style="new"] .credit-list li > span { font-size: .78rem; }
+  html[data-style="new"] .zz-url { white-space: normal; overflow-wrap: anywhere; }
+  html[data-style="new"] .credits .ofl { padding-top: 6px; padding-bottom: 6px; }
+}

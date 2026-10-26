@@ -359,9 +359,27 @@
       notices.appendChild(noticeSpan);
     });
     compact.appendChild(fonts);
-    compact.appendChild(notices);
+    var noticeDetails = document.createElement("details");
+    noticeDetails.className = "zz-credit-details";
+    var noticeSummary = document.createElement("summary");
+    noticeSummary.innerHTML = '<span lang="ja">著作権表記を読む</span><span lang="en">Font copyright notices</span>';
+    noticeDetails.appendChild(noticeSummary);
+    noticeDetails.appendChild(notices);
+    compact.appendChild(noticeDetails);
     list.classList.add("zz-font-original");
     list.parentNode.insertBefore(compact, list);
+
+    // 通常版の許諾文はそのまま残し、試作だけ開閉して読めるようにする。
+    var license = $("#credits .license");
+    if (license) {
+      var licenseDetails = document.createElement("details");
+      licenseDetails.className = "zz-only zz-credit-details zz-license-details";
+      var licenseSummary = document.createElement("summary");
+      licenseSummary.innerHTML = '<span lang="ja">SIL Open Font License 1.1 を読む</span><span lang="en">Read SIL Open Font License 1.1</span>';
+      licenseDetails.appendChild(licenseSummary);
+      licenseDetails.appendChild(license.cloneNode(true));
+      license.parentNode.appendChild(licenseDetails);
+    }
   })();
 
   // ---- オープニング ----
