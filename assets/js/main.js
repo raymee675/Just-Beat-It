@@ -281,6 +281,8 @@
         dd.textContent = v || (lang() === "en" ? "TBA" : "未定");
       });
       var b = $("[data-dl-button]", card);
+      var note = $("[data-dl-note]", card);
+      if (note) note.hidden = card.dataset.dl === "windows" ? !c.url : !(dlConfig.windows && dlConfig.windows.url && !c.url);
       if (c.url) {
         b.href = c.url;
         b.classList.remove("band-idle", "is-disabled");
@@ -288,6 +290,8 @@
         b.removeAttribute("aria-disabled");
         var size = c.size ? "<small>" + escapeHtml(c.size) + "</small>" : "";
         b.innerHTML = lang() === "en" ? "Download" + size : "ダウンロード" + size;
+      } else if (b) {
+        b.removeAttribute("href");
       }
     });
   }

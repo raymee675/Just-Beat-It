@@ -7,7 +7,7 @@
 ## 決まり
 
 - Steam 版とは完全に切り離す。サイトに Steam 版のこと・リンクは載せない。
-- 問い合わせ先は置かない。
+- 問い合わせは 08 お問い合わせの Google フォームだけ（URL は `config.js` の `contact.formUrl`）。
 - 日本語と英語を切り替えられる。
 
 ## 構成
@@ -24,6 +24,7 @@
 | 05 | 遊び方（キーボード・2 人・コントローラー・ルール） | howto |
 | 06 | 制作（制作班とメンバー） | team |
 | 07 | クレジット（フォント・素材・OFL の許諾文） | credits |
+| 08 | お問い合わせ（Google フォームへ案内） | contact |
 
 - `assets/js/config.js` … 運用で書き換える設定（下記）
 - `assets/js/opening.js` … トップの演出（弾が拍に合わせて集まり、ロゴが光って出る）
@@ -41,6 +42,7 @@
 - `members` … メンバー。`{ handle: "ハンドル名", role: { ja: "担当", en: "Role" } }` を並べる。空なら「準備中」
 - `pv.youtubeId` / `pv.mp4` … PV。どちらかを入れると差し替わる。空のあいだはプレイ映像を「PV 準備中」の注記つきで流す
 - `download.windows` / `download.mac` … `url` を入れるとダウンロードボタンが押せるようになる（空なら「準備中」）。`size`（大きさ）、`version`（版）、`os`・`gpu`・`storage`（動く PC の条件）
+- `contact.formUrl` … 08 お問い合わせで案内する Google フォームの URL
 
 ゲーム本体は GitHub Releases に置き、`url` には `https://github.com/所有者/リポジトリ/releases/download/タグ/ファイル.zip` の形の直リンクを入れます（1 ファイル 2 GB まで）。
 
