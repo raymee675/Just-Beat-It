@@ -104,6 +104,7 @@ a.band:hover, button.band:hover, .band:focus-visible {
 .p1 { color: var(--p1); font-weight: 700; }
 .p2 { color: var(--p2); font-weight: 700; }
 .note { color: var(--muted); font-size: .92rem; }
+.dl-note { margin: .4rem 0 0; font-size: .82rem; }
 .lead { font-size: 1.1rem; margin-bottom: 28px; }
 
 /* ---- ヘッダー ---- */
