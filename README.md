@@ -41,7 +41,7 @@
 - `team` … 制作の名前（日本語・英語）
 - `members` … メンバー。`{ handle: "ハンドル名", role: { ja: "担当", en: "Role" } }` を並べる。空なら「準備中」
 - `pv.youtubeId` / `pv.mp4` … PV。どちらかを入れると差し替わる。空のあいだはプレイ映像を「PV 準備中」の注記つきで流す
-- `download.windows` / `download.mac` … `url` を入れるとダウンロードボタンが押せるようになる（空なら「準備中」）。`size`（大きさ）、`version`（版）、`os`・`gpu`・`storage`（動く PC の条件）
+- `download.windows` … `url` を入れるとダウンロードボタンが押せるようになる（空なら「準備中」）。`size`（大きさ）、`version`（版）、`os`・`gpu`・`storage`（動く PC の条件）
 - `contact.formUrl` … 08 お問い合わせで案内する Google フォームの URL
 
 ゲーム本体は GitHub Releases に置き、`url` には `https://github.com/所有者/リポジトリ/releases/download/タグ/ファイル.zip` の形の直リンクを入れます（1 ファイル 2 GB まで）。
