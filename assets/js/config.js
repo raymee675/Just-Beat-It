@@ -29,7 +29,7 @@ window.JBI_CONFIG = {
   // size はファイルの大きさ（例 "約 650 MB"）、version は版（例 "1.0.0"）。
   download: {
     windows: {
-      url: "",
+      url: "https://github.com/raymee675/Just-Beat-It/releases/download/v2026.10.30/JustBeatIt-Windows-2026.10.30.zip",
       size: "414 MB",
       version: "2026.10.30",
       os: { ja: "Windows 10 / 11（64 ビット）", en: "Windows 10 / 11 (64-bit)" },
