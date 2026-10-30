@@ -30,11 +30,11 @@ window.JBI_CONFIG = {
   download: {
     windows: {
       url: "",
-      size: "",
-      version: "",
+      size: "414 MB",
+      version: "2026.10.30",
       os: { ja: "Windows 10 / 11（64 ビット）", en: "Windows 10 / 11 (64-bit)" },
       gpu: { ja: "DirectX 11 対応（GeForce GTX 1050 程度以上）", en: "DirectX 11 capable (GeForce GTX 1050 or better)" },
-      storage: { ja: "1 GB 以上の空き", en: "1 GB free space" }
+      storage: { ja: "2 GB 以上の空き（展開後 約 1.2 GB）", en: "2 GB free space (about 1.2 GB after extracting)" }
     },
     mac: {
       url: "",
