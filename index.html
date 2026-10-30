@@ -23,10 +23,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700;900&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=20261031">
-<script defer src="assets/js/config.js?v=20261031"></script>
-<script defer src="assets/js/opening.js?v=20261031"></script>
-<script defer src="assets/js/main.js?v=20261031"></script>
+<link rel="stylesheet" href="assets/css/site.css?v=20261031b">
+<script defer src="assets/js/config.js?v=20261031b"></script>
+<script defer src="assets/js/opening.js?v=20261031b"></script>
+<script defer src="assets/js/main.js?v=20261031b"></script>
 </head>
 <body>
 <a class="skip" href="#main"><span lang="ja">本文へ</span><span lang="en">Skip to content</span></a>
@@ -76,7 +76,7 @@
     <p class="hero-catch" lang="ja">弾は、拍に乗ってやってくる。</p>
     <p class="hero-catch" lang="en">The bullets ride the beat.</p>
     <div class="hero-actions">
-      <a class="band band-action band-big" href="#download"><span lang="ja">無料ダウンロード<small>Windows / Mac</small></span><span lang="en">Free Download<small>Windows / Mac</small></span></a>
+      <a class="band band-action band-big" href="#download"><span lang="ja">無料ダウンロード<small>Windows</small></span><span lang="en">Free Download<small>Windows</small></span></a>
       <a class="band band-idle band-big" href="#movie" data-play-pv><span lang="ja">▶ PV を見る</span><span lang="en">▶ Watch the PV</span></a>
     </div>
   </div>
@@ -167,7 +167,7 @@
     <h2 class="section-title"><span class="band band-title"><span lang="ja">ダウンロード</span><span lang="en">Download</span></span></h2>
     <p class="section-en">DOWNLOAD</p>
   </header>
-  <p class="lead"><span lang="ja">無料で遊べます。お使いのパソコンに合う方を選んでください。</span><span lang="en">It's free. Pick the version for your computer.</span></p>
+  <p class="lead"><span lang="ja">無料で遊べます。Windows のパソコンで遊べます（Mac 版は今のところありません）。</span><span lang="en">It's free, for Windows PCs (no Mac version for now).</span></p>
   <div class="downloads">
     <article class="plate dl" data-dl="windows">
       <h3>Windows</h3>
@@ -181,18 +181,6 @@
       <a class="band band-idle band-big is-disabled" data-dl-button aria-disabled="true"><span lang="ja">準備中</span><span lang="en">Coming soon</span></a>
       <p class="note dl-note" data-dl-note="windows" hidden><span lang="ja">ZIP（Windows 64 ビット）</span><span lang="en">ZIP (Windows 64-bit)</span></p>
     </article>
-    <article class="plate dl" data-dl="mac">
-      <h3>Mac</h3>
-      <dl class="specs">
-        <div><dt><span lang="ja">OS</span><span lang="en">OS</span></dt><dd data-dl-field="os">—</dd></div>
-        <div><dt><span lang="ja">グラフィック</span><span lang="en">Graphics</span></dt><dd data-dl-field="gpu">—</dd></div>
-        <div><dt><span lang="ja">空き容量</span><span lang="en">Storage</span></dt><dd data-dl-field="storage">—</dd></div>
-        <div><dt><span lang="ja">ファイルの大きさ</span><span lang="en">File size</span></dt><dd data-dl-field="size">—</dd></div>
-        <div><dt><span lang="ja">版</span><span lang="en">Version</span></dt><dd data-dl-field="version">—</dd></div>
-      </dl>
-      <a class="band band-idle band-big is-disabled" data-dl-button aria-disabled="true"><span lang="ja">準備中</span><span lang="en">Coming soon</span></a>
-      <p class="note dl-note" data-dl-note="mac" hidden><span lang="ja">Mac 版は準備中です</span><span lang="en">Mac version is coming soon</span></p>
-    </article>
   </div>
   <aside class="plate download-notice">
     <h3><span lang="ja">遊ぶ前のご注意</span><span lang="en">Before you play</span></h3>
@@ -203,7 +191,7 @@
   <noscript><p class="note">ダウンロードの情報を出すには JavaScript を有効にしてください。 / Please enable JavaScript to see download links.</p></noscript>
 
   <h3 class="sub-title"><span lang="ja">起動するときに警告が出たら</span><span lang="en">If you see a warning when launching</span></h3>
-  <p class="note"><span lang="ja">このゲームは個人の制作班が作ったもので、Microsoft や Apple の署名がありません。そのため初めて開くときに警告が出ることがあります。次の手順で開けます。</span><span lang="en">This game is made by a small student team and isn't signed by Microsoft or Apple, so your computer may warn you the first time. Here's how to open it.</span></p>
+  <p class="note"><span lang="ja">このゲームは個人の制作班が作ったもので、Microsoft の署名がありません。そのため初めて開くときに警告が出ることがあります。次の手順で開けます。</span><span lang="en">This game is made by a small student team and isn't signed by Microsoft, so your computer may warn you the first time. Here's how to open it.</span></p>
   <div class="warnings">
     <details class="plate warn" open>
       <summary>Windows</summary>
@@ -218,23 +206,6 @@
         <li>Open <code>JustBeatIt.exe</code> in the extracted folder.</li>
         <li>If a blue “Windows protected your PC” screen appears, click “More info”, then “Run anyway”.</li>
         <li>It will open without the warning from then on.</li>
-      </ol>
-    </details>
-    <details class="plate warn" open>
-      <summary>Mac</summary>
-      <ol lang="ja">
-        <li>ダウンロードした ZIP を開くとアプリができます。「アプリケーション」フォルダーへ移してください。</li>
-        <li>開こうとして「開発元を確認できません」「Apple は検証できませんでした」と出たら、いったん「完了」で閉じます。</li>
-        <li>「システム設定」→「プライバシーとセキュリティ」を開き、下の方にある「このまま開く」を押します。</li>
-        <li>もう一度アプリを開き、「開く」を押します。（macOS 14 以前は、アプリを Control キーを押しながらクリックして「開く」でも開けます）</li>
-        <li>「壊れているため開けません」と出るときは、ターミナルで次を実行してから開き直してください。<code class="cmd">xattr -dr com.apple.quarantine "/Applications/Just Beat It.app"</code></li>
-      </ol>
-      <ol lang="en">
-        <li>Open the downloaded ZIP to get the app, then move it to your Applications folder.</li>
-        <li>If you see “cannot be opened because the developer cannot be verified” or “Apple could not verify…”, click “Done”.</li>
-        <li>Open System Settings → Privacy &amp; Security, scroll down and click “Open Anyway”.</li>
-        <li>Open the app again and click “Open”. (On macOS 14 or earlier, you can also Control-click the app and choose “Open”.)</li>
-        <li>If it says the app “is damaged and can't be opened”, run this in Terminal and try again: <code class="cmd">xattr -dr com.apple.quarantine "/Applications/Just Beat It.app"</code></li>
       </ol>
     </details>
   </div>
