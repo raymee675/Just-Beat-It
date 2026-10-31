@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ja" data-lang="ja">
+<html lang="ja" data-lang="ja" data-style="new">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<script>(function(){var d=document.documentElement,l="ja";try{var q=new URLSearchParams(location.search).get("lang");if(q==="ja"||q==="en")l=q;else{var s=localStorage.getItem("jbi-lang");if(s==="ja"||s==="en")l=s;else if(!/^ja\b/i.test(navigator.language||"ja"))l="en"}}catch(e){}d.lang=l;d.dataset.lang=l;d.classList.add("js");try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("calm")}catch(e){}})()</script>
+<script>(function(){var d=document.documentElement,l="ja";try{var q=new URLSearchParams(location.search).get("lang");if(q==="ja"||q==="en")l=q;else{var s=localStorage.getItem("jbi-lang");if(s==="ja"||s==="en")l=s;else if(!/^ja\b/i.test(navigator.language||"ja"))l="en"}}catch(e){}d.lang=l;d.dataset.lang=l;try{if(new URLSearchParams(location.search).get("style")==="now"){delete d.dataset.style}else{d.dataset.style="new";var f=document.createElement("link");f.id="style-new-font";f.rel="stylesheet";f.href="https://fonts.googleapis.com/css2?family=Anton&family=M+PLUS+1:wght@800;900&family=Montserrat:wght@900&family=Noto+Sans+JP:wght@400;700&family=Silkscreen&display=swap";document.head.appendChild(f)}}catch(e){}d.classList.add("js");try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("calm")}catch(e){}})()</script>
 <title>Just Beat It</title>
 <meta name="description" content="曲の拍に合わせて飛んでくる弾をかわす、1〜2 人で遊べるリズム弾幕アクションを無料配布しています。 / A free rhythm bullet-hell action game for 1–2 players: dodge bullets to the beat.">
 <meta name="theme-color" content="#0b0a0e">
@@ -23,16 +23,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700;900&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=20261031b">
-<script defer src="assets/js/config.js?v=20261031b"></script>
-<script defer src="assets/js/opening.js?v=20261031b"></script>
-<script defer src="assets/js/main.js?v=20261031b"></script>
+<link rel="stylesheet" href="assets/css/site.css?v=20261031c">
+<link rel="stylesheet" href="assets/css/style-new.css?v=20261031c">
+<script defer src="assets/js/config.js?v=20261031c"></script>
+<script defer src="assets/js/opening.js?v=20261031c"></script>
+<script defer src="assets/js/main.js?v=20261031c"></script>
 </head>
 <body>
 <a class="skip" href="#main"><span lang="ja">本文へ</span><span lang="en">Skip to content</span></a>
 
 <header class="header" data-header>
-  <a class="header-logo" href="#top" aria-label="Just Beat It"><img src="assets/img/logo-pixel-1x.png" width="116" height="18" alt="Just Beat It"></a>
+  <a class="header-logo" href="#top" aria-label="Just Beat It"><img class="zz-logo-full" src="assets/img/logo-pixel-1x.png" width="116" height="18" alt="Just Beat It"><img class="zz-only zz-logo-j" src="assets/img/logo-j-1x.png" width="12" height="15" alt=""></a>
   <nav class="nav" aria-label="Sections" data-nav>
     <a href="#about"><b>01</b><span lang="ja">ゲーム</span><span lang="en">Game</span></a>
     <a href="#stages"><b>02</b><span lang="ja">ステージ</span><span lang="en">Stages</span></a>
@@ -55,6 +56,14 @@
 <section class="hero" id="top" data-hero>
   <div class="hero-scene" aria-hidden="true"><img src="assets/img/hero-title.jpg" width="1280" height="720" alt="" fetchpriority="high"></div>
   <canvas class="hero-canvas" data-opening-canvas aria-hidden="true"></canvas>
+  <div class="zz-only zz-hero-layers" aria-hidden="true" data-zz-hero>
+    <i class="zz-hero-blur"></i>
+    <div class="zz-hero-frame">
+      <img class="zz-hero-room" src="assets/img/hero-room.jpg" width="1280" height="720" alt="" loading="lazy">
+      <img class="zz-hero-mage" src="assets/img/hero-mage.png" width="401" height="800" alt="" loading="lazy">
+    </div>
+    <i class="zz-hero-shade"></i>
+  </div>
   <div class="hero-flank hero-flank-left" aria-hidden="true">
     <i style="--c:#ff2d78;background-image:url(assets/img/stage-vagrant.jpg)"></i>
     <i style="--c:#8a4dff;background-image:url(assets/img/stage-plague.jpg)"></i>
@@ -71,10 +80,18 @@
   </div>
   <div class="hero-center">
     <h1 class="hero-logo"><img src="assets/img/logo-pixel-1x.png" width="116" height="18" alt="Just Beat It"></h1>
+    <div class="zz-only zz-hero-info">
+      <p class="zz-hero-genre"><span lang="ja">リズム弾幕アクション</span><span lang="en">Rhythm bullet hell</span></p>
+      <p class="zz-hero-lead" lang="ja">曲を聴いて弾をよけ、<br>ダッシュですり抜けろ。</p>
+      <p class="zz-hero-lead" lang="en">Listen, dodge,<br>and dash through.</p>
+      <ul class="zz-hero-facts"><li><b>10</b>STAGES</li><li><b>10</b>SONGS</li><li><b>FREE</b>WINDOWS</li></ul>
+    </div>
     <p class="hero-sub" lang="ja">リズム弾幕アクション</p>
     <p class="hero-sub" lang="en">Rhythm Bullet Hell</p>
     <p class="hero-catch" lang="ja">弾は、拍に乗ってやってくる。</p>
     <p class="hero-catch" lang="en">The bullets ride the beat.</p>
+    <p class="zz-only hero-catch zz-credit" lang="ja">筑駒縁日班2026 弾幕制作班</p>
+    <p class="zz-only hero-catch zz-credit" lang="en">Tsukukoma Ennichi 2026 — Bullet Hell Team</p>
     <div class="hero-actions">
       <a class="band band-action band-big" href="#download"><span lang="ja">無料ダウンロード<small>Windows</small></span><span lang="en">Free Download<small>Windows</small></span></a>
       <a class="band band-idle band-big" href="#movie" data-play-pv><span lang="ja">▶ PV を見る</span><span lang="en">▶ Watch the PV</span></a>
@@ -99,15 +116,28 @@
         <p class="aside" lang="ja">※ 弾に当たると痛いです。なるべく避けてください。</p>
         <p class="aside" lang="en">* Getting hit hurts. We recommend not getting hit.</p>
       </div>
+      <div class="zz-only zz-story">
+        <p class="zz-kicker">STORY &amp; GAMEPLAY</p>
+        <p class="zz-story-text" lang="ja">見習いの魔法使いになって、古い街を旅するゲームです。<br>ステージは地下墓地から船着き場までの <span class="zz-nowrap">10 か所</span>で、それぞれに敵がいます。<br>曲に合わせて飛んでくる弾をよけて、曲が終わるまで生き残ればクリアです。</p>
+        <p class="zz-story-text" lang="en">You play an apprentice mage traveling through an old city.<br>There are 10 stages, from the Catacombs to the Wharf, each with its own enemy.<br>Dodge the bullets that come with the music and survive until the song ends.</p>
+        <dl class="zz-stats">
+          <div><dt>STAGES</dt><dd>10</dd></div>
+          <div><dt>SONGS</dt><dd>10</dd></div>
+        </dl>
+      </div>
       <ol class="features">
         <li class="plate"><b>01</b><h3><span lang="ja">拍に乗る弾幕</span><span lang="en">Bullets on the beat</span></h3><p lang="ja">弾が出る瞬間も、曲がる瞬間も、曲に合わせてある。目だけでなく耳でも避ける弾幕。</p><p lang="en">Bullets spawn, turn and burst in time with the song. Dodge with your ears as well as your eyes.</p></li>
         <li class="plate"><b>02</b><h3><span lang="ja">すり抜けるダッシュ</span><span lang="en">Dash through it</span></h3><p lang="ja">ダッシュの間は無敵。弾の壁も抜けられる。ただし連打すると無敵が付かず、点も減る。ずるはだめ。</p><p lang="en">You're invincible while dashing, even through a wall of bullets. Mash it, though, and you lose both the invincibility and points. No cheating.</p></li>
         <li class="plate"><b>03</b><h3><span lang="ja">かすめて稼ぐ</span><span lang="en">Graze for points</span></h3><p lang="ja">弾のすぐそばをかすめると「グレイズ」で加点。続けるほど倍率が上がり、最大 4 倍。</p><p lang="en">Brush past a bullet to score a graze. Keep the chain going and the multiplier climbs up to ×4.</p></li>
         <li class="plate"><b>04</b><h3><span lang="ja">ふたりで遊べる</span><span lang="en">Play together</span></h3><p lang="ja">1 台のパソコンで 2 人同時に。<span class="p1">1P</span> は水色、<span class="p2">2P</span> は緑。</p><p lang="en">Two players on one PC. <span class="p1">1P</span> is sky blue, <span class="p2">2P</span> is green.</p></li>
-        <li class="plate"><b>05</b><h3><span lang="ja">10 の場所、10 の曲</span><span lang="en">10 places, 10 songs</span></h3><p lang="ja">地下墓地から船着き場まで。難易度は EASY・NORMAL・LUNATIC の 3 段階。</p><p lang="en">From the Catacombs to the Wharf, each in EASY, NORMAL and LUNATIC.</p></li>
+        <li class="plate"><b>05</b><h3><span lang="ja">10 の場所、10 の曲</span><span lang="en">10 places, 10 songs</span></h3><p lang="ja">地下墓地から船着き場まで。難易度は EASY・NORMAL・HARD の 3 段階。</p><p lang="en">From the Catacombs to the Wharf, each in EASY, NORMAL and HARD.</p></li>
       </ol>
     </div>
-    <figure class="about-art"><img src="assets/img/hero-art.png" width="709" height="1024" loading="lazy" alt="主人公の見習い魔法使い" data-alt-en="The apprentice mage"></figure>
+    <figure class="about-art"><span class="zz-only zz-art-tag" aria-hidden="true">APPRENTICE MAGE / No.001</span><img src="assets/img/hero-art.png" width="709" height="1024" loading="lazy" alt="主人公の見習い魔法使い" data-alt-en="The apprentice mage"></figure>
+  </div>
+  <div class="zz-only zz-enemies" aria-hidden="true">
+    <p class="zz-kicker">ENEMY FILE <span>10 / 10</span></p>
+    <div class="zz-enemy-track"><div class="zz-enemy-row" data-zz-enemies></div></div>
   </div>
 </section>
 
@@ -132,13 +162,16 @@
       <button role="tab" type="button" data-stage="archmage" data-color="#2ee6d6" data-ja="大聖堂" data-ruby="だいせいどう" data-en="Cathedral"><b>09</b><span lang="ja">大聖堂</span><span lang="en">Cathedral</span></button>
       <button role="tab" type="button" data-stage="captain" data-color="#3a7bff" data-ja="船着き場" data-ruby="ふなつきば" data-en="Wharf"><b>10</b><span lang="ja">船着き場</span><span lang="en">Wharf</span></button>
     </div>
+    <button class="zz-only zz-stage-step zz-stage-prev" type="button" data-stage-step="-1" aria-label="前のステージ" data-aria-label-en="Previous stage"><svg viewBox="0 0 7 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M4 0h3v1H6v1H5v1H4v1H3v1H2v1h1v1h1v1h1v1h1v1h1v1H4v-1H3V9H2V8H1V7H0V4h1V3h1V2h1V1h1z"/></svg></button>
+    <button class="zz-only zz-stage-step zz-stage-next" type="button" data-stage-step="1" aria-label="次のステージ" data-aria-label-en="Next stage"><svg viewBox="0 0 7 11" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 0h3v1h1v1h1v1h1v1h1v3H6v1H5v1H4v1H3v1H0v-1h1V9h1V8h1V7h1V6h1V5H4V4H3V3H2V2H1V1H0z"/></svg></button>
     <div class="stage-stage" role="tabpanel" data-stage-panel style="--stage:#ff2d78">
       <p class="stage-count"><span>STAGE</span><b data-stage-no>01</b><small>/ 10</small></p>
       <div class="stage-enemy"><img data-stage-enemy src="assets/img/enemy/vagrant.gif" width="128" height="128" alt=""></div>
       <p class="stage-name"><ruby data-stage-name-ja lang="ja">地下墓地<rt data-stage-ruby>ちかぼち</rt></ruby><span data-stage-name-en>Catacombs</span></p>
     </div>
   </div>
-  <p class="stage-help"><span lang="ja">一覧から選ぶと、ステージが切り替わります（↑ ↓ キーでも選べます）。</span><span lang="en">Pick a stage from the list (or use the ↑ ↓ keys).</span></p>
+  <p class="zz-only stage-help zz-stage-help"><span lang="ja">＜ ＞ か、下の一覧で選べます（← → キーでも選べます）。</span><span lang="en">Use ‹ › or the list below (or the ← → keys).</span></p>
+  <p class="stage-help zz-old-help"><span lang="ja">一覧から選ぶと、ステージが切り替わります（↑ ↓ キーでも選べます）。</span><span lang="en">Pick a stage from the list (or use the ↑ ↓ keys).</span></p>
 </section>
 
 <!-- 03 映像 -->
@@ -167,7 +200,7 @@
     <h2 class="section-title"><span class="band band-title"><span lang="ja">ダウンロード</span><span lang="en">Download</span></span></h2>
     <p class="section-en">DOWNLOAD</p>
   </header>
-  <p class="lead"><span lang="ja">無料で遊べます。Windows のパソコンで遊べます（Mac 版は今のところありません）。</span><span lang="en">It's free, for Windows PCs (no Mac version for now).</span></p>
+  <p class="lead zz-old-lead"><span lang="ja">無料で遊べます。Windows のパソコンで遊べます（Mac 版は今のところありません）。</span><span lang="en">It's free, for Windows PCs (no Mac version for now).</span></p>
   <div class="downloads">
     <article class="plate dl" data-dl="windows">
       <h3>Windows</h3>
@@ -181,6 +214,14 @@
       <a class="band band-idle band-big is-disabled" data-dl-button aria-disabled="true"><span lang="ja">準備中</span><span lang="en">Coming soon</span></a>
       <p class="note dl-note" data-dl-note="windows" hidden><span lang="ja">ZIP（Windows 64 ビット）</span><span lang="en">ZIP (Windows 64-bit)</span></p>
     </article>
+  </div>
+  <div class="zz-only zz-sp-dl plate">
+    <p class="zz-sp-dl-head"><span class="zz-sp-dl-icons" aria-hidden="true"></span><span>WINDOWS</span></p>
+    <p class="zz-sp-dl-text" lang="ja">スマホでは遊べません。<br>パソコンでこのページを開いて<br>ダウンロードしてください。</p>
+    <p class="zz-sp-dl-text" lang="en">This game runs on Windows.<br>Open this page on your computer to download it.</p>
+    <button class="band band-action zz-copy" type="button" data-copy-link><span data-copy-label>ページのリンクをコピー</span></button>
+    <p class="zz-sp-dl-url" data-copy-url></p>
+    <p class="zz-visually-hidden" aria-live="polite" data-copy-status></p>
   </div>
   <aside class="plate download-notice">
     <h3><span lang="ja">遊ぶ前のご注意</span><span lang="en">Before you play</span></h3>
@@ -196,16 +237,16 @@
     <details class="plate warn" open>
       <summary>Windows</summary>
       <ol lang="ja">
-        <li>ダウンロードした ZIP を右クリックし、「すべて展開」で展開します（ZIP のままでは起動できません）。</li>
+        <li>ダウンロードした ZIP を右クリックし、「すべて展開」で展開します<span class="zz-cut">（ZIP のままでは起動できません）</span>。</li>
         <li>展開したフォルダーの中の <code>JustBeatIt.exe</code> を開きます。</li>
         <li>青い画面で「Windows によって PC が保護されました」と出たら、「詳細情報」を押し、出てきた「実行」を押します。</li>
-        <li>次からは警告なしで開けます。</li>
+        <li class="zz-cut">次からは警告なしで開けます。</li>
       </ol>
       <ol lang="en">
-        <li>Right-click the downloaded ZIP and choose “Extract All” (it won't run from inside the ZIP).</li>
+        <li>Right-click the downloaded ZIP and choose “Extract All”<span class="zz-cut"> (it won't run from inside the ZIP)</span>.</li>
         <li>Open <code>JustBeatIt.exe</code> in the extracted folder.</li>
         <li>If a blue “Windows protected your PC” screen appears, click “More info”, then “Run anyway”.</li>
-        <li>It will open without the warning from then on.</li>
+        <li class="zz-cut">It will open without the warning from then on.</li>
       </ol>
     </details>
   </div>
@@ -243,14 +284,24 @@
     </article>
     <article class="plate rules">
       <h3><span lang="ja">ルール</span><span lang="en">Rules</span></h3>
-      <ul lang="ja">
+      <ul class="zz-only zz-rules" lang="ja">
+        <li class="zz-rule-one"><span>リズムに合わせて弾をかわし続けよう！</span></li>
+        <li><span>ダッシュの間は無敵。<br>弾をすり抜けるとスコアが加点されるぞ</span></li>
+        <li><span>スコアに応じてランクが決まる。<br>目指せSランク！</span></li>
+      </ul>
+      <ul class="zz-only zz-rules" lang="en">
+        <li><span>Keep dodging the bullets to the rhythm!</span></li>
+        <li><span>You're invincible while dashing.<br>Slip through bullets to score points.</span></li>
+        <li><span>Your score decides your rank.<br>Aim for S!</span></li>
+      </ul>
+      <ul class="zz-old-rules" lang="ja">
         <li>曲が終わるまで弾をかわし続ければクリア。当たるほど点が減ります。</li>
         <li>ダッシュの間は無敵。弾をすり抜けると「ダッシュ回避」で加点。</li>
         <li>続けてダッシュしすぎると無敵が付かず、点も減ります。</li>
         <li>弾のすぐそばをかすめると「グレイズ」。続けるほど倍率が上がります（最大 4 倍）。</li>
         <li>終わるとランクが出ます。目指せ S。</li>
       </ul>
-      <ul lang="en">
+      <ul class="zz-old-rules" lang="en">
         <li>Keep dodging until the song ends to clear the stage. Each hit costs points.</li>
         <li>You're invincible while dashing. Slipping through bullets earns “dash dodge” points.</li>
         <li>Dash too often in a row and you lose the invincibility, and points too.</li>
@@ -295,14 +346,18 @@
         <li><b>Amarante</b><span>Copyright (c) 2011, Sorkin Type Co (www.sorkintype.com) with Reserved Font Name "Amarante".</span></li>
         <li><b>Belleza</b><span>Copyright 2012 The Belleza Project Authors (https://github.com/etunni/belleza)</span></li>
         <li><b>Oxanium</b><span>Copyright 2019 The Oxanium Project Authors (https://github.com/sevmeyer/oxanium)</span></li>
+        <li class="zz-only"><b>M PLUS 1</b><span>Copyright 2021 The M+ FONTS Project Authors (https://github.com/coz-m/MPLUS_FONTS)</span><small lang="ja">このサイト（試作の見た目）</small><small lang="en">This website (new look prototype)</small></li>
+        <li class="zz-only"><b>Anton</b><span>Copyright 2020 The Anton Project Authors (https://github.com/googlefonts/AntonFont.git)</span><small lang="ja">このサイト（試作の見た目）</small><small lang="en">This website (new look prototype)</small></li>
+        <li class="zz-only"><b>Silkscreen</b><span>Copyright 2001 The Silkscreen Project Authors (https://github.com/googlefonts/silkscreen)</span><small lang="ja">このサイト（試作の見た目）</small><small lang="en">This website (new look prototype)</small></li>
+        <li class="zz-only"><b>Montserrat</b><span>Copyright 2024 The Montserrat.Git Project Authors (https://github.com/JulietaUla/Montserrat.git)</span><small lang="ja">このサイト（試作の見た目）</small><small lang="en">This website (new look prototype)</small></li>
       </ul>
     </article>
     <article class="plate">
       <h3><span lang="ja">音楽・効果音・アイコン</span><span lang="en">Music, sound and icons</span></h3>
       <ul class="credit-list">
-        <li><b><span lang="ja">タイトル曲「古の街道」・リザルト曲「王宮探索」</span><span lang="en">Title “Inishie no Kaidou” / Result “Oukyuu Tansaku”</span></b><span>OpenTracks（<span lang="ja">旧 </span><span lang="en">formerly </span>DOVA-SYNDROME） https://dova-s.jp/</span></li>
-        <li><b><span lang="ja">決定の効果音</span><span lang="en">Confirm sound</span></b><span><span lang="ja">効果音ラボ</span><span lang="en">Sound Effect Lab</span> https://soundeffect-lab.info/</span></li>
-        <li><b>Material Symbols</b><span>Google — Apache License 2.0 (https://github.com/google/material-design-icons)</span><small lang="ja">リザルト画面のアイコン</small><small lang="en">Result screen icons</small></li>
+        <li><b><span lang="ja">タイトル曲「古の街道」</span><span lang="en">Title “Inishie no Kaidou”</span></b><span>OpenTracks（<span lang="ja">旧 </span><span lang="en">formerly </span>DOVA-SYNDROME） <span class="zz-url">https://dova-s.jp/</span></span></li>
+        <li><b><span lang="ja">決定の効果音</span><span lang="en">Confirm sound</span></b><span><span lang="ja">効果音ラボ</span><span lang="en">Sound Effect Lab</span> <span class="zz-url">https://soundeffect-lab.info/</span></span></li>
+        <li><b>Material Symbols</b><span>Google — Apache License 2.0 <span class="zz-url">(https://github.com/google/material-design-icons)</span></span><small lang="ja">リザルト画面のアイコン</small><small lang="en">Result screen icons</small></li>
       </ul>
     </article>
     <article class="plate ofl">

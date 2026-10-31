@@ -1,0 +1,1273 @@
+/* 通常の URL で使う新しい見た目: ゼンゼロ公式サイトの組み方に寄せる。
+   和文見出しは M PLUS 1 の極太、英字と数字は Anton の大文字、本文は Noto Sans JP。
+   区画の頭は「左端の名札（区画名・英字・大きな番号）」と「右上の大きな薄い英字」。明るい灰色と黒の面を交互に置き、区切り線は使わない。文字は傾けない */
+
+/* 見比べの切り替え（?style= がある時だけ main.js が左下に出す） */
+.style-switch {
+  position: fixed; z-index: 60;
+  left: max(12px, env(safe-area-inset-left, 0px)); bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  display: flex; padding: 3px;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, .35);
+  border-radius: 999px;
+  font-size: .75rem; font-weight: 700;
+}
+.style-switch button {
+  min-height: 36px; padding: 6px 14px;
+  background: none; border: 0; border-radius: 999px; color: #bbb;
+  font: inherit; cursor: pointer;
+}
+.style-switch button[aria-pressed="true"] { background: #fff; color: #111; }
+
+/* 試作だけで使う部品は、今の見た目では出さない */
+html:not([data-style="new"]) .zz-only { display: none !important; }
+
+html[data-style="new"] {
+  --font: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  --ja: "M PLUS 1", "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
+  --en: "Anton", "Impact", "M PLUS 1", sans-serif;
+  --wide: "Montserrat", "M PLUS 1", sans-serif;
+  --black: #111;
+  --light: #ededed;
+  --dark-ink: #222122;
+  --dark-muted: #77747a;
+  --carbon: repeating-linear-gradient(135deg, rgba(255, 255, 255, .045) 0 2px, transparent 2px 7px);
+  --header-h: calc(64px + env(safe-area-inset-top, 0px));
+}
+html[data-style="new"] body { background: var(--black); font-size: 17px; line-height: 1.8; }
+
+/* ---- 文字の役目 ---- */
+html[data-style="new"] h1,
+html[data-style="new"] h2,
+html[data-style="new"] h3,
+html[data-style="new"] h4 { font-family: var(--ja); font-weight: 900; letter-spacing: 0; }
+html[data-style="new"] code,
+html[data-style="new"] pre { font-family: ui-monospace, Consolas, monospace; }
+
+/* ---- ボタン: 角丸いっぱいのピル。筆の帯の形はやめる ---- */
+html[data-style="new"] .band {
+  font-family: var(--ja); font-weight: 900; letter-spacing: .02em;
+  padding: .55em 1.6em;
+  border-radius: 999px;
+}
+html[data-style="new"] .band::before { inset: 0; border-radius: inherit; -webkit-mask: none; mask: none; }
+html[data-style="new"] .band-action::before { background: var(--magenta); }
+html[data-style="new"] .band-idle::before { background: var(--black); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .85); }
+html[data-style="new"] .band small { font-family: var(--en); font-weight: 400; font-size: .78em; letter-spacing: .04em; opacity: .9; }
+html[data-style="new"] a.band:hover,
+html[data-style="new"] button.band:hover,
+html[data-style="new"] .band:focus-visible { transform: none; filter: brightness(1.15); }
+html[data-style="new"] .band:active { transform: scale(.98); }
+html[data-style="new"] .band.is-disabled:hover { filter: saturate(.4) brightness(.8); }
+
+/* ---- ヘッダー: 黒一色。いまの区画は白い札 ---- */
+html[data-style="new"] .header {
+  gap: 18px;
+  background: #000;
+  backdrop-filter: none;
+  border-bottom: 0;
+}
+/* ヘッダーのロゴは「J」の 1 文字だけ（トップに大きなロゴがあるため） */
+html[data-style="new"] .header-logo { width: auto; min-width: 44px; min-height: 44px; }
+html[data-style="new"] .header-logo .zz-logo-full { display: none; }
+html[data-style="new"] .header-logo .zz-logo-j { display: block; width: 24px; height: 30px; image-rendering: pixelated; }
+html[data-style="new"] .nav { gap: 2px; margin-left: auto; }
+html[data-style="new"] .nav a {
+  min-height: 40px; padding: 4px 16px;
+  border-radius: 999px;
+  color: #a19ea4;
+  font-size: .92rem; font-weight: 700; letter-spacing: .02em;
+}
+html[data-style="new"] .nav a b { display: none; }
+html[data-style="new"] .nav a:hover { color: #fff; }
+html[data-style="new"] .nav a.is-current { background: #fff; color: #111; }
+html[data-style="new"] .lang { gap: 4px; }
+html[data-style="new"] .band-chip { min-width: 44px; min-height: 40px; padding: .25em 1em; font: 700 .84rem/1 var(--font); }
+html[data-style="new"] .band-chip::before { background: transparent; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .4); }
+html[data-style="new"] .band-chip[aria-current="true"] { color: #111; }
+html[data-style="new"] .band-chip[aria-current="true"]::before { background: #fff; box-shadow: none; }
+
+/* 言語・メニューのボタンは同じ高さにそろえる */
+html[data-style="new"] .header { --hbtn: 40px; }
+html[data-style="new"] .band-chip,
+html[data-style="new"] .zz-menu-btn { height: var(--hbtn); min-height: 0; box-sizing: border-box; }
+html[data-style="new"] .zz-menu-btn,
+html[data-style="new"] .zz-menu { display: none; }
+
+/* 狭い画面: 区画の一覧はメニューのボタンにまとめ、上のバーは 1 列 */
+@media (max-width: 960px) {
+  html[data-style="new"] .nav { display: none; }
+  html[data-style="new"] .lang { margin-left: auto; }
+  html[data-style="new"] .zz-menu-btn {
+    display: grid; place-items: center; flex: 0 0 auto;
+    width: var(--hbtn); padding: 0;
+    border: 0; border-radius: 999px;
+    background: #fff; color: #111;
+    cursor: pointer;
+  }
+  html[data-style="new"] .zz-menu-btn i {
+    position: relative;
+    width: 16px; height: 2px; background: currentColor;
+    box-shadow: 0 -5px 0 currentColor, 0 5px 0 currentColor;
+    transition: transform .25s ease-out, box-shadow .25s ease-out;
+  }
+  html[data-style="new"].zz-menu-open .zz-menu-btn { background: var(--magenta); color: #fff; }
+  html[data-style="new"].zz-menu-open .zz-menu-btn i { transform: rotate(45deg); box-shadow: none; }
+  html[data-style="new"] .zz-menu-btn i::after { content: ""; position: absolute; inset: 0; background: currentColor; transform: rotate(0); transition: transform .25s ease-out; }
+  html[data-style="new"].zz-menu-open .zz-menu-btn i::after { transform: rotate(90deg); }
+  html[data-style="new"] .zz-menu { opacity: 0; transform: translateY(-8px); transition: opacity .2s ease-out, transform .2s ease-out; pointer-events: none; }
+  html[data-style="new"] .zz-menu.is-open { opacity: 1; transform: translateY(0); transition-duration: .25s; pointer-events: auto; }
+  html[data-style="new"] .zz-menu:not([hidden]) {
+    position: fixed; left: 0; right: 0; top: var(--header-h); z-index: 55;
+    display: grid; gap: 2px;
+    max-height: calc(100svh - var(--header-h)); overflow-y: auto;
+    padding: 8px max(var(--gutter), env(safe-area-inset-right, 0px)) 20px max(var(--gutter), env(safe-area-inset-left, 0px));
+    background: radial-gradient(rgba(255, 255, 255, .06) 1.2px, transparent 1.6px) 0 0 / 8px 8px, #000;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, .5);
+  }
+  html[data-style="new"] .zz-menu a {
+    display: flex; align-items: center; gap: 14px;
+    min-height: 54px; padding: 4px 16px 4px 6px;
+    border-radius: 999px;
+    color: #fff; text-decoration: none;
+    font: 900 1.12rem/1.2 var(--ja);
+  }
+  html[data-style="new"] .zz-menu a b {
+    display: grid; place-items: center; flex: 0 0 auto;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--magenta); color: #fff;
+    font: 400 1.15rem/1 var(--en); letter-spacing: 0;
+  }
+  html[data-style="new"] .zz-menu a em { margin-left: auto; color: #77747a; font: 400 .74rem/1 "Silkscreen", var(--en); font-style: normal; letter-spacing: .04em; }
+  html[data-style="new"] .zz-menu a.is-current { background: #fff; color: #111; }
+  html[data-style="new"] .zz-menu a:hover { background: #1b1b1e; }
+  html[data-style="new"] .zz-menu a.is-current:hover { background: #fff; }
+}
+@media (max-width: 560px) {
+  html[data-style="new"] { --header-h: calc(56px + env(safe-area-inset-top, 0px)); }
+  /* 指で押しやすいよう、言語とメニューは 44px の丸 */
+  html[data-style="new"] .header { --hbtn: 44px; display: flex; gap: 8px; padding-bottom: 0; }
+  html[data-style="new"] .lang { gap: 6px; }
+  html[data-style="new"] .band-chip { min-width: 44px; padding: 0 .5em; font-size: .82rem; }
+}
+
+/* ---- 右端の区画のドット（広い画面だけ） ---- */
+html[data-style="new"] .zz-dots {
+  position: fixed; z-index: 45; right: max(18px, env(safe-area-inset-right, 0px)); top: 50%;
+  display: none !important; flex-direction: column; align-items: center; gap: 4px;
+  transform: translateY(-50%);
+  transition: opacity .6s ease;
+}
+html[data-style="new"].js:not(.opened) .zz-dots { opacity: 0; pointer-events: none; }
+html[data-style="new"] .zz-dots a { display: grid; place-items: center; width: 24px; height: 24px; }
+html[data-style="new"] .zz-dots a::before {
+  content: ""; width: 8px; height: 8px;
+  background: #8d8a90;
+  box-shadow: none; border: 0; outline: 0;
+  transition: height .25s ease, background .25s ease;
+}
+html[data-style="new"] .zz-dots a.is-current { height: 40px; }
+html[data-style="new"] .zz-dots a.is-current::before { width: 8px; height: 28px; background: var(--magenta); }
+html[data-style="new"] .zz-dots a:hover::before { background: #fff; }
+@media (min-width: 1100px) {
+  html[data-style="new"] .zz-dots { display: flex !important; }
+}
+
+/* ---- 00 トップ ----
+   CG（部屋と主人公を分けた 2 枚）は画面に止めておき、スクロールに合わせて寄って暗くなる。次の区画は下からその上にかぶさる。
+   開いた時は DELTARUNE のサイトのように、黒い画面にロゴが左から白く光りながら現れ、色が付いてから CG と各要素が出る */
+html[data-style="new"] .hero {
+  --band-h: clamp(112px, 14svh, 140px);
+  --hp: 0;
+  place-items: center start;
+  background: transparent;
+  overflow: visible;
+}
+html[data-style="new"] .hero-scene,
+html[data-style="new"] .hero-canvas,
+html[data-style="new"] .hero-flank,
+html[data-style="new"] .hero-scroll,
+html[data-style="new"] .hero-sub { display: none; }
+
+/* 止めておく CG */
+html[data-style="new"] .zz-hero-layers {
+  position: fixed; inset: 0; z-index: -1;
+  overflow: hidden;
+  background: #000;
+  pointer-events: none;
+}
+html[data-style="new"] .zz-hero-frame {
+  /* 16:9 の絵を画面いっぱいに（はみ出しは切る）。部屋と主人公を同じ枠で重ねる */
+  position: absolute; left: 62%; top: 50%;
+  width: max(100vw, 177.78vh); aspect-ratio: 16 / 9;
+  transform: translate(-62%, -50%) translateY(calc(var(--hp) * -5%)) scale(calc(1 + var(--hp) * .14));
+  transform-origin: 68% 55%;
+  will-change: transform;
+}
+html[data-style="new"] .zz-hero-room { position: absolute; inset: 0; width: 100%; height: 100%; }
+html[data-style="new"] .zz-hero-mage {
+  position: absolute; left: 68.13%; top: 42.22%; width: 13.44%; height: auto;
+  transform: translate(calc(var(--hp) * -18%), calc(var(--hp) * -9%)) scale(calc(1 + var(--hp) * .1));
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .55));
+}
+html[data-style="new"] .zz-hero-shade {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, .8) 0%, rgba(0, 0, 0, .42) 36%, transparent 62%),
+    linear-gradient(rgba(0, 0, 0, .5), transparent 22%, transparent 72%, rgba(0, 0, 0, .55)),
+    radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1.4px) 0 0 / 6px 6px;
+}
+html[data-style="new"] .zz-hero-shade::after {
+  /* スクロールするほど暗く */
+  content: ""; position: absolute; inset: 0; background: #000; opacity: calc(var(--hp) * .7);
+}
+html[data-style="new"] .hero ~ * { position: relative; z-index: 1; }
+
+html[data-style="new"] .hero-center {
+  position: static; z-index: auto; /* 下の帯の上にキャッチとボタンを出すため、重なりの層を作らない */
+  align-items: flex-start; text-align: left;
+  width: min(100%, 1440px); margin: 0 auto;
+  padding: calc(var(--header-h) + 12px) var(--gutter) calc(var(--band-h) + 12px);
+}
+html[data-style="new"] .hero-logo {
+  position: relative;
+  width: min(88vw, 760px);
+  opacity: calc(1 - var(--hp) * 1.4);
+  transform: translateY(calc(var(--hp) * -40px));
+}
+/* ロゴはドット絵の白一色。色の縁やずれは付けない */
+html[data-style="new"] .hero-logo img { filter: drop-shadow(0 6px 0 rgba(0, 0, 0, .6)); }
+
+/* 下の帯: 大きな薄い英字とドットを敷き、キャッチとボタンを載せる */
+html[data-style="new"] .hero::after {
+  content: "JUST BEAT IT JUST BEAT IT JUST BEAT IT JUST BEAT IT JUST BEAT IT";
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  height: var(--band-h);
+  overflow: hidden; white-space: nowrap;
+  padding-left: 2vw;
+  background: radial-gradient(rgba(0, 0, 0, .16) 1.2px, transparent 1.6px) 0 0 / 8px 8px, var(--magenta);
+  color: rgba(255, 255, 255, .1);
+  font: 400 calc(var(--band-h) * .96)/1.02 var(--en);
+  letter-spacing: 0;
+  pointer-events: none;
+  transition: transform .8s cubic-bezier(.2, .8, .2, 1);
+}
+html[data-style="new"] .hero-catch {
+  position: absolute; z-index: 3; left: var(--gutter); bottom: 0;
+  height: var(--band-h); margin: 0;
+  display: flex; align-items: center;
+  max-width: calc(100% - 2 * var(--gutter) - 480px);
+  color: #fff;
+  font: 900 clamp(1.4rem, 2.8vw, 2.5rem)/1.25 var(--ja); letter-spacing: .02em;
+}
+html[data-style="new"] .hero-catch:not(.zz-credit) { display: none; }
+html[data-style="new"] .zz-credit { font: 700 clamp(20px, 1.65vw, 24px)/1.5 var(--font); letter-spacing: 0; }
+html[data-style="new"] .zz-visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+html[data-style="new"] .zz-os-icon { display: inline-block; width: 20px; height: 20px; vertical-align: middle; }
+html[data-style="new"] .hero-actions small { display: inline-flex; align-items: center; gap: 8px; }
+html[data-style="new"] .dl h3 .zz-os-icon { width: 48px; height: 48px; }
+html[data-style="new"] .hero-actions {
+  position: absolute; z-index: 3; right: var(--gutter); bottom: 0;
+  height: var(--band-h); margin: 0;
+  align-items: center; flex-wrap: nowrap; gap: 14px;
+}
+html[data-style="new"] .hero-actions .band { font-size: clamp(1rem, 1.5vw, 1.25rem); padding: .9em 1.9em; }
+html[data-style="new"] .hero-actions .band-action::before { background: #000; }
+html[data-style="new"] .hero-actions .band-idle::before { background: transparent; box-shadow: inset 0 0 0 2px #fff; }
+html[data-style="new"] .hero-skip { bottom: calc(var(--band-h) + 16px); border-radius: 999px; }
+
+/* 開く時の順番（JS がある時だけ）。site.css のオープニングの動きは使わない */
+html[data-style="new"] .hero .hero-logo,
+html[data-style="new"] .hero .hero-catch,
+html[data-style="new"] .hero .hero-actions { animation: none !important; }
+html[data-style="new"].js .hero:not(.is-done) .hero-logo,
+html[data-style="new"].js .hero:not(.is-done) .zz-hero-layers,
+html[data-style="new"].js .hero:not(.is-done) .hero-catch,
+html[data-style="new"].js .hero:not(.is-done) .hero-actions { opacity: 0; }
+html[data-style="new"].js .hero:not(.is-done)::after { transform: translateY(100%); }
+html[data-style="new"] .hero.is-done .hero-catch,
+html[data-style="new"] .hero.is-done .hero-actions { opacity: 1; }
+html[data-style="new"] .zz-intro-layer {
+  position: fixed; inset: 0; z-index: 50; background: #000; pointer-events: none;
+  display: grid; place-items: center; overflow: hidden;
+}
+html[data-style="new"] .zz-intro-letters { position: relative; width: 70vw; aspect-ratio: 116 / 18; }
+/* ドットで組み上げたロゴから、定位置のロゴへそのまま入れ替える */
+html[data-style="new"] .hero-logo img { transition: filter .8s ease; }
+html[data-style="new"] .hero.zz-intro .hero-logo img { filter: none; }
+html[data-style="new"] .zz-intro-letters canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
+html[data-style="new"] .hero.zz-intro .hero-skip { position: fixed; z-index: 51; }
+html[data-style="new"].js .hero.zz-revealing .hero-logo { opacity: 1; }
+html[data-style="new"].js .hero.zz-revealing .zz-hero-layers,
+html[data-style="new"].js .hero.zz-revealing .hero-catch,
+html[data-style="new"].js .hero.zz-revealing .hero-actions { opacity: 1; transition: opacity 1s ease; }
+html[data-style="new"].js .hero.zz-revealing::after { transform: none; }
+@media (max-width: 900px) {
+  html[data-style="new"] .hero { --band-h: 210px; }
+  html[data-style="new"] .zz-hero-frame { left: 72%; transform: translate(-72%, -50%) translateY(calc(var(--hp) * -5%)) scale(calc(1 + var(--hp) * .14)); }
+  html[data-style="new"] .zz-hero-shade { background: linear-gradient(rgba(0, 0, 0, .55), rgba(0, 0, 0, .2) 40%, rgba(0, 0, 0, .55) 75%), radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1.4px) 0 0 / 6px 6px; }
+  html[data-style="new"] .hero-center { padding-top: calc(var(--header-h) + 8px); padding-bottom: calc(var(--band-h) + 90px); }
+  html[data-style="new"] .hero-logo { width: 100%; }
+  html[data-style="new"] .hero-catch {
+    left: 0; right: 0; height: auto; bottom: calc(var(--band-h) - 80px);
+    max-width: none; justify-content: center; padding: 0 16px; text-align: center;
+    font-size: clamp(1.35rem, 6vw, 1.8rem);
+  }
+  html[data-style="new"] .hero-actions {
+    left: 0; right: 0; height: auto; bottom: 24px;
+    flex-direction: row; justify-content: center; gap: 10px;
+    width: auto; padding: 0 12px;
+  }
+  html[data-style="new"] .hero-actions .band { flex: 1 1 0; max-width: 240px; padding: .85em .6em; font-size: 1rem; }
+  html[data-style="new"] .hero-actions small { display: block; margin: 2px 0 0; }
+  html[data-style="new"] .hero-actions .band > span { display: flex; flex-direction: column; align-items: center; line-height: 1.15; }
+  html[data-style="new"] .hero-actions [hidden] { display: none; }
+  html[data-style="new"] .zz-credit { font-size: 18px; }
+  html[data-style="new"] .zz-intro-letters { width: 88vw; }
+  html[data-style="new"] .hero-actions small { display: inline-flex; }
+}
+/* スマホの縦画面: PC と同じ組み方にはしない。
+   上にロゴ、その下に部屋の CG の全景（上下はぼかした同じ絵へなじませる）、主人公は右下に大きく立たせて CG の主な所は隠さない。
+   左下にボタン、下の帯にはクレジットだけを置く */
+html[data-style="new"] .zz-hero-blur,
+html[data-style="new"] .zz-hero-info { display: none; }
+@media (max-width: 640px) {
+  html[data-style="new"] .hero {
+    --band-h: 56px;
+    --cg-top: calc(var(--header-h) + 90px);
+    --cg-w: 120vw;
+    --cg-h: calc(var(--cg-w) * .5625);
+    place-items: start;
+  }
+  html[data-style="new"] .zz-hero-blur {
+    display: block; position: absolute; inset: -40px;
+    background: url("../img/hero-room.jpg") 42% 50% / cover no-repeat;
+    filter: blur(22px) brightness(.55) saturate(1.25);
+  }
+  html[data-style="new"] .zz-hero-frame {
+    left: 50%; top: var(--cg-top);
+    width: var(--cg-w);
+    transform: translateX(-50%) translateY(calc(var(--hp) * -6%)) scale(calc(1 + var(--hp) * .1));
+    transform-origin: 50% 40%;
+  }
+  html[data-style="new"] .zz-hero-room {
+    filter: brightness(1.2) saturate(1.1);
+    -webkit-mask: linear-gradient(transparent, #000 16%, #000 80%, transparent);
+    mask: linear-gradient(transparent, #000 16%, #000 80%, transparent);
+  }
+  html[data-style="new"] .zz-hero-mage {
+    /* 元の立ち位置（ぼかして埋めた所）に重ねたまま、大きくする */
+    left: 57%; top: 50%; width: 40%;
+    transform: translateY(calc(var(--hp) * -6%)) scale(calc(1 + var(--hp) * .08));
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .6));
+  }
+  html[data-style="new"] .zz-hero-shade {
+    background:
+      linear-gradient(rgba(0, 0, 0, .7), transparent 20%, transparent 62%, rgba(0, 0, 0, .3) 80%, rgba(0, 0, 0, .55)),
+      radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1.4px) 0 0 / 6px 6px;
+  }
+  html[data-style="new"] .hero-center { padding: calc(var(--header-h) + 16px) var(--gutter) 0; }
+  html[data-style="new"] .hero-logo { width: 100%; }
+
+  /* 左下: ジャンル・一言・数字 */
+  html[data-style="new"] .zz-hero-info {
+    display: none;
+    position: absolute; z-index: 3; left: var(--gutter);
+    top: calc(var(--cg-top) + var(--cg-h) - 4px);
+    width: 58vw;
+  }
+  html[data-style="new"].js .hero:not(.is-done) .zz-hero-info { opacity: 0; }
+  html[data-style="new"].js .hero.zz-revealing .zz-hero-info { opacity: 1; transition: opacity 1s ease; }
+  html[data-style="new"] .zz-hero-info > * { opacity: calc(1 - var(--hp) * 1.6); }
+  html[data-style="new"] .zz-hero-genre {
+    margin: 0; padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--magenta); color: #fff;
+    font: 900 .82rem/1.2 var(--ja); letter-spacing: .04em;
+  }
+  html[data-style="new"] .zz-hero-lead {
+    margin: 0;
+    color: #fff;
+    font: 900 1.16rem/1.45 var(--ja); letter-spacing: 0; white-space: nowrap;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, .7), 0 0 18px rgba(0, 0, 0, .8);
+  }
+  html[data-style="new"] .zz-hero-facts { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 0; padding: 0; list-style: none; }
+  html[data-style="new"] .zz-hero-facts li {
+    display: flex; align-items: baseline; gap: 5px;
+    padding: 6px 9px 5px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, .72); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25);
+    color: rgba(255, 255, 255, .75);
+    font: 400 .6rem/1 "Silkscreen", var(--en); letter-spacing: .04em;
+  }
+  html[data-style="new"] .zz-hero-facts b { color: #fff; font: 400 1.3rem/1 var(--en); letter-spacing: .02em; }
+
+  /* 下の帯: クレジットだけ */
+  html[data-style="new"] .hero::after { padding-left: 0; font-size: calc(var(--band-h) * .9); }
+  html[data-style="new"] .hero-catch.zz-credit {
+    left: 0; right: 0; bottom: 0;
+    height: var(--band-h); padding: 0 var(--gutter);
+    justify-content: flex-start;
+    font-size: 14px; letter-spacing: .04em;
+  }
+  html[data-style="new"] .hero-actions {
+    left: var(--gutter); right: auto; bottom: auto;
+    top: calc(var(--cg-top) + var(--cg-h) - 4px);
+    width: min(calc(60vw - var(--gutter)), 240px);
+    flex-direction: column; gap: 12px; padding: 0;
+    align-items: stretch;
+    transition: opacity 1s ease;
+  }
+  html[data-style="new"] .hero-actions .band {
+    flex: 0 0 auto; max-width: none; min-height: 0; height: 52px;
+    opacity: calc(1 - var(--hp) * 1.6);
+    display: grid; place-items: center;
+    padding: 0 10px; font-size: .95rem; white-space: nowrap;
+  }
+  html[data-style="new"] .hero-actions .band:first-child { flex-grow: 0; }
+  html[data-style="new"] .hero-actions .band > span { flex-direction: row; gap: 8px; line-height: 1; }
+  html[data-style="new"] .hero-actions small { display: inline-flex; margin: 0; gap: 4px; }
+  html[data-style="new"] .hero-actions .zz-os-icon { width: 15px; height: 15px; }
+  /* 見比べの切り替えはクレジットの帯より上に置く */
+  .style-switch { font-size: .66rem; bottom: 68px; }
+  .style-switch button { min-height: 28px; padding: 3px 10px; }
+}
+
+/* ---- 区画のあいだを流れる英字の帯 ---- */
+html[data-style="new"] .zz-ticker {
+  display: block; overflow: hidden;
+  height: 52px;
+  background: #111; color: #222;
+  border: 0; width: 100%;
+}
+html[data-style="new"] .zz-ticker--1 { background: #111; }
+html[data-style="new"] .zz-ticker--2 { background: #111; color: #222; }
+html[data-style="new"] .zz-ticker-run {
+  display: flex; align-items: center; width: max-content; height: 100%;
+  animation: zz-ticker 46s linear infinite;
+}
+html[data-style="new"] .zz-ticker-half { display: flex; align-items: center; flex: 0 0 auto; min-width: max(2600px, 100vw); justify-content: space-around; }
+html[data-style="new"] .zz-ticker.zz-ticker-light { background: var(--light); color: #dcdcdc; }
+html[data-style="new"] .zz-ticker--1 .zz-ticker-run { animation-direction: reverse; }
+html[data-style="new"] .zz-ticker span { padding: 0 22px; font: 400 1.6rem/1 var(--en); letter-spacing: .03em; white-space: nowrap; }
+html[data-style="new"] .zz-ticker i {
+  flex: 0 0 auto; width: 10px; height: 10px; background: currentColor;
+  box-shadow: 12px 0 0 currentColor, 24px 0 0 currentColor;
+  margin-right: 24px;
+}
+html[data-style="new"] .zz-ticker--1 i { box-shadow: 12px 0 0 currentColor, 24px 0 0 currentColor; }
+@keyframes zz-ticker { to { transform: translateX(-50%); } }
+html.calm[data-style="new"] .zz-ticker-run { animation: none; }
+html.calm[data-style="new"] :is(.zz-menu, .zz-menu-btn, .zz-menu-btn i, .zz-menu-btn i::after, .zz-warn-body) { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-style="new"] :is(.zz-menu, .zz-menu-btn, .zz-menu-btn i, .zz-menu-btn i::after, .zz-warn-body) { transition: none; }
+}
+
+/* ---- 区画: 明るい灰色と黒を交互に ---- */
+html[data-style="new"] .section {
+  --section-slant: 36deg;
+  --tag-cut: 80px;
+  --panel-h: max(640px, calc(var(--tag-top) + var(--tag-h, 240px) + 25px));
+  --tag: var(--magenta);
+  --tag-top: clamp(40px, 4.4vw, 64px);
+  --tag-w: clamp(210px, 17vw, 260px);
+  --ghost: rgba(255, 255, 255, .06);
+  padding: calc(var(--tag-top) + clamp(104px, 8.6vw, 132px)) var(--gutter) clamp(64px, 6.4vw, 96px) calc(var(--tag-w) + clamp(28px, 3.4vw, 56px));
+  min-height: 0;
+  border-top: 0;
+  overflow: hidden;
+  background: var(--black);
+}
+html[data-style="new"] .section::before {
+  /* 左上から斜めに横切る面（細かい斜線の地模様） */
+  content: ""; position: absolute; left: 0; top: 0; z-index: 0;
+  width: calc(var(--tag-w) + (var(--tag-top) + var(--tag-h, 240px) - var(--tag-cut)) * tan(var(--section-slant)) + 37px);
+  max-width: 100%; height: var(--panel-h);
+  background: var(--carbon), rgba(255, 255, 255, .025);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--panel-h) * tan(var(--section-slant))) 100%, 0 100%);
+  transform: none;
+  pointer-events: none;
+}
+html[data-style="new"] .section::after {
+  /* 右下の角の斜めの面（ドット入り） */
+  content: ""; position: absolute; right: 0; bottom: 0; z-index: 0;
+  width: clamp(120px, 16vw, 240px); aspect-ratio: 1;
+  background: radial-gradient(rgba(0, 0, 0, .22) 1.3px, transparent 1.7px) 0 0 / 9px 9px, var(--tag);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+html[data-style="new"] .section > * { position: relative; z-index: 1; max-width: 1240px; }
+html[data-style="new"] .section > .stage-bg { position: absolute; z-index: 0; max-width: none; }
+html[data-style="new"] .section--alt { --tag: var(--cyan); }
+
+/* 明るい区画 */
+html[data-style="new"] #about,
+html[data-style="new"] #download,
+html[data-style="new"] #howto,
+html[data-style="new"] #credits {
+  --ink: var(--dark-ink);
+  --muted: var(--dark-muted);
+  --ghost: rgba(0, 0, 0, .07);
+  --plate: #fff;
+  --dot: rgba(0, 0, 0, .2);
+  background: var(--light);
+  color: var(--dark-ink);
+}
+html[data-style="new"] #about::before,
+html[data-style="new"] #download::before,
+html[data-style="new"] #howto::before,
+html[data-style="new"] #credits::before { background: var(--carbon), #121214; }
+
+/* 区画の名札（左端にくっつける） */
+html[data-style="new"] .section-head,
+html[data-style="new"] .section-head--alt {
+  position: absolute; left: 0; top: var(--tag-top); z-index: 2;
+  margin: 0; max-width: none;
+  display: grid; grid-template-columns: auto; justify-items: start; align-content: start;
+  width: var(--tag-w);
+  padding: 16px 22px 30px max(18px, calc(env(safe-area-inset-left, 0px) + 12px));
+  background: radial-gradient(rgba(255, 255, 255, .14) 1.2px, transparent 1.6px) 0 0 / 7px 7px, var(--tag);
+  color: #fff;
+  border-top-right-radius: 30px;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--tag-cut)), calc(100% - var(--tag-cut) * tan(var(--section-slant))) 100%, 0 100%);
+}
+html[data-style="new"] .section-title,
+html[data-style="new"] .section-head--alt .section-title {
+  grid-column: 1; text-align: left;
+  font-size: clamp(1.3rem, 1.9vw, 1.7rem); line-height: 1.15;
+}
+html[data-style="new"] .band-title,
+html[data-style="new"] .section-head--alt .band-title {
+  display: block; padding: 0;
+  color: #fff;
+  white-space: normal;
+  transform: none; letter-spacing: 0;
+}
+html[data-style="new"] .band-title::before { display: none; }
+html[data-style="new"] .section-en,
+html[data-style="new"] .section-head--alt .section-en {
+  grid-column: 1; margin: 4px 0 0;
+  color: rgba(255, 255, 255, .92);
+  font: 400 .95rem/1.1 var(--en); letter-spacing: .03em;
+}
+html[data-style="new"] .section-no,
+html[data-style="new"] .section-head--alt .section-no {
+  position: static; order: 3;
+  margin-top: 2px;
+  color: #fff; -webkit-text-stroke: 0;
+  font: 400 clamp(3.6rem, 5.4vw, 5rem)/1 var(--en); letter-spacing: 0;
+}
+/* 右上の大きな薄い英字 */
+html[data-style="new"] .zz-ghost {
+  position: absolute !important; z-index: 0 !important;
+  right: var(--gutter); top: calc(var(--tag-top) - .12em);
+  width: auto !important; max-width: calc(100% - 2 * var(--gutter)) !important; margin: 0 !important;
+  overflow: hidden; text-align: right; white-space: nowrap;
+  color: var(--ghost);
+  font: 400 clamp(3.6rem, 10vw, 9.4rem)/1 var(--en);
+  text-transform: uppercase; letter-spacing: 0;
+  pointer-events: none; user-select: none;
+}
+
+/* 名札の下の飾り: バーコードと小さな英字・ドットの面・十字の目印 */
+html[data-style="new"] .zz-deco {
+  position: absolute !important; inset: 0; z-index: 0 !important; max-width: none !important;
+  pointer-events: none;
+  --dot: rgba(255, 255, 255, .22);
+}
+html[data-style="new"] #about .zz-deco,
+html[data-style="new"] #download .zz-deco,
+html[data-style="new"] #howto .zz-deco,
+html[data-style="new"] #credits .zz-deco { --dot: rgba(0, 0, 0, .2); }
+html[data-style="new"] .zz-code,
+html[data-style="new"] .zz-coord,
+html[data-style="new"] .zz-kicker {
+  font: 400 .78rem/1.3 "Silkscreen", var(--en); letter-spacing: .04em; text-transform: uppercase;
+}
+html[data-style="new"] .zz-code {
+  position: absolute; left: 20px; top: calc(var(--tag-top) + 210px);
+  display: grid; gap: 6px; width: calc(var(--tag-w) - 40px);
+  color: var(--muted);
+}
+html[data-style="new"] .zz-barcode {
+  display: block; height: 34px;
+  background: repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 4px, currentColor 4px 5px, transparent 5px 9px, currentColor 9px 12px, transparent 12px 14px);
+  opacity: .8;
+}
+html[data-style="new"] .zz-dotfield {
+  position: absolute; left: 20px; top: calc(var(--tag-top) + 300px);
+  width: calc(var(--tag-w) - 40px); height: 150px;
+  background: radial-gradient(var(--dot) 1.6px, transparent 2px) 0 0 / 12px 12px;
+  -webkit-mask: linear-gradient(transparent, #000 30%, #000 60%, transparent);
+  mask: linear-gradient(transparent, #000 30%, #000 60%, transparent);
+}
+html[data-style="new"] .zz-coord {
+  position: absolute; right: var(--gutter); bottom: 22px;
+  color: var(--muted); opacity: .8;
+}
+html[data-style="new"] .zz-cross {
+  position: absolute; width: 18px; height: 18px;
+  background: linear-gradient(currentColor, currentColor) center / 2px 100% no-repeat, linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat;
+  color: var(--magenta);
+}
+html[data-style="new"] .zz-cross--a { left: calc(var(--tag-w) + 6px); top: calc(var(--tag-top) + 6px); }
+html[data-style="new"] .zz-cross--b { left: 20px; top: calc(var(--tag-top) + 470px); color: var(--muted); }
+html[data-style="new"] .zz-kicker {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 14px;
+  color: var(--magenta); font-size: .9rem;
+}
+html[data-style="new"] .zz-kicker::before { content: ""; width: 10px; height: 10px; background: currentColor; box-shadow: 14px 0 0 currentColor; margin-right: 14px; }
+html[data-style="new"] .zz-kicker span { margin-left: auto; padding-right: var(--gutter); color: var(--muted); }
+
+html[data-style="new"] .sub-title {
+  margin: 48px 0 16px; padding: 0;
+  border: 0;
+  display: flex; align-items: center; gap: 12px;
+  font: 900 1.5rem/1.3 var(--ja);
+}
+html[data-style="new"] .sub-title::before { content: ""; width: 20px; height: 20px; background: var(--magenta); clip-path: polygon(0 0, 100% 0, 0 100%); }
+
+/* 板: 角丸の白いカード（明るい区画）／黒いカード（黒い区画） */
+html[data-style="new"] .plate {
+  border: 0; border-radius: 22px;
+  box-shadow: none;
+  padding: clamp(22px, 2.6vw, 36px);
+}
+html[data-style="new"] .section:not(#about):not(#download):not(#howto):not(#credits) .plate { background: #1b1b1e; }
+html[data-style="new"] .note { font-size: .95rem; }
+html[data-style="new"] .lead { font-weight: 700; font-size: 1.25rem; margin-bottom: 22px; }
+
+/* ---- 01 ゲームについて: 1 つの文章と、数字・敵のスプライト ---- */
+html[data-style="new"] .about-lead,
+html[data-style="new"] .features { display: none; }
+html[data-style="new"] .about { grid-template-columns: minmax(0, 1fr) minmax(220px, 360px); gap: clamp(24px, 3.4vw, 52px); align-items: center; }
+html[data-style="new"] .zz-story-text {
+  margin: 0;
+  font: 700 clamp(1.15rem, 1.75vw, 1.5rem)/2.05 var(--font);
+  letter-spacing: .02em;
+  color: #18171a;
+}
+html[data-style="new"] .zz-story-text[lang="en"] { font-size: clamp(1.1rem, 1.6vw, 1.4rem); line-height: 1.8; }
+html[data-style="new"] .zz-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 28px 0 0; }
+html[data-style="new"] .zz-stats div {
+  position: relative; display: flex; flex-direction: column-reverse; justify-content: flex-end;
+  padding: 14px 18px 16px;
+  border-radius: 18px;
+  background: #111; color: #fff;
+  overflow: hidden;
+}
+html[data-style="new"] .zz-stats div::after {
+  content: ""; position: absolute; right: 0; bottom: 0; width: 34px; height: 34px;
+  background: var(--magenta); clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+html[data-style="new"] .zz-stats div:nth-child(even)::after { background: var(--cyan); }
+html[data-style="new"] .zz-stats dt { font: 400 .78rem/1.2 "Silkscreen", var(--en); letter-spacing: .06em; color: rgba(255, 255, 255, .7); }
+html[data-style="new"] .zz-stats dd { margin: 0; font: 400 clamp(2.8rem, 4.4vw, 4.2rem)/1 var(--en); }
+html[data-style="new"] .about-art { position: relative; top: 0; }
+html[data-style="new"] .about-art img { filter: drop-shadow(10px 10px 0 rgba(221, 0, 123, .9)); }
+html[data-style="new"] .zz-art-tag {
+  position: absolute; left: 0; top: 4%; z-index: 1;
+  padding: 6px 12px; border-radius: 999px;
+  background: #111; color: #fff;
+  font: 400 .72rem/1 "Silkscreen", var(--en); letter-spacing: .04em;
+}
+html[data-style="new"] .zz-enemies { display: block; max-width: none !important; margin: 40px calc(-1 * var(--gutter)) 0 0; }
+html[data-style="new"] .zz-enemy-track {
+  overflow: hidden;
+  border-radius: 22px 0 0 22px;
+  background:
+    radial-gradient(rgba(255, 255, 255, .08) 1.2px, transparent 1.6px) 0 0 / 8px 8px,
+    #111;
+}
+html[data-style="new"] .zz-enemy-row { display: flex; width: max-content; animation: zz-ticker 60s linear infinite; }
+html.calm[data-style="new"] .zz-enemy-row { animation: none; }
+html[data-style="new"] .zz-enemy-row figure {
+  margin: 0; padding: 14px 18px 12px;
+  display: grid; justify-items: center; gap: 4px;
+  border-right: 2px dotted rgba(255, 255, 255, .14);
+}
+html[data-style="new"] .zz-enemy-row img { width: 112px; height: 112px; image-rendering: pixelated; }
+html[data-style="new"] .zz-enemy-row figcaption { display: flex; gap: 8px; color: rgba(255, 255, 255, .78); font: 400 .72rem/1 "Silkscreen", var(--en); letter-spacing: .04em; white-space: nowrap; }
+html[data-style="new"] .zz-enemy-row figcaption b { color: var(--magenta); font-weight: 400; }
+
+/* ---- 02 ステージ: 選んでいる物と前後 2 つずつ。＜ ＞ でも選べる ---- */
+html[data-style="new"] .stages {
+  --tag-top: calc(var(--header-h) + 24px);
+  --tag: var(--stage);
+  padding: calc(var(--header-h) + clamp(96px, 8vw, 120px)) var(--gutter) 40px;
+  min-height: 100svh;
+  background: #000;
+}
+html[data-style="new"] .stages > * { max-width: none; }
+html[data-style="new"] .stages .section-head { top: calc(var(--header-h) + 24px); background: radial-gradient(rgba(255, 255, 255, .14) 1.2px, transparent 1.6px) 0 0 / 7px 7px, var(--magenta); }
+/* ステージの区画の大きな英字は、選んでいるステージの名前（ステージの色で薄く） */
+html[data-style="new"] .stages .zz-ghost {
+  z-index: 1 !important; top: calc(var(--header-h) + 14px);
+  color: var(--stage); opacity: .34;
+  font-family: var(--wide); font-weight: 900; text-transform: none; letter-spacing: -.02em;
+  transition: color .4s;
+}
+html[data-style="new"] .stages .zz-code,
+html[data-style="new"] .stages .zz-dotfield,
+html[data-style="new"] .stages .zz-cross { display: none; }
+html[data-style="new"] .stages .zz-coord { color: rgba(255, 255, 255, .6); }
+html[data-style="new"] .stages::before { background: var(--carbon), rgba(0, 0, 0, .55); z-index: 0; }
+html[data-style="new"] .stages::after { transition: background .4s; }
+html[data-style="new"] .stage-bg { z-index: 0; }
+html[data-style="new"] .stage-bg img { filter: saturate(1.05) brightness(.62) blur(2px); transform: scale(1.03); }
+html[data-style="new"] .stage-bg::after {
+  background:
+    radial-gradient(rgba(0, 0, 0, .35) 1.2px, transparent 1.6px) 0 0 / 6px 6px,
+    linear-gradient(90deg, rgba(0, 0, 0, .55) 0%, rgba(0, 0, 0, .15) 30%, rgba(0, 0, 0, .15) 70%, rgba(0, 0, 0, .55) 100%),
+    linear-gradient(rgba(0, 0, 0, .5), transparent 25%, transparent 70%, rgba(0, 0, 0, .8));
+}
+html[data-style="new"] .stage-ui {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; justify-items: center;
+}
+html[data-style="new"] .stage-stage {
+  order: 1;
+  display: grid; grid-template-rows: auto auto auto; justify-items: center; text-align: center;
+  width: min(100%, 980px); padding: 0;
+}
+html[data-style="new"] .stage-stage::before { display: none; }
+html[data-style="new"] .stage-list {
+  order: 2;
+  flex-direction: row; justify-content: center; align-items: center; gap: 10px;
+  width: 100%; max-width: none; padding: 4px 0 0; overflow: visible;
+}
+html[data-style="new"] .stage-list button {
+  order: var(--pos, 0);
+  min-height: 52px;
+  padding: 6px 22px 6px 8px;
+  gap: 12px;
+  border-radius: 999px;
+  background: rgba(10, 10, 12, .84);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .22);
+  color: #e9e6ea;
+  font: 800 1.05rem/1.2 var(--ja);
+  transform: none;
+  opacity: .62;
+  transition: opacity .25s, background .25s;
+}
+html[data-style="new"] .stage-list button[data-near] { opacity: .9; }
+html[data-style="new"] .stage-list button[data-far] { display: none; }
+html[data-style="new"] .stage-list button::before { display: none; }
+html[data-style="new"] .stage-list button b {
+  display: grid; place-items: center; flex: 0 0 auto;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255, 255, 255, .12); color: #fff;
+  font: 400 1.1rem/1 var(--en); letter-spacing: 0;
+}
+html[data-style="new"] .stage-list button:hover { transform: none; filter: none; opacity: 1; background: rgba(40, 40, 46, .92); }
+html[data-style="new"] .stage-list button[aria-selected="true"] {
+  min-height: 62px; padding-right: 30px;
+  background: #fff; color: #111; box-shadow: 0 0 0 4px var(--stage); opacity: 1; transform: none;
+  font-size: 1.25rem;
+}
+html[data-style="new"] .stage-list button[aria-selected="true"] b { width: 46px; height: 46px; background: var(--stage); font-size: 1.3rem; }
+/* ＜ ＞ */
+html[data-style="new"] .zz-stage-step {
+  position: absolute; z-index: 3; top: calc(50% - 70px);
+  display: grid !important; place-items: center;
+  width: clamp(64px, 6vw, 88px); aspect-ratio: 1;
+  border: 0; border-radius: 50%;
+  background: rgba(0, 0, 0, .7); color: #fff;
+  box-shadow: inset 0 0 0 3px #fff;
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+html[data-style="new"] .zz-stage-step svg { width: 32%; height: auto; fill: currentColor; }
+html[data-style="new"] .zz-stage-prev { left: max(0px, calc(50% - 394px)); }
+html[data-style="new"] .zz-stage-prev svg { margin-right: 6%; }
+html[data-style="new"] .zz-stage-next { right: max(0px, calc(50% - 394px)); }
+html[data-style="new"] .zz-stage-next svg { margin-left: 6%; }
+html[data-style="new"] .zz-stage-step:hover { background: var(--magenta); }
+html[data-style="new"] .zz-stage-step:active { transform: scale(.94); }
+html[data-style="new"] .zz-stage-step:focus-visible { outline: 3px solid var(--stage); outline-offset: 4px; }
+html[data-style="new"] .stage-count {
+  order: 3; justify-self: center;
+  align-items: center; gap: 12px;
+  margin-top: 14px; padding: 6px 20px 6px 6px;
+  border-radius: 999px;
+  background: #000; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .85);
+  color: #fff;
+  font: 400 1.1rem/1 var(--en); letter-spacing: .04em;
+}
+html[data-style="new"] .stage-count span { order: 2; }
+html[data-style="new"] .stage-count b {
+  order: 1;
+  display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%;
+  background: var(--stage); color: #fff;
+  font: 400 1.15rem/1 var(--en);
+}
+html[data-style="new"] .stage-count small { order: 3; font-size: inherit; color: rgba(255, 255, 255, .6); }
+html[data-style="new"] .stage-enemy { order: 1; justify-self: center; width: min(72vw, 460px, 44svh); }
+html[data-style="new"] .stage-enemy img { filter: drop-shadow(0 10px 0 rgba(0, 0, 0, .45)); }
+html[data-style="new"] .stage-name { order: 2; align-items: center; gap: 0; margin-top: 10px; }
+html[data-style="new"] .stage-name ruby {
+  position: relative; z-index: 1;
+  color: #fff;
+  font: 900 clamp(2.6rem, min(5.6vw, 7.4svh), 4.4rem)/1.25 var(--ja);
+  letter-spacing: .02em;
+  -webkit-text-stroke: 0; text-shadow: 0 4px 0 rgba(0, 0, 0, .5);
+}
+html[data-style="new"] .stage-name rt { font: 700 .24em/1 var(--font); color: rgba(255, 255, 255, .85); letter-spacing: .2em; }
+html[data-style="new"] .stage-name [data-stage-name-en] {
+  margin-top: 2px;
+  color: rgba(255, 255, 255, .85);
+  font: 400 1.25rem/1.2 var(--en);
+  letter-spacing: .08em; text-transform: uppercase;
+}
+html[data-style="new"]:root[data-lang="en"] .stage-name [data-stage-name-en] {
+  color: #fff;
+  font: 900 clamp(2.2rem, min(5vw, 7svh), 3.8rem)/1.15 var(--wide);
+  letter-spacing: -.01em; text-transform: none;
+  -webkit-text-stroke: 0; text-shadow: 0 4px 0 rgba(0, 0, 0, .5);
+}
+html[data-style="new"] .stage-help { color: rgba(255, 255, 255, .72); font-size: .9rem; text-align: center; }
+html[data-style="new"] .zz-old-help { display: none; }
+html[data-style="new"] .zz-stage-help { display: none; }
+
+@media (max-width: 820px) {
+  html[data-style="new"] .stage-list { gap: 6px; padding: 4px 0 8px; }
+  html[data-style="new"] .stage-list button { flex: 0 0 auto; min-height: 46px; padding: 4px; }
+  html[data-style="new"] .stage-list button:not([aria-selected="true"]) > span { display: none !important; }
+  html[data-style="new"] .stage-list button[aria-selected="true"] { min-height: 52px; padding-right: 18px; font-size: 1.05rem; }
+  html[data-style="new"] .stage-list button[aria-selected="true"] b { width: 40px; height: 40px; }
+  html[data-style="new"] .zz-stage-step { width: 56px; top: calc(50% - 90px); }
+}
+
+/* ---- 03 映像 ---- */
+html[data-style="new"] .movie { max-width: 1240px; }
+html[data-style="new"] .movie-label { display: inline-flex; align-items: center; gap: 10px; font: 900 1.25rem/1.2 var(--ja); }
+html[data-style="new"] .movie-label::before {
+  content: "▶"; display: grid; place-items: center; width: 36px; height: 36px; margin: 0;
+  border-radius: 50%; background: var(--magenta); color: #fff; font-size: .8rem;
+}
+html[data-style="new"] .movie-frame { padding: 0; overflow: hidden; }
+html[data-style="new"] .movie-note { display: none; }
+
+/* ---- 04 ダウンロード: 警告の説明と手順は、それぞれの OS の欄の下に ---- */
+html[data-style="new"] #download .sub-title,
+html[data-style="new"] #download .sub-title + .note,
+html[data-style="new"] #download .warnings { display: none; }
+html[data-style="new"] .downloads { gap: 16px; align-items: start; }
+html[data-style="new"] .dl { position: relative; overflow: hidden; }
+html[data-style="new"] .dl::after {
+  content: ""; position: absolute; right: 0; top: 0; width: 120px; height: 80px;
+  background: radial-gradient(rgba(0, 0, 0, .16) 1.4px, transparent 1.8px) 0 0 / 10px 10px;
+  -webkit-mask: linear-gradient(225deg, #000 30%, transparent 75%); mask: linear-gradient(225deg, #000 30%, transparent 75%);
+  pointer-events: none;
+}
+html[data-style="new"] .dl h3 { font: 400 3.4rem/1 var(--en); letter-spacing: .01em; text-transform: uppercase; }
+html[data-style="new"] .specs { font-size: 1rem; }
+html[data-style="new"] .specs div { border-bottom: 0; padding: 8px 0; }
+html[data-style="new"] .specs div:nth-child(odd) { background: #f2f2f2; margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 10px; }
+html[data-style="new"] .specs dt { font-weight: 700; }
+html[data-style="new"] .dl .band-big { font-size: 1.15rem; padding: .9em 2em; }
+html[data-style="new"] .zz-warn {
+  margin-top: 22px; padding-top: 20px;
+  border-top: 2px dotted rgba(0, 0, 0, .16);
+}
+html[data-style="new"] .zz-warn-steps { border-radius: 16px; background: #f2f2f2; }
+html[data-style="new"] .zz-warn-body { overflow: hidden; transition: height .25s ease-out; }
+html[data-style="new"] .zz-warn-steps summary {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 56px; padding: 8px 10px 8px 18px;
+  font: 900 1.08rem/1.35 var(--ja);
+  cursor: pointer; list-style: none;
+}
+html[data-style="new"] .zz-warn-steps summary::-webkit-details-marker { display: none; }
+html[data-style="new"] .zz-warn-steps summary::before {
+  content: ""; display: block; flex: 0 0 auto; position: static; transform: none;
+  width: 16px; height: 16px; border: 0;
+  background: var(--magenta); clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+html[data-style="new"] .zz-warn-steps summary:hover { color: var(--magenta); }
+html[data-style="new"] .zz-warn-steps summary::after {
+  margin-left: auto;
+  content: ""; flex: 0 0 auto;
+  width: 36px; height: 36px; border-radius: 50%;
+  background:
+    linear-gradient(#fff, #fff) center / 14px 2px no-repeat,
+    linear-gradient(#fff, #fff) center / 2px 14px no-repeat,
+    #111;
+}
+html[data-style="new"] .zz-warn-steps[open] summary::after { background: linear-gradient(#fff, #fff) center / 14px 2px no-repeat, var(--magenta); }
+html[data-style="new"] .zz-warn-steps ol { margin: 0; padding: 0 22px 18px 40px; font-size: .95rem; }
+html[data-style="new"] .zz-warn-steps li + li { margin-top: 6px; }
+html[data-style="new"] .zz-warn code { background: #e4e4e4; }
+
+/* ---- 05 遊び方: 2 人用の欄はやめ、ルールを横に ---- */
+html[data-style="new"] .controls-duo { display: none; }
+html[data-style="new"] .key-set:has(> kbd.space) > :not(kbd.space) { display: none; }
+html[data-style="new"] .howto { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
+html[data-style="new"] .howto .rules { grid-column: auto; }
+html[data-style="new"] .controls h3,
+html[data-style="new"] .rules h3,
+html[data-style="new"] .credits h3 {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.4rem; margin-bottom: 16px;
+}
+html[data-style="new"] .controls h3::before,
+html[data-style="new"] .rules h3::before,
+html[data-style="new"] .credits h3::before {
+  content: ""; flex: 0 0 auto; width: 7px; height: 1.1em; border-radius: 3px; background: var(--magenta);
+}
+html[data-style="new"] .controls h3::after,
+html[data-style="new"] .rules h3::after {
+  margin-left: auto;
+  color: var(--muted);
+  font: 400 .78rem/1 "Silkscreen", var(--en); letter-spacing: .04em;
+}
+html[data-style="new"] .controls h3::after { content: "INPUT / KEYBOARD"; }
+html[data-style="new"] .rules h3::after { content: "RULES / 05"; }
+html[data-style="new"] .control-row { border-bottom: 0; padding: 14px 0; font-size: 1.02rem; }
+html[data-style="new"] .control-row + .control-row { border-top: 2px dotted rgba(0, 0, 0, .12); }
+html[data-style="new"] .control-row dt { font-weight: 700; color: var(--dark-muted); }
+html[data-style="new"] kbd {
+  border: 0; border-radius: 9px;
+  background: #18181b; color: #fff;
+  box-shadow: 0 4px 0 #000;
+  font: 900 1.05em/1.6 "Montserrat", "Noto Sans JP", sans-serif; letter-spacing: .03em;
+}
+html[data-style="new"] .key-cluster kbd { min-height: 40px; min-width: 40px; }
+html[data-style="new"] .key-cluster { grid-template-columns: repeat(3, 40px); gap: 8px; }
+html[data-style="new"] .note kbd { font-size: .85em; }
+html[data-style="new"] .rules ul { list-style: none; padding: 0; margin: 0; counter-reset: rule; font-size: 1.02rem; }
+html[data-style="new"] .rules li { position: relative; padding: 10px 0 10px 50px; counter-increment: rule; }
+html[data-style="new"] .rules li + li { border-top: 2px dotted rgba(0, 0, 0, .12); }
+html[data-style="new"] .rules li::before {
+  content: counter(rule, decimal-leading-zero);
+  position: absolute; left: 0; top: .3em;
+  color: var(--magenta);
+  font: 400 1.6rem/1.4 var(--en);
+}
+
+/* ---- 06 制作 ---- */
+html[data-style="new"] .team-name { font-family: var(--ja); font-weight: 900; font-size: clamp(1.3rem, 2.2vw, 1.8rem); }
+html[data-style="new"] .members li::before { border-radius: 2px; }
+
+/* ---- 07 クレジット ---- */
+html[data-style="new"] .zz-font-original { display: none; }
+html[data-style="new"] .zz-font-credits > p { margin: 12px 0 0; overflow-wrap: anywhere; }
+html[data-style="new"] .zz-font-credits > p:first-child { font-weight: 700; }
+html[data-style="new"] .zz-font-notices { font-size: .75rem; line-height: 1.7; color: #4a474d; }
+html[data-style="new"] .credit-list li { border-bottom: 2px dotted rgba(0, 0, 0, .12); }
+html[data-style="new"] .credit-list li > span { color: #4a474d; }
+html[data-style="new"] .license { background: #f2f2f2; color: #444; border-radius: 12px; }
+
+/* ---- フッター ---- */
+html[data-style="new"] .footer { position: relative; z-index: 1; background: #000; border-top: 0; }
+
+/* 狭い画面: 名札は上、中身はその下 */
+@media (max-width: 1000px) {
+  html[data-style="new"] .section { padding: calc(var(--tag-top) + 170px) var(--gutter) 64px; }
+  html[data-style="new"] .zz-code,
+  html[data-style="new"] .zz-dotfield,
+  html[data-style="new"] .zz-cross--b { display: none; }
+  html[data-style="new"] .zz-cross--a { left: auto; right: var(--gutter); top: calc(var(--tag-top) + 140px); }
+  html[data-style="new"] .about { grid-template-columns: minmax(0, 1fr); }
+  html[data-style="new"] .about-art { order: -1; max-width: 220px; margin: 0 auto; }
+  html[data-style="new"] .zz-enemies { margin-left: calc(-1 * var(--gutter)); }
+  html[data-style="new"] .zz-enemy-track { border-radius: 0; }
+  html[data-style="new"] .howto { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  html[data-style="new"] body { font-size: 16px; }
+  html[data-style="new"] .section { --tag-top: 32px; --tag-w: 176px; padding-top: calc(var(--tag-top) + 150px); }
+  html[data-style="new"] .section-head { padding-right: 16px; }
+  html[data-style="new"] .section-no { font-size: 3.2rem; }
+  html[data-style="new"] .section-title { font-size: 1.12rem; }
+  html[data-style="new"] .about-art { max-width: 170px; }
+  html[data-style="new"] .zz-art-tag { left: 50%; top: -6px; transform: translateX(-50%); white-space: nowrap; }
+  html[data-style="new"] .zz-ghost {
+    top: calc(var(--tag-top) + 4px);
+    width: calc(100% - var(--tag-w) - 24px) !important;
+    font-size: clamp(2.2rem, 11.5vw, 3.6rem); line-height: .92;
+    white-space: normal;
+  }
+  html[data-style="new"] .stages .zz-ghost { font-size: clamp(1.8rem, 9vw, 2.6rem); line-height: 1; }
+  html[data-style="new"] .section { --panel-h: calc(var(--tag-top) + var(--tag-h, 240px) + 25px); }
+  html[data-style="new"] .zz-cross--a { display: none; }
+  html[data-style="new"] .zz-coord { left: var(--gutter); right: auto; bottom: 16px; font-size: .66rem; }
+  html[data-style="new"] .stages { --tag-top: calc(var(--header-h) + 16px); padding-top: calc(var(--header-h) + 168px); justify-content: flex-start; }
+  html[data-style="new"] .stage-enemy { width: min(58vw, 260px); }
+  html[data-style="new"] .stages .section-head { top: calc(var(--header-h) + 16px); }
+  html[data-style="new"] .stages .zz-ghost { top: calc(var(--header-h) + 34px); }
+  html[data-style="new"] .zz-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-style="new"] .zz-story-text { font-size: 1.12rem; line-height: 1.95; }
+  html[data-style="new"] .zz-story-text { font-size: 1.05rem; line-height: 1.85; }
+  html[data-style="new"] .zz-enemy-row img { width: 88px; height: 88px; }
+  html[data-style="new"] .dl h3 { font-size: 2.8rem; }
+  html[data-style="new"] .specs div:nth-child(odd) { margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
+  html[data-style="new"] .zz-warn-steps ol { padding: 0 14px 16px 32px; }
+  html[data-style="new"] .zz-warn-steps summary { gap: 10px; padding-left: 14px; font-size: .98rem; letter-spacing: -.01em; }
+  html[data-style="new"] .zz-warn-steps summary::before { width: 12px; height: 12px; }
+  html[data-style="new"] .howto .plate { padding: 22px 18px; }
+  html[data-style="new"] .controls h3,
+  html[data-style="new"] .rules h3 { font-size: 1.25rem; margin-bottom: 8px; }
+  html[data-style="new"] .controls h3::after,
+  html[data-style="new"] .rules h3::after { display: none; }
+  html[data-style="new"] .control-row { padding: 12px 0; }
+  html[data-style="new"] .key-set { gap: 8px 6px; }
+  html[data-style="new"] .key-cluster { grid-template-columns: repeat(3, 34px); gap: 6px; }
+  html[data-style="new"] .key-cluster kbd { min-width: 0; min-height: 34px; padding: 0; font-size: .95em; }
+  html[data-style="new"] .key-set .or { margin: 0 2px; }
+  html[data-style="new"] .key-set > kbd,
+  html[data-style="new"] .key-unit kbd { min-height: 38px; font-size: 1em; }
+  html[data-style="new"] .rules li { padding-left: 42px; }
+  html[data-style="new"] .rules li::before { font-size: 1.4rem; }
+  html[data-style="new"] .zz-ticker { height: 44px; }
+  html[data-style="new"] .zz-ticker span { font-size: 1.3rem; padding: 0 16px; }
+}
+
+/* ---- 新しい見た目だけで外す文（今の見た目では出す） ---- */
+html[data-style="new"] .zz-old-lead,
+html[data-style="new"] .zz-cut,
+html[data-style="new"] .zz-old-rules { display: none !important; }
+
+/* ---- 01 ENEMY FILE: 10 体を 1 列に割り付けて、どの横幅でも端で切れないようにする（スマホは 5 体×2 段） ---- */
+html[data-style="new"] .zz-enemies { margin: 40px 0 0; }
+html[data-style="new"] .zz-kicker span { padding-right: 0; }
+html[data-style="new"] .zz-enemy-track { border-radius: 22px; }
+html[data-style="new"] .zz-enemy-row {
+  display: grid; grid-template-columns: repeat(10, minmax(0, 1fr));
+  width: auto; animation: none;
+}
+html[data-style="new"] .zz-enemy-row figure:nth-child(n + 11) { display: none; }
+html[data-style="new"] .zz-enemy-row figure { min-width: 0; padding: 16px 4px 14px; align-content: start; }
+html[data-style="new"] .zz-enemy-row figure:nth-child(10) { border-right: 0; }
+html[data-style="new"] .zz-enemy-row img { width: min(100%, 96px); height: auto; aspect-ratio: 1; }
+html[data-style="new"] .zz-enemy-row figcaption {
+  flex-direction: column; align-items: center; gap: 4px;
+  font-size: .62rem; line-height: 1.25; text-align: center; white-space: normal;
+}
+@media (max-width: 1000px) {
+  html[data-style="new"] .zz-enemies { margin-left: 0; }
+  html[data-style="new"] .zz-enemy-track { border-radius: 18px; }
+}
+@media (max-width: 760px) {
+  html[data-style="new"] .zz-enemy-row { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  html[data-style="new"] .zz-enemy-row figure:nth-child(5) { border-right: 0; }
+  html[data-style="new"] .zz-enemy-row figure:nth-child(n + 6) { border-top: 2px dotted rgba(255, 255, 255, .14); }
+  html[data-style="new"] .zz-enemy-row img { width: min(100%, 64px); height: auto; }
+}
+
+/* ---- スマホ: 「どんなゲームか → 遊び方 → ダウンロード」の順に、1 画面に詰め込みすぎない ---- */
+@media (max-width: 640px) {
+  /* 右上の大きな薄い英字は、名札の英字と同じ言葉なので出さない（切れて見えていた） */
+  html[data-style="new"] .zz-ghost { display: none; }
+  html[data-style="new"] .section { padding-top: calc(var(--tag-top) + var(--tag-h, 140px) + 28px); padding-bottom: 56px; }
+  html[data-style="new"] .stages { padding-top: calc(var(--tag-top) + var(--tag-h, 140px) + 20px); }
+  /* 01: 主人公の絵（トップに大きく出ている）と数字の札（02 と重なる）は出さない */
+  html[data-style="new"] #about .about-art,
+  html[data-style="new"] #about .zz-stats { display: none; }
+  html[data-style="new"] .zz-story-text,
+  html[data-style="new"] .zz-story-text[lang="en"] { font-size: 1.05rem; line-height: 1.8; }
+  html[data-style="new"] .zz-enemies { margin-top: 28px; }
+  /* 02: 番号は下の一覧の丸に出ているので、STAGE 01 / 10 の札は出さない */
+  html[data-style="new"] .stages .stage-count { display: none; }
+  html[data-style="new"] .stage-list button { min-height: 48px; min-width: 48px; justify-content: center; }
+  html[data-style="new"] .stage-list button b { width: 40px; height: 40px; }
+  /* 04: 欄の頭はアイコンと OS の名前を横に。仕様の表は 1 項目 1 行に詰める */
+  html[data-style="new"] .dl h3 { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 1.9rem; }
+  html[data-style="new"] .dl h3 .zz-os-icon { width: 32px; height: 32px; }
+  html[data-style="new"] .dl h3 .zz-visually-hidden {
+    position: static !important; order: 2; width: auto; height: auto; margin: 0;
+    overflow: visible; clip-path: none;
+  }
+  html[data-style="new"] .dl::after { display: none; }
+  html[data-style="new"] .specs { font-size: .92rem; }
+  html[data-style="new"] .specs div { grid-template-columns: 7.2em 1fr; gap: 8px; padding: 7px 0; }
+  html[data-style="new"] .specs dt { font-size: .84rem; }
+  html[data-style="new"] .specs dd { font-size: .92rem; line-height: 1.5; }
+  html[data-style="new"] .dl .band-big { display: flex; justify-content: center; min-height: 52px; margin-top: 14px; }
+  html[data-style="new"] .zz-warn { margin-top: 16px; padding-top: 14px; }
+  /* 遊び方: 本文は 16px 以上 */
+  html[data-style="new"] .rules ul { font-size: 1rem; }
+  /* 見比べの切り替えは本文に重ねず、ページの一番下に置く */
+  html[data-style="new"] .style-switch {
+    position: relative; left: auto; bottom: auto;
+    width: fit-content; margin: 0 auto; padding: 3px;
+    font-size: .8rem;
+  }
+  html[data-style="new"] .style-switch button { min-height: 44px; padding: 6px 16px; }
+  html[data-style="new"] body:has(> .style-switch) { padding-bottom: max(20px, env(safe-area-inset-bottom, 0px)); }
+}
+html[data-style="new"] .zz-story-text { word-break: auto-phrase; font-size: clamp(1.1rem, 1.5vw, 1.35rem); }
+@media (max-width: 640px) {
+  html[data-style="new"] .zz-enemy-row figcaption { font-size: .5rem; overflow-wrap: anywhere; }
+}
+/* 右下の小さな英字は、角の色の面に隠れないよう左へ寄せる */
+html[data-style="new"] .zz-coord { right: calc(clamp(120px, 16vw, 240px) + 16px); }
+
+/* スマホの名札は横に組んで背を低くする（番号を左、区画名と英字を右） */
+@media (max-width: 640px) {
+  html[data-style="new"] .section { --tag-w: 248px; --tag-cut: 34px; }
+  html[data-style="new"] .section-head,
+  html[data-style="new"] .section-head--alt {
+    grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; align-items: center;
+    padding: 12px 30px 14px max(16px, calc(env(safe-area-inset-left, 0px) + 12px));
+    border-top-right-radius: 22px;
+  }
+  html[data-style="new"] .section-no,
+  html[data-style="new"] .section-head--alt .section-no { grid-column: 1; grid-row: 1 / span 2; order: 0; margin: 0; font-size: 3.4rem; }
+  html[data-style="new"] .section-title,
+  html[data-style="new"] .section-head--alt .section-title { grid-column: 2; grid-row: 1; align-self: end; font-size: 1.2rem; }
+  html[data-style="new"] .section-en,
+  html[data-style="new"] .section-head--alt .section-en { grid-column: 2; grid-row: 2; align-self: start; }
+  html[data-style="new"] .specs div { grid-template-columns: 8.6em 1fr; }
+}
+
+/* ==== 11 回目 ==== */
+/* 05 遊び方: 「ポーズ・戻る」は「ダッシュ・決定」の右に並べる（移動は 1 段目に横いっぱい） */
+html[data-style="new"] .controls .control-map { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+html[data-style="new"] .controls .control-row:first-child { grid-column: 1 / -1; }
+html[data-style="new"] .controls .control-row:nth-child(3) { padding-left: 20px; border-left: 2px dotted rgba(0, 0, 0, .12); }
+/* ルール: 番号と文の 1 行目の頭をそろえる（並べて、ベースラインで合わせる） */
+html[data-style="new"] .rules li {
+  display: grid; grid-template-columns: 50px minmax(0, 1fr); align-items: baseline;
+  padding: 12px 0;
+}
+html[data-style="new"] .rules li::before { position: static; font: 400 1.6rem/1 var(--en); }
+html[data-style="new"] .rules li > span { line-height: 1.7; }
+html[data-style="new"] .rules li.zz-rule-one > span { white-space: nowrap; }
+/* スマホのダウンロードの案内（PC では出さない） */
+html[data-style="new"] .zz-sp-dl { display: none; }
+
+@media (max-width: 640px) {
+  /* 文字を全体に少し小さく（rem で決めている所はまとめて縮む。押せる所の px は保つ） */
+  html[data-style="new"] { font-size: 15px; }
+  html[data-style="new"] body { font-size: 1rem; }
+  /* 言葉や数字の途中で折り返さない（日本語は文節で、英数字は語で折り返す） */
+  html[data-style="new"] body { word-break: auto-phrase; line-break: strict; }
+  html[data-style="new"] .zz-nowrap { white-space: nowrap; }
+
+  /* トップ: ロゴを少し下へ（その分、部屋の CG とボタンも下げる） */
+  html[data-style="new"] .hero { --cg-top: calc(var(--header-h) + 128px); }
+  html[data-style="new"] .hero-center { padding-top: calc(var(--header-h) + 52px); }
+
+  /* 見出しと中身のあいだを広げる */
+  html[data-style="new"] .section { padding-top: calc(var(--tag-top) + var(--tag-h, 140px) + 52px); }
+  html[data-style="new"] .stages { padding-top: calc(var(--tag-top) + var(--tag-h, 140px) + 40px); }
+
+  /* 02: 下の選び方は「‹ 前のステージ ｜ 今の番号 ｜ 次のステージ ›」。写真の上の大きな ＜ ＞ は出さない */
+  html[data-style="new"] .zz-stage-step { display: none !important; }
+  html[data-style="new"] .stage-list {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px;
+    width: 100%; padding: 6px 0 4px;
+  }
+  html[data-style="new"] .stage-list button:not([aria-selected="true"]):not([data-side]) { display: none; }
+  html[data-style="new"] .stage-list button[data-side] {
+    display: flex; align-items: center; gap: 7px;
+    min-width: 0; min-height: 56px; padding: 6px 10px;
+    border-radius: 16px;
+    background: rgba(10, 10, 12, .86); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .3);
+    color: #fff; opacity: 1;
+    font: 800 .9rem/1.2 var(--ja); text-align: left;
+  }
+  html[data-style="new"] .stage-list button[data-side="next"] { flex-direction: row-reverse; text-align: right; }
+  html[data-style="new"] .stage-list button[data-side]::before {
+    display: block; content: "‹"; flex: 0 0 auto;
+    position: static; width: auto; height: auto; background: none;
+    font: 400 1.7rem/1 var(--en); color: #fff;
+  }
+  html[data-style="new"] .stage-list button[data-side="next"]::before { content: "›"; }
+  html[data-style="new"] .stage-list button[data-side] b { width: 30px; height: 30px; font-size: .95rem; }
+  html[data-style="new"][data-lang="ja"] .stage-list button[data-side] > span[lang="ja"],
+  html[data-style="new"][data-lang="en"] .stage-list button[data-side] > span[lang="en"] {
+    display: block !important; min-width: 0; overflow-wrap: anywhere;
+  }
+  html[data-style="new"][data-lang="en"] .stage-list button[data-side] > span[lang="en"] { font-size: .8rem; line-height: 1.15; }
+  html[data-style="new"] .stage-list button[aria-selected="true"] {
+    min-height: 56px; min-width: 56px; padding: 4px;
+    border-radius: 50%; justify-content: center;
+  }
+  html[data-style="new"] .stage-list button[aria-selected="true"] > span { display: none !important; }
+  html[data-style="new"] .stage-list button[aria-selected="true"] b { width: 46px; height: 46px; }
+
+  /* 遊び方 */
+  html[data-style="new"] .controls .control-row:nth-child(3) { padding-left: 14px; }
+  html[data-style="new"] .rules li { grid-template-columns: 40px minmax(0, 1fr); }
+  html[data-style="new"] .rules li::before { font-size: 1.4rem; }
+  html[data-style="new"] .rules ul { font-size: .95rem; }
+  html[data-style="new"] .rules li.zz-rule-one > span { font-size: clamp(.8rem, 4vw, .95rem); letter-spacing: -.01em; }
+
+  /* 05 ダウンロード: スマホでは遊べないので、欄と仕様の表は出さず、パソコンで開くよう案内する */
+  html[data-style="new"] #download .downloads { display: none; }
+  html[data-style="new"] .zz-sp-dl { display: block; padding: 22px 18px; }
+  html[data-style="new"] .zz-sp-dl-head {
+    display: flex; align-items: center; gap: 12px; margin: 0 0 12px;
+    font: 400 1.5rem/1 var(--en); letter-spacing: .02em;
+  }
+  html[data-style="new"] .zz-sp-dl-icons { display: inline-flex; gap: 8px; }
+  html[data-style="new"] .zz-sp-dl-icons .zz-os-icon { width: 26px; height: 26px; }
+  html[data-style="new"] .zz-sp-dl-text { margin: 0 0 16px; font-weight: 700; line-height: 1.75; }
+  html[data-style="new"] .zz-copy {
+    display: flex; justify-content: center; align-items: center;
+    width: 100%; min-height: 52px; padding: 0 16px;
+    border: 0; cursor: pointer;
+    font: 900 1rem/1 var(--ja);
+  }
+  html[data-style="new"] .zz-copy.is-copied::before { background: #111; }
+  html[data-style="new"] .zz-sp-dl-url { margin: 10px 0 0; color: var(--muted); font-size: .75rem; overflow-wrap: anywhere; word-break: break-all; }
+}
+@media (max-width: 640px) {
+  /* クレジット: URL は小さくして 1 行に。許諾文は元の改行のまま横に送って読む */
+  html[data-style="new"] .credit-list li > span { font-size: .82rem; }
+  html[data-style="new"] .zz-url { white-space: nowrap; font-size: .74rem; letter-spacing: -.01em; }
+  html[data-style="new"] .license { white-space: pre; overflow-wrap: normal; word-break: normal; overflow-x: auto; font-size: .7rem; }
+}
+@media (max-width: 640px) {
+  html[data-style="new"] .credits { grid-template-columns: minmax(0, 1fr); }
+  html[data-style="new"] .credits > * { min-width: 0; }
+  html[data-style="new"] .zz-url { display: block; }
+}
+/* PC でも、仕様の表などで言葉の途中で折り返さない */
+html[data-style="new"] body { word-break: auto-phrase; }
+
+/* ==== 12 回目: 番号の上端を本文へそろえ、クレジットを短くする ==== */
+html[data-style="new"] .ofl > h3,
+html[data-style="new"] .ofl > .license { display: none; }
+html[data-style="new"] .zz-credit-details { margin-top: 10px; }
+html[data-style="new"] .zz-credit-details summary {
+  padding: 10px 0; cursor: pointer; font-size: .85rem; font-weight: 700; line-height: 1.6;
+}
+html[data-style="new"] .zz-credit-details summary:focus-visible { outline: 2px solid var(--magenta); outline-offset: 3px; }
+html[data-style="new"] .zz-license-details { margin-top: 0; }
+html[data-style="new"] .zz-license-details .license {
+  max-height: none; margin-top: 10px; white-space: pre-wrap;
+  overflow-wrap: anywhere; word-break: normal;
+}
+html[data-style="new"] .credits .ofl { padding-top: 8px; padding-bottom: 8px; }
+
+@media (max-width: 640px) {
+  html[data-style="new"] .rules li {
+    grid-template-columns: 30px minmax(0, 1fr); align-items: start;
+  }
+  html[data-style="new"] .rules li::before { font-size: 1em; line-height: 1.7; }
+  html[data-style="new"] #credits {
+    padding-top: calc(var(--tag-top) + var(--tag-h, 140px) + 40px);
+    padding-bottom: 36px;
+  }
+  html[data-style="new"] .credits { gap: 10px; }
+  html[data-style="new"] .credits .plate { padding: 16px 18px; }
+  html[data-style="new"] .credits h3 { font-size: 1.1rem; margin-bottom: 8px; }
+  html[data-style="new"] .credits .note { margin-bottom: 8px; font-size: .8rem; line-height: 1.6; }
+  html[data-style="new"] .zz-font-credits > p:first-child { margin-top: 8px; font-size: .8rem; line-height: 1.65; }
+  html[data-style="new"] .credit-list li { padding: 7px 0; gap: 2px; font-size: .8rem; line-height: 1.6; }
+  html[data-style="new"] .credit-list li > span { font-size: .78rem; }
+  html[data-style="new"] .zz-url { white-space: normal; overflow-wrap: anywhere; }
+  html[data-style="new"] .credits .ofl { padding-top: 6px; padding-bottom: 6px; }
+}
+
+/* 現在の配布案内とお問い合わせを新デザインでも読みやすくする */
+html[data-style="new"] #download .download-notice { margin-top: 24px; }
+html[data-style="new"] #contact .downloads { grid-template-columns: minmax(0, 1fr); }
