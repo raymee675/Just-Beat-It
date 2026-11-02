@@ -843,7 +843,7 @@
       var li = document.createElement("li");
       li.className = "plate";
       var b = document.createElement("b");
-      b.textContent = m.handle || "";
+      b.textContent = (typeof m.handle === "string" ? m.handle : pick(m.handle)) || "";
       var s = document.createElement("span");
       s.textContent = pick(m.role);
       li.appendChild(b);
