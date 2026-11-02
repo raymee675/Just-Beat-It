@@ -14,7 +14,8 @@ window.JBI_CONFIG = {
     { handle: { ja: "レイミー", en: "Raymee" }, role: { ja: "プログラム・弾幕・キャラクター原案", en: "Programming, Patterns, Character Concepts" } },
     { handle: "z1024", role: { ja: "弾幕・キャラクター原案・テストプレイ", en: "Patterns, Character Concepts, Playtesting" } },
     { handle: "sosodoneas", role: { ja: "弾幕・キャラクター原案・キャラクターの絵", en: "Patterns, Character Concepts, Character Art" } },
-    { handle: "beniguchi", role: { ja: "音楽", en: "Music" } }
+    { handle: "beniguchi", role: { ja: "音楽", en: "Music" } },
+    { handle: "kino", role: { ja: "音楽", en: "Music" } }
   ],
 
   // PV。youtubeId（例 "dQw4w9WgXcQ"）か mp4（例 "assets/video/pv1.mp4"）のどちらかを入れると差し替わります。
