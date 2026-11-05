@@ -104,7 +104,6 @@ a.band:hover, button.band:hover, .band:focus-visible {
 .p1 { color: var(--p1); font-weight: 700; }
 .p2 { color: var(--p2); font-weight: 700; }
 .note { color: var(--muted); font-size: .92rem; }
-.dl-note { margin: .4rem 0 0; font-size: .82rem; }
 .lead { font-size: 1.1rem; margin-bottom: 28px; }
 
 /* ---- ヘッダー ---- */
@@ -459,24 +458,13 @@ html.js .hero-flank i { transform: scaleX(0); }
 .movie-frame video, .movie-frame iframe { display: block; width: 100%; height: 100%; border: 0; background: #000; object-fit: cover; }
 .movie-note { margin-top: 12px; color: var(--muted); font-size: .88rem; }
 
-/* ---- 04 ダウンロード ---- */
-.downloads { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 20px; }
+/* ---- 04 Steam・お問い合わせ ---- */
+.action-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 20px; }
 .dl { display: flex; flex-direction: column; gap: 20px; }
 .dl h3 { font-size: 1.6rem; font-weight: 900; letter-spacing: .04em; }
-.specs { margin: 0; display: grid; gap: 0; }
-.specs div { display: grid; grid-template-columns: 9em 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px solid rgba(255, 255, 255, .07); }
-.specs dt { color: var(--muted); font-size: .88rem; }
-.specs dd { min-width: 0; overflow-wrap: anywhere; margin: 0; font-size: .95rem; }
 .dl .band { align-self: flex-start; margin-top: auto; }
-.warnings { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 20px; }
-.warn summary { min-height: 40px; cursor: pointer; font-size: 1.15rem; font-weight: 700; list-style: none; }
-.warn summary::-webkit-details-marker { display: none; }
-.warn summary::before { content: "＋"; color: var(--cyan); margin-right: 10px; font-weight: 900; }
-.warn[open] summary::before { content: "－"; }
-.warn ol { margin: 14px 0 0; padding-left: 1.4em; display: grid; gap: 8px; font-size: .93rem; }
-.warn li { min-width: 0; }
-.warn code { padding: 1px 6px; background: rgba(255, 255, 255, .08); border-radius: 3px; font-size: .9em; }
-.warn code.cmd { display: block; margin-top: 8px; padding: 10px 12px; overflow-wrap: anywhere; white-space: pre-wrap; font-family: ui-monospace, Consolas, monospace; }
+#steam .steam-note { margin-top: 16px; }
+#steam .play-notice { margin-top: 24px; }
 
 /* ---- 05 遊び方 ---- */
 .howto { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 20px; align-items: start; }
@@ -544,7 +532,6 @@ kbd.space { min-width: 7em; }
   .stage-name [data-stage-name-en] { letter-spacing: .12em; }
   .credit-list li { grid-template-columns: 1fr; }
   .credit-list small { grid-column: 1; }
-  .specs div { grid-template-columns: 7.5em 1fr; }
 }
 
 /* ---- フッター ---- */

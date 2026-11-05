@@ -1,4 +1,4 @@
-// サイト全体の動き: 言語の切り替え・オープニング・ナビ・ステージ選択・映像・ダウンロード・制作班。
+// サイト全体の動き: 言語の切り替え・オープニング・ナビ・ステージ選択・映像・Steam への案内・制作班。
 (function () {
   "use strict";
 
@@ -115,10 +115,10 @@
       if (en) s.insertBefore(zz("span", "zz-ghost", en.textContent), s.firstChild);
     });
     // 区画のあいだを流れる英字の帯
-    var TICKER = ["JUST BEAT IT", "RHYTHM BULLET HELL", "10 STAGES", "10 SONGS", "DASH", "FREE DOWNLOAD", "WINDOWS"];
+    var TICKER = ["JUST BEAT IT", "RHYTHM BULLET HELL", "10 STAGES", "10 SONGS", "DASH", "COMING TO STEAM", "2026.11.19"];
     $$("main > .section").forEach(function (s, i) {
       var t = zz("div", "zz-ticker zz-ticker--" + (i % 3));
-      if (["about", "download", "howto", "credits"].indexOf(s.id) !== -1) t.classList.add("zz-ticker-light");
+      if (["about", "steam", "howto", "credits"].indexOf(s.id) !== -1) t.classList.add("zz-ticker-light");
       var run = document.createElement("div");
       run.className = "zz-ticker-run";
       var words = TICKER.slice(i % TICKER.length).concat(TICKER.slice(0, i % TICKER.length));
@@ -145,52 +145,6 @@
       }).join("");
       row.innerHTML = items + items;
     }
-    // 04: 起動の警告の手順を、Windows の欄の下に写す（見出しを押すと開閉。最初は畳む）
-    var subTitle = $("#download .sub-title");
-    $$("#download .warn").forEach(function (det, k) {
-      var card = $$("#download [data-dl]")[k];
-      if (!card || !subTitle) return;
-      var box = zz("div", "zz-warn");
-      box.removeAttribute("aria-hidden");
-      var c = det.cloneNode(true);
-      c.open = false;
-      c.className = "zz-warn-steps";
-      $("summary", c).innerHTML = subTitle.innerHTML;
-      var body = document.createElement("div");
-      body.className = "zz-warn-body";
-      $$("ol", c).forEach(function (ol) { body.appendChild(ol); });
-      c.appendChild(body);
-      var expanded = false, closeTimer, bodyFrame;
-      function finishHeight() {
-        clearTimeout(closeTimer);
-        if (!expanded) c.open = false;
-        body.style.height = "auto";
-      }
-      body.addEventListener("transitionend", function (ev) {
-        if (ev.target === body && ev.propertyName === "height") finishHeight();
-      });
-      $("summary", c).addEventListener("click", function (ev) {
-        ev.preventDefault();
-        expanded = !expanded;
-        clearTimeout(closeTimer);
-        cancelAnimationFrame(bodyFrame);
-        if (instantMotion()) {
-          c.open = expanded;
-          body.style.height = "auto";
-          return;
-        }
-        var height = c.open ? body.getBoundingClientRect().height : 0;
-        c.open = true;
-        body.style.height = height + "px";
-        void body.offsetHeight;
-        bodyFrame = requestAnimationFrame(function () {
-          body.style.height = (expanded ? body.scrollHeight : 0) + "px";
-          closeTimer = setTimeout(finishHeight, 300);
-        });
-      });
-      box.appendChild(c);
-      card.appendChild(box);
-    });
     var langBox = $(".header .lang");
     if (langBox) {
       // 狭い画面では、区画の一覧をメニューのボタンにまとめる（番号だけでは何か分からないため）
@@ -261,12 +215,12 @@
     document.body.appendChild(nav);
   })();
 
-  // スマホの新しい見た目では「どんなゲームか → 遊び方 → ダウンロード」の順に読めるよう、遊び方をダウンロードの前へ移し、番号も付け替える
+  // スマホの新しい見た目では「どんなゲームか → 遊び方 → Steam への案内」の順に読めるよう、遊び方を Steam 区画の前へ移し、番号も付け替える
   (function () {
-    var dl = $("#download"), how = $("#howto");
-    if (!dl || !how) return;
+    var steam = $("#steam"), how = $("#howto");
+    if (!steam || !how) return;
     var mq = window.matchMedia("(max-width: 640px)");
-    var NO = { download: ["04", "05"], howto: ["05", "04"] };
+    var NO = { steam: ["04", "05"], howto: ["05", "04"] };
     function setNo(sec, no) {
       $(".section-no", sec).textContent = no;
       $$('a[href="#' + sec.id + '"] b').forEach(function (b) { b.textContent = no; });
@@ -284,10 +238,10 @@
     }
     function apply() {
       var sp = root.dataset.style === "new" && mq.matches;
-      if (sp) putBefore(how, dl); else putBefore(dl, how);
-      [dl, how].forEach(function (sec) { setNo(sec, NO[sec.id][sp ? 1 : 0]); });
+      if (sp) putBefore(how, steam); else putBefore(steam, how);
+      [steam, how].forEach(function (sec) { setNo(sec, NO[sec.id][sp ? 1 : 0]); });
       $$(".zz-menu").forEach(function (menu) {
-        var a = $('a[href="#download"]', menu), b = $('a[href="#howto"]', menu);
+        var a = $('a[href="#steam"]', menu), b = $('a[href="#howto"]', menu);
         if (a && b) { if (sp) menu.insertBefore(b, a); else menu.insertBefore(a, b); }
       });
     }
@@ -383,82 +337,6 @@
   })();
 
   // ---- オープニング ----
-  if (root.dataset.style === "new") {
-    // 16×16 のドット絵（# が塗るマス）。どちらも横 14 マスの中に収め、大きさをそろえる
-    var OS_DOTS = {
-      windows: [
-        "", ".######..######", ".######..######", ".######..######", ".######..######", ".######..######", ".######..######", "", "",
-        ".######..######", ".######..######", ".######..######", ".######..######", ".######..######", ".######..######"
-      ],
-      mac: [
-        "..........##", ".........###", "........###", "",
-        "...####..####", "..############", ".#############", ".############",
-        ".###########", ".###########", ".############", ".#############",
-        "..############", "..############", "...####..####", "....##....##"
-      ]
-    };
-    function osIcon(os) {
-      var d = "";
-      (OS_DOTS[os] || []).forEach(function (row, y) {
-        row.replace(/#+/g, function (run, x) { d += "M" + x + " " + y + "h" + run.length + "v1h-" + run.length + "z"; });
-      });
-      return '<svg class="zz-os-icon" viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges" fill="currentColor"><path d="' + d + '"/></svg>';
-    }
-    $$(".hero-actions small").forEach(function (el) {
-      el.innerHTML = '<span class="zz-visually-hidden">Windows</span>' + osIcon("windows");
-    });
-    $$("#download [data-dl] h3").forEach(function (el) {
-      var word = el.textContent;
-      el.innerHTML = '<span class="zz-visually-hidden">' + word + '</span>' + osIcon(word.toLowerCase());
-    });
-    $$(".zz-sp-dl-icons").forEach(function (el) { el.innerHTML = osIcon("windows"); });
-
-    // スマホのダウンロード欄: パソコンで開いてもらうため、ページのリンクをコピーする
-    var copyBtn = $("[data-copy-link]");
-    if (copyBtn) {
-      var copyLabel = $("[data-copy-label]", copyBtn);
-      var copyStatus = $("[data-copy-status]");
-      var copyUrl = function () { return location.origin + location.pathname + "#download"; };
-      var copyTimer = 0;
-      var copyIdle = function () {
-        copyBtn.classList.remove("is-copied");
-        copyLabel.textContent = lang() === "en" ? "Copy page link" : "ページのリンクをコピー";
-      };
-      var showUrl = function () { $("[data-copy-url]").textContent = copyUrl(); copyIdle(); };
-      showUrl();
-      langHooks.push(showUrl);
-      var fallbackCopy = function (text) {
-        var ta = document.createElement("textarea");
-        ta.value = text;
-        ta.setAttribute("readonly", "");
-        ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
-        document.body.appendChild(ta);
-        ta.select();
-        var ok = false;
-        try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
-        document.body.removeChild(ta);
-        return ok;
-      };
-      var done = function (ok) {
-        var en = lang() === "en";
-        var msg = ok ? (en ? "Copied ✓" : "コピーしました ✓") : (en ? "Couldn't copy" : "コピーできませんでした");
-        copyLabel.textContent = msg;
-        copyStatus.textContent = msg;
-        copyBtn.classList.toggle("is-copied", ok);
-        clearTimeout(copyTimer);
-        copyTimer = setTimeout(copyIdle, 2000);
-      };
-      copyBtn.addEventListener("click", function () {
-        var text = copyUrl();
-        if (navigator.clipboard && window.isSecureContext) {
-          navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(fallbackCopy(text)); });
-        } else {
-          done(fallbackCopy(text));
-        }
-      });
-    }
-  }
-
   var hero = $("[data-hero]");
   var opening = null;
 
@@ -792,31 +670,10 @@
     }).observe(video);
   }
 
-  // ---- ダウンロード ----
-  var dlConfig = config.download || {};
-  function renderDownloads() {
-    $$("[data-dl]").forEach(function (card) {
-      var c = dlConfig[card.dataset.dl] || {};
-      $$("[data-dl-field]", card).forEach(function (dd) {
-        var v = pick(c[dd.dataset.dlField]);
-        dd.textContent = v || (lang() === "en" ? "TBA" : "未定");
-      });
-      var b = $("[data-dl-button]", card);
-      var note = $("[data-dl-note]", card);
-      if (note) note.hidden = card.dataset.dl === "windows" ? !c.url : !(dlConfig.windows && dlConfig.windows.url && !c.url);
-      if (c.url) {
-        b.href = c.url;
-        b.classList.remove("band-idle", "is-disabled");
-        b.classList.add("band-action");
-        b.removeAttribute("aria-disabled");
-        var size = c.size ? "<small>" + escapeHtml(c.size) + "</small>" : "";
-        b.innerHTML = lang() === "en" ? "Download" + size : "ダウンロード" + size;
-      } else if (b) {
-        b.removeAttribute("href");
-      }
-    });
+  // ---- Steam への案内 ----
+  if (config.steam && config.steam.url) {
+    $$("[data-steam-link]").forEach(function (a) { a.href = config.steam.url; });
   }
-  langHooks.push(renderDownloads);
 
   // ---- お問い合わせ ----
   var contactConfig = config.contact || {};

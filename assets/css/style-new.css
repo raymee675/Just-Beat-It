@@ -267,9 +267,7 @@ html[data-style="new"] .zz-visually-hidden {
   position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
 }
-html[data-style="new"] .zz-os-icon { display: inline-block; width: 20px; height: 20px; vertical-align: middle; }
 html[data-style="new"] .hero-actions small { display: inline-flex; align-items: center; gap: 8px; }
-html[data-style="new"] .dl h3 .zz-os-icon { width: 48px; height: 48px; }
 html[data-style="new"] .hero-actions {
   position: absolute; z-index: 3; right: var(--gutter); bottom: 0;
   height: var(--band-h); margin: 0;
@@ -429,9 +427,8 @@ html[data-style="new"] .zz-hero-info { display: none; }
     padding: 0 10px; font-size: .95rem; white-space: nowrap;
   }
   html[data-style="new"] .hero-actions .band:first-child { flex-grow: 0; }
-  html[data-style="new"] .hero-actions .band > span { flex-direction: row; gap: 8px; line-height: 1; }
+  html[data-style="new"] .hero-actions .band > span { flex-direction: column; gap: 4px; line-height: 1; }
   html[data-style="new"] .hero-actions small { display: inline-flex; margin: 0; gap: 4px; }
-  html[data-style="new"] .hero-actions .zz-os-icon { width: 15px; height: 15px; }
   /* 見比べの切り替えはクレジットの帯より上に置く */
   .style-switch { font-size: .66rem; bottom: 68px; }
   .style-switch button { min-height: 28px; padding: 3px 10px; }
@@ -462,9 +459,7 @@ html[data-style="new"] .zz-ticker i {
 html[data-style="new"] .zz-ticker--1 i { box-shadow: 12px 0 0 currentColor, 24px 0 0 currentColor; }
 @keyframes zz-ticker { to { transform: translateX(-50%); } }
 html.calm[data-style="new"] .zz-ticker-run { animation: none; }
-html.calm[data-style="new"] :is(.zz-menu, .zz-menu-btn, .zz-menu-btn i, .zz-menu-btn i::after, .zz-warn-body) { transition: none; }
 @media (prefers-reduced-motion: reduce) {
-  html[data-style="new"] :is(.zz-menu, .zz-menu-btn, .zz-menu-btn i, .zz-menu-btn i::after, .zz-warn-body) { transition: none; }
 }
 
 /* ---- 区画: 明るい灰色と黒を交互に ---- */
@@ -506,7 +501,7 @@ html[data-style="new"] .section--alt { --tag: var(--cyan); }
 
 /* 明るい区画 */
 html[data-style="new"] #about,
-html[data-style="new"] #download,
+html[data-style="new"] #steam,
 html[data-style="new"] #howto,
 html[data-style="new"] #credits {
   --ink: var(--dark-ink);
@@ -518,7 +513,7 @@ html[data-style="new"] #credits {
   color: var(--dark-ink);
 }
 html[data-style="new"] #about::before,
-html[data-style="new"] #download::before,
+html[data-style="new"] #steam::before,
 html[data-style="new"] #howto::before,
 html[data-style="new"] #credits::before { background: var(--carbon), #121214; }
 
@@ -580,7 +575,7 @@ html[data-style="new"] .zz-deco {
   --dot: rgba(255, 255, 255, .22);
 }
 html[data-style="new"] #about .zz-deco,
-html[data-style="new"] #download .zz-deco,
+html[data-style="new"] #steam .zz-deco,
 html[data-style="new"] #howto .zz-deco,
 html[data-style="new"] #credits .zz-deco { --dot: rgba(0, 0, 0, .2); }
 html[data-style="new"] .zz-code,
@@ -638,7 +633,7 @@ html[data-style="new"] .plate {
   box-shadow: none;
   padding: clamp(22px, 2.6vw, 36px);
 }
-html[data-style="new"] .section:not(#about):not(#download):not(#howto):not(#credits) .plate { background: #1b1b1e; }
+html[data-style="new"] .section:not(#about):not(#steam):not(#howto):not(#credits) .plate { background: #1b1b1e; }
 html[data-style="new"] .note { font-size: .95rem; }
 html[data-style="new"] .lead { font-weight: 700; font-size: 1.25rem; margin-bottom: 22px; }
 
@@ -853,11 +848,8 @@ html[data-style="new"] .movie-label::before {
 html[data-style="new"] .movie-frame { padding: 0; overflow: hidden; }
 html[data-style="new"] .movie-note { display: none; }
 
-/* ---- 04 ダウンロード: 警告の説明と手順は、それぞれの OS の欄の下に ---- */
-html[data-style="new"] #download .sub-title,
-html[data-style="new"] #download .sub-title + .note,
-html[data-style="new"] #download .warnings { display: none; }
-html[data-style="new"] .downloads { gap: 16px; align-items: start; }
+/* ---- 04 Steam・お問い合わせ ---- */
+html[data-style="new"] .action-cards { gap: 16px; align-items: start; }
 html[data-style="new"] .dl { position: relative; overflow: hidden; }
 html[data-style="new"] .dl::after {
   content: ""; position: absolute; right: 0; top: 0; width: 120px; height: 80px;
@@ -866,44 +858,7 @@ html[data-style="new"] .dl::after {
   pointer-events: none;
 }
 html[data-style="new"] .dl h3 { font: 400 3.4rem/1 var(--en); letter-spacing: .01em; text-transform: uppercase; }
-html[data-style="new"] .specs { font-size: 1rem; }
-html[data-style="new"] .specs div { border-bottom: 0; padding: 8px 0; }
-html[data-style="new"] .specs div:nth-child(odd) { background: #f2f2f2; margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 10px; }
-html[data-style="new"] .specs dt { font-weight: 700; }
 html[data-style="new"] .dl .band-big { font-size: 1.15rem; padding: .9em 2em; }
-html[data-style="new"] .zz-warn {
-  margin-top: 22px; padding-top: 20px;
-  border-top: 2px dotted rgba(0, 0, 0, .16);
-}
-html[data-style="new"] .zz-warn-steps { border-radius: 16px; background: #f2f2f2; }
-html[data-style="new"] .zz-warn-body { overflow: hidden; transition: height .25s ease-out; }
-html[data-style="new"] .zz-warn-steps summary {
-  display: flex; align-items: center; gap: 12px;
-  min-height: 56px; padding: 8px 10px 8px 18px;
-  font: 900 1.08rem/1.35 var(--ja);
-  cursor: pointer; list-style: none;
-}
-html[data-style="new"] .zz-warn-steps summary::-webkit-details-marker { display: none; }
-html[data-style="new"] .zz-warn-steps summary::before {
-  content: ""; display: block; flex: 0 0 auto; position: static; transform: none;
-  width: 16px; height: 16px; border: 0;
-  background: var(--magenta); clip-path: polygon(0 0, 100% 0, 0 100%);
-}
-html[data-style="new"] .zz-warn-steps summary:hover { color: var(--magenta); }
-html[data-style="new"] .zz-warn-steps summary::after {
-  margin-left: auto;
-  content: ""; flex: 0 0 auto;
-  width: 36px; height: 36px; border-radius: 50%;
-  background:
-    linear-gradient(#fff, #fff) center / 14px 2px no-repeat,
-    linear-gradient(#fff, #fff) center / 2px 14px no-repeat,
-    #111;
-}
-html[data-style="new"] .zz-warn-steps[open] summary::after { background: linear-gradient(#fff, #fff) center / 14px 2px no-repeat, var(--magenta); }
-html[data-style="new"] .zz-warn-steps ol { margin: 0; padding: 0 22px 18px 40px; font-size: .95rem; }
-html[data-style="new"] .zz-warn-steps li + li { margin-top: 6px; }
-html[data-style="new"] .zz-warn code { background: #e4e4e4; }
-
 /* ---- 05 遊び方: 2 人用の欄はやめ、ルールを横に ---- */
 html[data-style="new"] .controls-duo { display: none; }
 html[data-style="new"] .key-set:has(> kbd.space) > :not(kbd.space) { display: none; }
@@ -1006,10 +961,6 @@ html[data-style="new"] .footer { position: relative; z-index: 1; background: #00
   html[data-style="new"] .zz-story-text { font-size: 1.05rem; line-height: 1.85; }
   html[data-style="new"] .zz-enemy-row img { width: 88px; height: 88px; }
   html[data-style="new"] .dl h3 { font-size: 2.8rem; }
-  html[data-style="new"] .specs div:nth-child(odd) { margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
-  html[data-style="new"] .zz-warn-steps ol { padding: 0 14px 16px 32px; }
-  html[data-style="new"] .zz-warn-steps summary { gap: 10px; padding-left: 14px; font-size: .98rem; letter-spacing: -.01em; }
-  html[data-style="new"] .zz-warn-steps summary::before { width: 12px; height: 12px; }
   html[data-style="new"] .howto .plate { padding: 22px 18px; }
   html[data-style="new"] .controls h3,
   html[data-style="new"] .rules h3 { font-size: 1.25rem; margin-bottom: 8px; }
@@ -1029,8 +980,6 @@ html[data-style="new"] .footer { position: relative; z-index: 1; background: #00
 }
 
 /* ---- 新しい見た目だけで外す文（今の見た目では出す） ---- */
-html[data-style="new"] .zz-old-lead,
-html[data-style="new"] .zz-cut,
 html[data-style="new"] .zz-old-rules { display: none !important; }
 
 /* ---- 01 ENEMY FILE: 10 体を 1 列に割り付けて、どの横幅でも端で切れないようにする（スマホは 5 体×2 段） ---- */
@@ -1060,7 +1009,7 @@ html[data-style="new"] .zz-enemy-row figcaption {
   html[data-style="new"] .zz-enemy-row img { width: min(100%, 64px); height: auto; }
 }
 
-/* ---- スマホ: 「どんなゲームか → 遊び方 → ダウンロード」の順に、1 画面に詰め込みすぎない ---- */
+/* ---- スマホ: 「どんなゲームか → 遊び方 → Steam への案内」の順に、1 画面に詰め込みすぎない ---- */
 @media (max-width: 640px) {
   /* 右上の大きな薄い英字は、名札の英字と同じ言葉なので出さない（切れて見えていた） */
   html[data-style="new"] .zz-ghost { display: none; }
@@ -1076,20 +1025,10 @@ html[data-style="new"] .zz-enemy-row figcaption {
   html[data-style="new"] .stages .stage-count { display: none; }
   html[data-style="new"] .stage-list button { min-height: 48px; min-width: 48px; justify-content: center; }
   html[data-style="new"] .stage-list button b { width: 40px; height: 40px; }
-  /* 04: 欄の頭はアイコンと OS の名前を横に。仕様の表は 1 項目 1 行に詰める */
+  /* お問い合わせ欄 */
   html[data-style="new"] .dl h3 { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 1.9rem; }
-  html[data-style="new"] .dl h3 .zz-os-icon { width: 32px; height: 32px; }
-  html[data-style="new"] .dl h3 .zz-visually-hidden {
-    position: static !important; order: 2; width: auto; height: auto; margin: 0;
-    overflow: visible; clip-path: none;
-  }
   html[data-style="new"] .dl::after { display: none; }
-  html[data-style="new"] .specs { font-size: .92rem; }
-  html[data-style="new"] .specs div { grid-template-columns: 7.2em 1fr; gap: 8px; padding: 7px 0; }
-  html[data-style="new"] .specs dt { font-size: .84rem; }
-  html[data-style="new"] .specs dd { font-size: .92rem; line-height: 1.5; }
   html[data-style="new"] .dl .band-big { display: flex; justify-content: center; min-height: 52px; margin-top: 14px; }
-  html[data-style="new"] .zz-warn { margin-top: 16px; padding-top: 14px; }
   /* 遊び方: 本文は 16px 以上 */
   html[data-style="new"] .rules ul { font-size: 1rem; }
   /* 見比べの切り替えは本文に重ねず、ページの一番下に置く */
@@ -1123,7 +1062,6 @@ html[data-style="new"] .zz-coord { right: calc(clamp(120px, 16vw, 240px) + 16px)
   html[data-style="new"] .section-head--alt .section-title { grid-column: 2; grid-row: 1; align-self: end; font-size: 1.2rem; }
   html[data-style="new"] .section-en,
   html[data-style="new"] .section-head--alt .section-en { grid-column: 2; grid-row: 2; align-self: start; }
-  html[data-style="new"] .specs div { grid-template-columns: 8.6em 1fr; }
 }
 
 /* ==== 11 回目 ==== */
@@ -1139,8 +1077,6 @@ html[data-style="new"] .rules li {
 html[data-style="new"] .rules li::before { position: static; font: 400 1.6rem/1 var(--en); }
 html[data-style="new"] .rules li > span { line-height: 1.7; }
 html[data-style="new"] .rules li.zz-rule-one > span { white-space: nowrap; }
-/* スマホのダウンロードの案内（PC では出さない） */
-html[data-style="new"] .zz-sp-dl { display: none; }
 
 @media (max-width: 640px) {
   /* 文字を全体に少し小さく（rem で決めている所はまとめて縮む。押せる所の px は保つ） */
@@ -1200,24 +1136,7 @@ html[data-style="new"] .zz-sp-dl { display: none; }
   html[data-style="new"] .rules ul { font-size: .95rem; }
   html[data-style="new"] .rules li.zz-rule-one > span { font-size: clamp(.8rem, 4vw, .95rem); letter-spacing: -.01em; }
 
-  /* 05 ダウンロード: スマホでは遊べないので、欄と仕様の表は出さず、パソコンで開くよう案内する */
-  html[data-style="new"] #download .downloads { display: none; }
-  html[data-style="new"] .zz-sp-dl { display: block; padding: 22px 18px; }
-  html[data-style="new"] .zz-sp-dl-head {
-    display: flex; align-items: center; gap: 12px; margin: 0 0 12px;
-    font: 400 1.5rem/1 var(--en); letter-spacing: .02em;
-  }
-  html[data-style="new"] .zz-sp-dl-icons { display: inline-flex; gap: 8px; }
-  html[data-style="new"] .zz-sp-dl-icons .zz-os-icon { width: 26px; height: 26px; }
-  html[data-style="new"] .zz-sp-dl-text { margin: 0 0 16px; font-weight: 700; line-height: 1.75; }
-  html[data-style="new"] .zz-copy {
-    display: flex; justify-content: center; align-items: center;
-    width: 100%; min-height: 52px; padding: 0 16px;
-    border: 0; cursor: pointer;
-    font: 900 1rem/1 var(--ja);
-  }
-  html[data-style="new"] .zz-copy.is-copied::before { background: #111; }
-  html[data-style="new"] .zz-sp-dl-url { margin: 10px 0 0; color: var(--muted); font-size: .75rem; overflow-wrap: anywhere; word-break: break-all; }
+
 }
 @media (max-width: 640px) {
   /* クレジット: URL は小さくして 1 行に。許諾文は元の改行のまま横に送って読む */
@@ -1230,7 +1149,7 @@ html[data-style="new"] .zz-sp-dl { display: none; }
   html[data-style="new"] .credits > * { min-width: 0; }
   html[data-style="new"] .zz-url { display: block; }
 }
-/* PC でも、仕様の表などで言葉の途中で折り返さない */
+/* PC でも言葉の途中で折り返さない */
 html[data-style="new"] body { word-break: auto-phrase; }
 
 /* ==== 12 回目: 番号の上端を本文へそろえ、クレジットを短くする ==== */
@@ -1268,6 +1187,6 @@ html[data-style="new"] .credits .ofl { padding-top: 8px; padding-bottom: 8px; }
   html[data-style="new"] .credits .ofl { padding-top: 6px; padding-bottom: 6px; }
 }
 
-/* 現在の配布案内とお問い合わせを新デザインでも読みやすくする */
-html[data-style="new"] #download .download-notice { margin-top: 24px; }
-html[data-style="new"] #contact .downloads { grid-template-columns: minmax(0, 1fr); }
+/* Steam への案内とお問い合わせを新デザインでも読みやすくする */
+html[data-style="new"] #steam .play-notice { margin-top: 24px; }
+html[data-style="new"] #contact .action-cards { grid-template-columns: minmax(0, 1fr); }

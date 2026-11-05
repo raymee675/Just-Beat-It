@@ -1,12 +1,12 @@
-# Just Beat It 配布サイト
+# Just Beat It 公式サイト
 
-Just Beat It 制作班のリズム弾幕アクション「Just Beat It」を配布するための、GitHub Pages 用の静的サイトです。HTML / CSS / JavaScript だけでできていて、ビルドも npm も要りません。
+Just Beat It 制作班のリズム弾幕アクション「Just Beat It」の公式サイトです。GitHub Pages 用の静的サイトで、HTML / CSS / JavaScript だけでできていて、ビルドも npm も要りません。
 
 公開 URL: https://raymee675.github.io/Just-Beat-It/
 
 ## 決まり
 
-- Steam 版とは完全に切り離す。サイトに Steam 版のこと・リンクは載せない。
+- Steam への案内と公式サイトの役割だけを持つ。ゲームの配布はしない。
 - 問い合わせは 08 お問い合わせの Google フォームだけ（URL は `config.js` の `contact.formUrl`）。
 - 日本語と英語を切り替えられる。
 
@@ -16,11 +16,11 @@ Just Beat It 制作班のリズム弾幕アクション「Just Beat It」を配�
 
 | 番号 | 区画 | id |
 | --- | --- | --- |
-| 00 | トップ（オープニング・キャッチ・ダウンロード・PV） | top |
+| 00 | トップ（オープニング・キャッチ・Steam・PV） | top |
 | 01 | ゲームについて | about |
 | 02 | ステージ（一覧から選ぶと背景・敵・場所の名前が替わる） | stages |
 | 03 | 映像（PV 第一弾） | movie |
-| 04 | ダウンロード（PC の条件・大きさ・警告が出た時の開き方） | download |
+| 04 | Steam（発売日・ストアページへの案内・遊ぶ前の注意） | steam |
 | 05 | 遊び方（キーボード・2 人・コントローラー・ルール） | howto |
 | 06 | 制作（制作班とメンバー） | team |
 | 07 | クレジット（フォント・素材・OFL の許諾文） | credits |
@@ -28,10 +28,10 @@ Just Beat It 制作班のリズム弾幕アクション「Just Beat It」を配�
 
 - `assets/js/config.js` … 運用で書き換える設定（下記）
 - `assets/js/opening.js` … トップの演出（弾が拍に合わせて集まり、ロゴが光って出る）
-- `assets/js/main.js` … 言語の切り替え・ナビ・ステージ選択・映像・ダウンロード・制作班
+- `assets/js/main.js` … 言語の切り替え・ナビ・ステージ選択・映像・Steam への案内・制作班
 - `assets/css/site.css` … 見た目（ゲームの UI と同じ、暗い板と筆の帯）
 - `assets/img/enemy/` … ステージの敵の絵（ゲームの `Assets/StageData/*/Visuals` から）
-- `manual/`・`support/`・`download/`・`en/` … 前のサイトの URL を新しい区画へ転送するだけのページ
+- `manual/`・`support/`・`en/` … 前のサイトの URL を新しい区画へ転送するだけのページ
 - `404.html`、`.nojekyll`、`robots.txt`
 
 ## 日常の設定変更
@@ -41,10 +41,8 @@ Just Beat It 制作班のリズム弾幕アクション「Just Beat It」を配�
 - `team` … 制作の名前（日本語・英語）
 - `members` … メンバー。`{ handle: "ハンドル名", role: { ja: "担当", en: "Role" } }` を並べる。空なら「準備中」
 - `pv.youtubeId` / `pv.mp4` … PV。どちらかを入れると差し替わる。空のあいだはプレイ映像を「PV 準備中」の注記つきで流す
-- `download.windows` … `url` を入れるとダウンロードボタンが押せるようになる（空なら「準備中」）。`size`（大きさ）、`version`（版）、`os`・`gpu`・`storage`（動く PC の条件）
+- `steam.url` … Steam ストアページの URL。ヒーローと 04 Steam のボタンに反映（JavaScript が無効な場合のリンクは `index.html` にも記載）
 - `contact.formUrl` … 08 お問い合わせで案内する Google フォームの URL
-
-ゲーム本体は GitHub Releases に置き、`url` には `https://github.com/所有者/リポジトリ/releases/download/タグ/ファイル.zip` の形の直リンクを入れます（1 ファイル 2 GB まで）。
 
 ## 見た目の決まり
 

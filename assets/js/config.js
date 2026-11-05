@@ -30,17 +30,8 @@ window.JBI_CONFIG = {
     formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfeEURZEyI0D2UZvlAes9fcFfb7OTds7c3bpasJRYUKSAk5DA/viewform"
   },
 
-  // ダウンロード。url が空のあいだはボタンが「準備中」になります。
-  // url は GitHub Releases の直リンク（https://github.com/所有者/リポジトリ/releases/download/タグ/ファイル.zip）。
-  // size はファイルの大きさ（例 "約 650 MB"）、version は版（例 "1.0.0"）。
-  download: {
-    windows: {
-      url: "https://github.com/raymee675/Just-Beat-It/releases/download/v2026.11.02/JustBeatIt-Windows-2026.11.02.zip",
-      size: "329 MB",
-      version: "2026.11.02",
-      os: { ja: "Windows 10 / 11（64 ビット）", en: "Windows 10 / 11 (64-bit)" },
-      gpu: { ja: "DirectX 11 対応（GeForce GTX 1050 程度以上）", en: "DirectX 11 capable (GeForce GTX 1050 or better)" },
-      storage: { ja: "2 GB 以上の空き（展開後 約 1.1 GB）", en: "2 GB free space (about 1.1 GB after extracting)" }
-    }
+  // Steam。url にストアページの URL を入れると、サイトの案内先に反映されます。
+  steam: {
+    url: "https://store.steampowered.com/app/5429530/Just_Beat_It/"
   }
 };
