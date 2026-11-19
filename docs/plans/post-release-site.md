@@ -1,7 +1,7 @@
 # Post-release site update and SEO
 
-Date: 2026-11-19  
-Status: Implemented and source-validated on `release/post-launch-2026-11-19`; branch publication only, no main deployment.
+Date: 2026-11-19
+Status: Implemented and source-validated on `release/post-launch-2026-11-19`; pushed to GitHub; no main deployment.
 
 ## Objective
 
