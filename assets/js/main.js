@@ -115,7 +115,7 @@
       if (en) s.insertBefore(zz("span", "zz-ghost", en.textContent), s.firstChild);
     });
     // 区画のあいだを流れる英字の帯
-    var TICKER = ["JUST BEAT IT", "RHYTHM BULLET HELL", "10 STAGES", "10 SONGS", "DASH", "AVAILABLE ON STEAM", "ark art games"];
+    var TICKER = ["JUST BEAT IT", "RHYTHM BULLET HELL", "10 STAGES", "10 SONGS", "DASH", "ark art games"];
     $$("main > .section").forEach(function (s, i) {
       var t = zz("div", "zz-ticker zz-ticker--" + (i % 3));
       if (["about", "steam", "howto", "credits"].indexOf(s.id) !== -1) t.classList.add("zz-ticker-light");
