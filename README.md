@@ -1,6 +1,6 @@
 # Just Beat It 公式サイト
 
-Just Beat It 制作班のリズム弾幕アクション「Just Beat It」の公式サイトです。GitHub Pages 用の静的サイトで、HTML / CSS / JavaScript だけでできていて、ビルドも npm も要りません。
+ark art gamesのリズム弾幕アクション「Just Beat It」の公式サイトです。GitHub Pages 用の静的サイトで、HTML / CSS / JavaScript だけでできていて、ビルドも npm も要りません。
 
 公開 URL: https://raymee675.github.io/Just-Beat-It/
 
@@ -20,7 +20,7 @@ Just Beat It 制作班のリズム弾幕アクション「Just Beat It」の公�
 | 01 | ゲームについて | about |
 | 02 | ステージ（一覧から選ぶと背景・敵・場所の名前が替わる） | stages |
 | 03 | 映像（PV 第一弾） | movie |
-| 04 | Steam（発売日・ストアページへの案内・遊ぶ前の注意） | steam |
+| 04 | Steam（配信中の案内・ストアページへの案内・遊ぶ前の注意） | steam |
 | 05 | 遊び方（キーボード・2 人・コントローラー・ルール） | howto |
 | 06 | 制作（制作班とメンバー） | team |
 | 07 | クレジット（フォント・素材・OFL の許諾文） | credits |
@@ -79,3 +79,21 @@ Just Beat It 制作班のリズム弾幕アクション「Just Beat It」の公�
 ## 公開
 
 main ブランチの / (root) を GitHub Pages で公開しています。`.nojekyll` は消さないでください。
+
+## 検索エンジン向けの設定
+
+`index.html` にゲーム名・ジャンル・チーム名・配信状況を含むタイトルと説明文、正規 URL、VideoGame / Organization の JSON-LD を記載しています。本文のチーム名、`config.js` と `main.js` の代替表示も `ark art games` です。
+
+`sitemap.xml` は正規のトップページだけを掲載します。転送専用ページ・404・言語やスタイルのクエリ違いは追加しません。内容を大きく更新した時だけ `lastmod` を更新してください。
+
+発売後用ブランチを main に取り込んで公開した後は、次の手順で検索登録を行います。
+
+1. Google Search Console で `https://raymee675.github.io/Just-Beat-It/` を URL プレフィックスとして登録し、所有権を確認します。指定された確認ファイルや meta タグがある場合に限り追加してください。
+2. サイトマップ `https://raymee675.github.io/Just-Beat-It/sitemap.xml` を送信し、トップページの URL 検査からインデックス登録をリクエストします。
+3. Bing Webmaster Tools でも所有権確認後、同じサイトマップを送信します。
+
+GitHub Pages のプロジェクトサイトなので、このリポジトリの `robots.txt` は `/Just-Beat-It/robots.txt` に配置されます。Google が参照するホスト直下の `/robots.txt` とは異なり、このファイルだけでサイトマップが通知されるとは限りません。上記の管理ツールからの送信を使ってください。現在の本番 URL は HTTP 200、ホスト直下の robots.txt は HTTP 404 で、X-Robots-Tag による拒否はありません（2026-11-19 確認）。
+
+検索掲載・順位・反映時期は各検索エンジンが決定します。構造化データは検索結果の特別表示を保証するものではありません。
+
+根拠: [Google Search Essentials](https://developers.google.com/search/docs/essentials)、[サイトマップ](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)、[再クロールの依頼](https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl)、[Bing のサイトマップ](https://www2.bing.com/webmasters/help/sitemaps-3b5cf6ed)、[Schema.org VideoGame](https://schema.org/VideoGame)。

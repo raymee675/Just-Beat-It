@@ -1,2 +1,5 @@
 User-agent: *
 Allow: /
+
+# On GitHub project Pages, submit this sitemap through webmaster tools.
+Sitemap: https://raymee675.github.io/Just-Beat-It/sitemap.xml
